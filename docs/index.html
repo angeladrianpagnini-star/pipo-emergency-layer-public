@@ -3,118 +3,519 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>PIPO Emergency Layer Public</title>
-    <link rel="stylesheet" href="styles.css" />
+    <title>PIPO Emergency Layer - Prototipo</title>
+    <link rel="stylesheet" href="styles.css?v=32" />
   </head>
   <body>
-    <main class="shell">
-      <section class="phone" aria-label="Vista ciudadana">
-        <header class="brand">
-          <div class="mark">P</div>
+    <main class="app-shell">
+      <div class="device-column">
+        <section class="pre-download-card" aria-label="Identificacion previa a la descarga">
+          <div class="pipo-brandmark" aria-hidden="true"><span>P</span></div>
           <div>
-            <p>Capa visual del dispositivo</p>
-            <h1>PIPO</h1>
+            <p class="eyebrow">Antes de la descarga</p>
+            <h2>PIPO identidad segura</h2>
+            <p>MFA, biometria local y dispositivo enrolado para activar la herramienta.</p>
           </div>
-          <button id="pipoButton" class="pipo-dot" type="button" aria-label="Abrir PIPO">+</button>
-        </header>
-
-        <section class="identity">
-          <article>
-            <span>Identidad</span>
-            <strong>MFA activo</strong>
-          </article>
-          <article>
-            <span>Dispositivo</span>
-            <strong>Enrolado</strong>
-          </article>
         </section>
 
-        <section class="device-view">
-          <p class="eyebrow">Pantalla activa</p>
-          <h2>Contenido del dispositivo</h2>
-          <div class="mock-search">Buscar...</div>
-          <article><span></span><div><strong>Contacto A</strong><p>Mensaje simulado</p></div></article>
-          <article><span></span><div><strong>Servicio local</strong><p>Actualizacion recibida</p></div></article>
-          <article><span></span><div><strong>Comunidad</strong><p>Actividad reciente</p></div></article>
-        </section>
+        <section class="phone-panel" aria-label="Pantalla ciudadana">
+          <div id="neutralScreen" class="neutral-screen hidden" aria-live="polite">
+            <p>Solicitud registrada</p>
+            <strong id="neutralCase">Estado: activo</strong>
+            <button class="ghost-button" type="button" data-action="restore">Volver</button>
+          </div>
 
-        <aside id="pipoPanel" class="panel hidden">
-          <div class="panel-head">
-            <div>
-              <p class="eyebrow">PIPO Layer</p>
-              <h2>Alerta ciudadana</h2>
+        <div id="citizenFlow" class="citizen-flow">
+          <section class="social-app" aria-label="Pantalla del dispositivo simulada">
+            <header class="social-header">
+              <div>
+                <p class="eyebrow">Pantalla activa del dispositivo</p>
+                <h1 id="socialTitle">Mensajes</h1>
+              </div>
+              <details id="networkPicker" class="network-picker">
+                <summary id="networkToggle" class="network-toggle">Vistas</summary>
+                <div id="networkRail" class="network-rail" aria-label="Cambiar vista del dispositivo">
+                  <button type="button" class="active" data-social="chat">Mensajes</button>
+                  <button type="button" data-social="feed">Actividad</button>
+                  <button type="button" data-social="work">Trabajo</button>
+                  <button type="button" data-social="community">Comunidad</button>
+                </div>
+              </details>
+            </header>
+
+            <section class="identity-card" aria-label="Identidad segura PIPO">
+              <div>
+                <span>Identidad verificada</span>
+                <strong>MFA + biometria local</strong>
+              </div>
+              <div>
+                <span>Dispositivo enrolado</span>
+                <strong>Token seguro activo</strong>
+              </div>
+            </section>
+
+            <div class="social-screen active" data-screen="chat">
+              <div class="search-pill">Buscar...</div>
+              <article class="chat-row"><span class="avatar"></span><div><strong>Contacto A</strong><p>escribiendo...</p></div><time>10:05</time></article>
+              <article class="chat-row"><span class="avatar alt"></span><div><strong>Grupo barrial</strong><p>Buen dia. Nos vemos en el punto...</p></div><time>09:55</time></article>
+              <article class="chat-row"><span class="avatar neutral"></span><div><strong>Contacto B</strong><p>Ahi voy</p></div><time>09:45</time></article>
+              <article class="chat-row"><span class="avatar"></span><div><strong>Servicio local</strong><p>Solicitud recibida...</p></div><time>09:32</time></article>
+              <nav class="mock-nav"><span>Inicio</span><span>Llamadas</span><span>Actividad</span></nav>
             </div>
-            <button id="closePanel" type="button">×</button>
+
+            <div class="social-screen" data-screen="feed">
+              <div class="story-strip"><span></span><span></span><span></span><span></span></div>
+              <article class="social-card">
+                <div class="avatar-line">
+                  <span class="avatar alt"></span>
+                  <div>
+                    <strong>Cuenta comunitaria</strong>
+                    <p>3 personas mas · contenido anonimizado</p>
+                  </div>
+                </div>
+                <div class="post-visual magenta"></div>
+                <div class="reaction-row"><span>Me gusta</span><span>Comentar</span><span>Enviar</span></div>
+              </article>
+            </div>
+
+            <div class="social-screen" data-screen="work">
+              <div class="search-pill light">Buscar</div>
+              <article class="work-card">
+                <div class="avatar-line">
+                  <span class="avatar neutral"></span>
+                  <div>
+                    <strong>Perfil profesional</strong>
+                    <p>Publicacion sugerida · 1 h</p>
+                  </div>
+                </div>
+                <div class="post-visual work"></div>
+                <p class="post-text">Contenido laboral anonimizado. La capa visual PIPO permanece disponible sin exponer identidad.</p>
+              </article>
+              <div class="reaction-row"><span>Recomendar</span><span>Comentar</span><span>Enviar</span></div>
+            </div>
+
+            <div class="social-screen" data-screen="community">
+              <aside class="server-rail"><span></span><span></span><span></span><span></span><span>+</span></aside>
+              <section class="channel-list">
+                <h2>Comunidad segura</h2>
+                <div class="search-pill">Buscar</div>
+                <p># avisos</p>
+                <p># general</p>
+                <p># clases</p>
+                <p># herramientas</p>
+                <p>🔊 Sala general</p>
+                <p>🔊 Sala duo</p>
+                <p># segundo-anio</p>
+              </section>
+            </div>
+          </section>
+
+          <button id="pipoDot" class="pipo-dot" type="button" data-action="toggle-rail" aria-label="Abrir PIPO">
+            <span></span>
+          </button>
+
+          <aside id="pipoRail" class="pipo-rail overlay hidden" aria-label="Barra de emergencia PIPO">
+            <div class="rail-head">
+              <div>
+                <p class="eyebrow">PIPO Layer</p>
+                <h2>Emergencia</h2>
+              </div>
+              <button class="mini-close" type="button" data-action="toggle-rail" aria-label="Cerrar">×</button>
+            </div>
+
+            <div class="rail-section">
+              <p>Condicion</p>
+              <div class="incident-grid compact-grid" id="incidentGrid">
+                <button type="button" data-incident="No puedo hablar">No puedo hablar</button>
+                <button type="button" data-incident="Violencia de genero">Violencia</button>
+                <button type="button" data-incident="Emergencia medica">Salud</button>
+                <button type="button" data-incident="Amenaza o extorsion">Amenaza</button>
+                <button type="button" data-incident="Robo en curso">Robo</button>
+                <button type="button" data-incident="Incendio">Incendio</button>
+                <button type="button" data-incident="Accidente vial">Accidente</button>
+                <button type="button" data-incident="Persona en riesgo">Persona en riesgo</button>
+              </div>
+            </div>
+
+            <div class="rail-section">
+              <p>Derivar a</p>
+              <div class="route-grid">
+                <button type="button" data-route="911 / Seguridad">911</button>
+                <button type="button" data-route="107 / Salud">107</button>
+                <button type="button" data-route="100 / Bomberos">Bomberos</button>
+                <button type="button" data-route="103 / Defensa Civil">Defensa Civil</button>
+                <button type="button" data-route="Genero">Genero</button>
+                <button type="button" data-route="Transito vial">Transito</button>
+                <button type="button" data-route="Ninez">Ninez</button>
+                <button type="button" data-route="Fiscalia">Fiscalia</button>
+                <button type="button" data-route="CVGRT territorial">CVGRT</button>
+              </div>
+            </div>
+
+            <div class="rail-actions">
+              <button id="panicButton" class="primary-alert" type="button">Comunicar alerta</button>
+              <button type="button" data-action="reserved-call" class="reserve-alert">Llamar en reserva</button>
+            </div>
+
+            <div class="single-contact">
+              <strong>Activacion silenciosa</strong>
+              <span>Si no puedo hablar ni delatarme, toca una sola vez para enviar ubicacion, audio/video preautorizado y evidencia disponible.</span>
+              <button type="button" data-action="silent" class="silent-alert">Tocar sin delatarme</button>
+            </div>
+          </aside>
           </div>
+        </section>
 
-          <p class="label">Condicion</p>
-          <div class="grid" id="conditionGrid">
-            <button type="button" data-condition="Seguridad">Seguridad</button>
-            <button type="button" data-condition="Salud">Salud</button>
-            <button type="button" data-condition="Incendio">Incendio</button>
-            <button type="button" data-condition="Accidente">Accidente</button>
-            <button type="button" data-condition="Amenaza">Amenaza</button>
-            <button type="button" data-condition="Persona en riesgo">Persona en riesgo</button>
+        <section class="field-mobile field-mobile-device">
+          <div class="section-title">
+            <h3>Movil de campo</h3>
+            <span>Receptor derivado</span>
           </div>
-
-          <p class="label">Derivar a</p>
-          <div class="grid route-grid" id="routeGrid">
-            <button type="button" data-route="911">911</button>
-            <button type="button" data-route="107">107</button>
-            <button type="button" data-route="Bomberos">Bomberos</button>
-            <button type="button" data-route="Defensa Civil">Defensa Civil</button>
-            <button type="button" data-route="Transito">Transito</button>
-            <button type="button" data-route="Centro de Monitoreo">Monitoreo</button>
+          <div class="field-phone">
+            <p class="field-id">TRACE-PIPO-000124</p>
+            <h4>No puedo hablar</h4>
+            <p>Derivacion recibida por equipo en territorio. Acceso limitado al minimo necesario.</p>
+            <div class="field-actions">
+              <button type="button" data-action="field-accept">Aceptar derivacion</button>
+              <button type="button" data-action="field-update">Informar arribo</button>
+            </div>
+            <div id="fieldEvidence" class="field-evidence hidden">
+              <strong>Evidencia habilitada</strong>
+              <span>Imagenes</span>
+              <span>Audio</span>
+              <span>Ubicacion</span>
+            </div>
+            <div class="field-actions secondary">
+              <button type="button" data-action="field-video">Enviar video de campo</button>
+              <button type="button" data-action="field-audio">Enviar audio de campo</button>
+            </div>
+            <div class="radio-channel">
+              <strong>Canal operativo multired</strong>
+              <div>
+                <button type="button" data-radio="911">911</button>
+                <button type="button" data-radio="107">107</button>
+                <button type="button" data-radio="Genero">Genero</button>
+                <button type="button" data-radio="Transito vial">Transito</button>
+                <button type="button" data-radio="Defensa Civil">Defensa Civil</button>
+                <button type="button" data-radio="Fiscalia">Fiscalia</button>
+                <button type="button" data-radio="Ninez">Ninez</button>
+                <button type="button" data-radio="CVGRT">CVGRT</button>
+              </div>
+              <p id="radioState">Disponible durante toda la intervencion.</p>
+            </div>
+            <ul id="fieldLog">
+              <li>Movil seguro en espera de asignacion.</li>
+            </ul>
           </div>
+        </section>
+      </div>
 
-          <button id="sendAlert" class="send-alert" type="button">Comunicar alerta</button>
-          <p class="notice">Demo publica: no captura datos reales ni accede a sensores.</p>
-        </aside>
-      </section>
-
-      <section class="console" aria-label="Consola institucional">
-        <header>
+      <section class="operator-panel" aria-label="Consola operativa">
+        <header class="console-header">
           <div>
-            <p class="eyebrow">Centro de recepcion</p>
+            <p class="eyebrow">Centro de monitoreo</p>
             <h2>Consola PIPO</h2>
           </div>
-          <button id="resetDemo" type="button">Reiniciar</button>
+          <div class="console-actions">
+            <button type="button" data-action="reset">Reiniciar demo</button>
+          </div>
         </header>
 
-        <section class="metrics">
-          <article><span>Activas</span><strong id="activeCount">0</strong></article>
-          <article><span>Derivadas</span><strong id="derivedCount">0</strong></article>
-          <article><span>Cerradas</span><strong id="closedCount">0</strong></article>
-        </section>
-
-        <section class="case-board">
-          <div>
-            <h3>Bandeja</h3>
-            <div id="caseList" class="case-list"></div>
-          </div>
-          <article class="case-detail">
-            <p class="case-id" id="caseId">Sin caso</p>
-            <h3 id="caseTitle">Esperando alerta</h3>
-            <div class="map">
-              <span></span>
-            </div>
-            <dl>
-              <div><dt>Derivacion</dt><dd id="caseRoute">Pendiente</dd></div>
-              <div><dt>Estado</dt><dd id="caseStatus">Sin actividad</dd></div>
-              <div><dt>Cierre</dt><dd id="caseClosure">Requiere cierre</dd></div>
-            </dl>
-            <textarea id="caseNotes">Registro operativo general. No contiene datos personales.</textarea>
-            <button id="closeCase" type="button">Cerrar incidente</button>
+        <div class="metrics">
+          <article>
+            <span>Activas</span>
+            <strong id="activeCount">1</strong>
           </article>
-        </section>
+          <article>
+            <span>Rojo</span>
+            <strong id="redCount">1</strong>
+          </article>
+          <article>
+            <span>Derivadas</span>
+            <strong id="derivedCount">0</strong>
+          </article>
+        </div>
 
-        <section class="scope">
-          <h3>Alcance publico seguro</h3>
-          <p>Esta demo muestra el flujo conceptual sin datos reales, sensores del dispositivo ni integraciones reales.</p>
-        </section>
+        <div class="console-layout">
+          <section class="case-detail">
+            <div class="case-head">
+              <div>
+                <p id="caseId" class="case-id">PIPO-000124</p>
+                <h3 id="caseTitle">No puedo hablar</h3>
+              </div>
+              <span id="casePriority" class="priority red">Rojo</span>
+            </div>
+
+            <div class="map-box">
+              <div class="map-marker"></div>
+              <span id="caseZone">Lomas de Zamora - ubicacion estimada</span>
+            </div>
+
+            <div class="detail-grid">
+              <article>
+                <span>ID comunicacion</span>
+                <strong id="caseComms">COM-AR-778204</strong>
+              </article>
+              <article>
+                <span>Telefono asociado</span>
+                <strong id="casePhone">+54 9 11 ***-4428</strong>
+              </article>
+              <article>
+                <span>Canal</span>
+                <strong id="caseChannel">PIPO discreto</strong>
+              </article>
+              <article>
+                <span>Estado</span>
+                <strong id="caseStatus">Recibido</strong>
+              </article>
+              <article>
+                <span>Evidencia</span>
+                <strong id="caseEvidence">Ubicacion + audio</strong>
+              </article>
+              <article>
+                <span>Operador</span>
+                <strong>Turno A</strong>
+              </article>
+            </div>
+
+            <section class="timeline">
+              <h3>Historial</h3>
+              <ul id="timelineList"></ul>
+            </section>
+
+            <section class="derivation">
+              <h3>Transferencia y derivacion</h3>
+              <div class="derivation-buttons">
+                <button type="button" data-derive="911 / Seguridad">911</button>
+                <button type="button" data-derive="107 / Salud">107</button>
+                <button type="button" data-derive="Genero">Genero</button>
+                <button type="button" data-derive="Transito vial">Transito</button>
+                <button type="button" data-derive="Defensa Civil">Defensa Civil</button>
+                <button type="button" data-derive="Fiscalia">Fiscalia</button>
+                <button type="button" data-derive="Ninez">Ninez</button>
+                <button type="button" data-derive="CVGRT territorial">CVGRT</button>
+              </div>
+              <p class="derivation-copy">La llamada y sus funciones sensibles quedan enlazadas al funcionario receptor dentro del mismo hilo documental.</p>
+            </section>
+
+            <aside class="sensitive-note">
+              Acceso sensible: camara, microfono o ubicacion en tiempo real requiere consentimiento previo,
+              emergencia activa, autorizacion operativa y auditoria restringida.
+            </aside>
+
+          </section>
+
+          <section class="report-panel">
+            <div class="section-title">
+              <h3>Informe del incidente</h3>
+              <span>Cierre obligatorio</span>
+            </div>
+            <div class="report-meta">
+              <article>
+                <span>Funcionario receptor</span>
+                <strong id="receiverName">Sin asignar</strong>
+              </article>
+              <article>
+                <span>Recepcion en campo</span>
+                <strong id="fieldDevice">Movil seguro pendiente</strong>
+              </article>
+              <article>
+                <span>Hilo documental</span>
+                <strong id="threadId">TRACE-PIPO-000124</strong>
+              </article>
+            </div>
+            <label class="report-field">
+              Registro del operador
+              <textarea id="operatorReport">Persona sin posibilidad de hablar. Se mantiene ubicacion activa y evidencia sensible bajo protocolo.</textarea>
+            </label>
+            <label class="report-field">
+              Carga del funcionario receptor
+              <textarea id="receiverReport">Pendiente de carga por area derivada.</textarea>
+            </label>
+            <section class="document-links">
+              <h4>Enlaces institucionales</h4>
+              <button type="button" data-linkdoc="Acta policial">Acta policial</button>
+              <button type="button" data-linkdoc="Ingreso hospitalario">Ingreso hospitalario</button>
+              <button type="button" data-linkdoc="Comunicacion judicial">Comunicacion judicial</button>
+              <button type="button" data-linkdoc="Fiscalia / Ninez">Fiscalia / Ninez</button>
+              <ul id="linkedDocs">
+                <li>Sin documentacion externa asociada.</li>
+              </ul>
+            </section>
+            <div class="closure-grid">
+              <button type="button" data-action="mark-followup">Pendiente seguimiento</button>
+              <button type="button" data-action="close-case">Cerrar reporte</button>
+            </div>
+            <div class="closure-grid upload-grid">
+              <button type="button" data-linkdoc="Acta de procedimiento">Crear acta</button>
+              <button type="button" data-linkdoc="Documento adjunto">Subir documento</button>
+              <button type="button" data-linkdoc="Foto de cierre">Subir foto</button>
+              <button type="button" data-linkdoc="Video de cierre">Subir video</button>
+            </div>
+            <div class="closure-state">
+              <span>Estado de cierre</span>
+              <strong id="closureState">Abierto - requiere cierre</strong>
+            </div>
+          </section>
+
+          <div class="middle-stack">
+          <section class="camera-monitor">
+            <div class="section-title">
+              <h3>Captura bajo protocolo</h3>
+              <span>Registro activo</span>
+            </div>
+            <div class="security-strip">
+              <span>Cifrado E2E operativo</span>
+              <span>Hash de evidencia</span>
+              <span>Acceso por rol</span>
+              <span>Usuario + dispositivo verificados</span>
+            </div>
+            <div class="camera-grid">
+              <article class="camera-feed front">
+                <span>Camara frontal</span>
+                <button type="button" data-action="expand-front">Expandir</button>
+                <div class="face-mask"></div>
+                <p>Rostro protegido / evidencia cifrada</p>
+              </article>
+              <article class="camera-feed rear">
+                <span>Camara trasera</span>
+                <button type="button" data-action="expand-rear">Expandir</button>
+                <div class="scene-lines"></div>
+                <p>Entorno documentado / ubicacion asociada</p>
+              </article>
+            </div>
+            <div class="audio-register">
+              <div class="wave-bars" aria-label="Modulacion de audio">
+                <span></span><span></span><span></span><span></span><span></span><span></span>
+              </div>
+              <ul>
+                <li>09:54 acceso sensible autorizado</li>
+                <li>09:54 audio en modulacion activa</li>
+                <li>09:55 doble camara registrada en caso</li>
+              </ul>
+            </div>
+            <div class="monitor-actions">
+              <button type="button" data-action="ask-field-video">Solicitar carga video</button>
+              <button type="button" data-action="ask-field-audio">Solicitar carga audio</button>
+              <button type="button" data-action="request-field-video">Activar video preautorizado</button>
+              <button type="button" data-action="request-field-audio">Activar audio preautorizado</button>
+            </div>
+          </section>
+
+          <section class="analytics-panel">
+            <div class="section-title">
+              <h3>Acontecimientos</h3>
+              <span>Gestion estadistica</span>
+            </div>
+            <div class="analytics-grid">
+              <article>
+                <span>Hoy</span>
+                <strong>18</strong>
+                <div class="mini-bars"><i></i><i></i><i></i><i></i><i></i></div>
+              </article>
+              <article>
+                <span>Mes</span>
+                <strong>426</strong>
+                <div class="mini-bars month"><i></i><i></i><i></i><i></i><i></i></div>
+              </article>
+              <article>
+                <span>Año</span>
+                <strong>4.812</strong>
+                <div class="mini-bars year"><i></i><i></i><i></i><i></i><i></i></div>
+              </article>
+            </div>
+            <div class="report-actions">
+              <button type="button" data-action="daily-report">Reporte diario</button>
+              <button type="button" data-action="monthly-report">Reporte mensual</button>
+              <button type="button" data-action="annual-report">Reporte anual</button>
+            </div>
+            <p id="reportState">Reportes disponibles para analisis operativo, auditoria y planificacion.</p>
+          </section>
+
+          </div>
+
+          <section class="queue">
+            <div class="section-title">
+              <h3>Bandeja</h3>
+              <span>Tiempo real</span>
+            </div>
+            <div id="caseList" class="case-list"></div>
+          </section>
+
+          <section class="federated-bases">
+            <div class="section-title">
+              <h3>Bases operativas</h3>
+              <span>Consolas federadas</span>
+            </div>
+            <div class="base-grid">
+              <article>
+                <strong>911 / Seguridad</strong>
+                <span>Consola propia + agentes</span>
+                <p>Paquete local: audio, ubicacion, derivaciones y acta.</p>
+              </article>
+              <article>
+                <strong>107 / Salud</strong>
+                <span>Consola propia + ambulancia</span>
+                <p>Paquete local: triage, ingreso hospitalario y traslado.</p>
+              </article>
+              <article>
+                <strong>Transito vial</strong>
+                <span>Consola propia + moviles</span>
+                <p>Paquete local: corte, siniestro, corredor y apoyo vial.</p>
+              </article>
+              <article>
+                <strong>Fiscalia / Ninez</strong>
+                <span>Consola propia + receptor</span>
+                <p>Paquete local: oficio, resguardo, intervencion y cierre.</p>
+              </article>
+              <article>
+                <strong>Defensa Civil</strong>
+                <span>Consola propia + brigadas</span>
+                <p>Paquete local: clima, evacuacion, anegamiento y riesgo estructural.</p>
+              </article>
+              <article>
+                <strong>Genero</strong>
+                <span>Consola propia + equipo protegido</span>
+                <p>Paquete local: victima, medidas, acompanamiento y seguimiento.</p>
+              </article>
+              <article>
+                <strong>CVGRT</strong>
+                <span>Consola propia + territorio</span>
+                <p>Paquete local: escucha, orientacion, asistencia y cierre comunitario.</p>
+              </article>
+              <article>
+                <strong>Centro de Monitoreo</strong>
+                <span>Base central integradora</span>
+                <p>Paquete central: todos los hilos, estados, evidencias y reportes.</p>
+              </article>
+            </div>
+            <p class="federated-copy">La base central integra todos los hilos; cada base operativa conserva su paquete documental y actua con su equipo de campo.</p>
+          </section>
+
+        </div>
       </section>
     </main>
 
-    <script src="app.js"></script>
+    <div id="cameraModal" class="camera-modal hidden" role="dialog" aria-modal="true" aria-label="Vista ampliada de camara">
+      <section class="expanded-camera">
+        <header>
+          <div>
+            <p class="eyebrow">Vista ampliada</p>
+            <h2 id="modalCameraTitle">Camara</h2>
+          </div>
+          <button type="button" data-action="close-camera">Cerrar</button>
+        </header>
+        <div id="modalCameraView" class="modal-camera-view front-view">
+          <div class="face-mask"></div>
+        </div>
+      </section>
+      <aside class="modal-report">
+        <h3>Registro durante visualizacion</h3>
+        <textarea>El operador mantiene escritura de registro mientras visualiza camara ampliada. Toda accion queda asociada al hilo documental.</textarea>
+        <button type="button" data-action="close-case">Cerrar reporte</button>
+      </aside>
+    </div>
+
+    <script src="app.js?v=32"></script>
   </body>
 </html>
