@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PIPO Emergency Layer Public</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="phone" aria-label="Vista ciudadana">
+        <header class="brand">
+          <div class="mark">P</div>
+          <div>
+            <p>Capa visual del dispositivo</p>
+            <h1>PIPO</h1>
+          </div>
+          <button id="pipoButton" class="pipo-dot" type="button" aria-label="Abrir PIPO">+</button>
+        </header>
+
+        <section class="identity">
+          <article>
+            <span>Identidad</span>
+            <strong>MFA activo</strong>
+          </article>
+          <article>
+            <span>Dispositivo</span>
+            <strong>Enrolado</strong>
+          </article>
+        </section>
+
+        <section class="device-view">
+          <p class="eyebrow">Pantalla activa</p>
+          <h2>Contenido del dispositivo</h2>
+          <div class="mock-search">Buscar...</div>
+          <article><span></span><div><strong>Contacto A</strong><p>Mensaje simulado</p></div></article>
+          <article><span></span><div><strong>Servicio local</strong><p>Actualizacion recibida</p></div></article>
+          <article><span></span><div><strong>Comunidad</strong><p>Actividad reciente</p></div></article>
+        </section>
+
+        <aside id="pipoPanel" class="panel hidden">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">PIPO Layer</p>
+              <h2>Alerta ciudadana</h2>
+            </div>
+            <button id="closePanel" type="button">×</button>
+          </div>
+
+          <p class="label">Condicion</p>
+          <div class="grid" id="conditionGrid">
+            <button type="button" data-condition="Seguridad">Seguridad</button>
+            <button type="button" data-condition="Salud">Salud</button>
+            <button type="button" data-condition="Incendio">Incendio</button>
+            <button type="button" data-condition="Accidente">Accidente</button>
+            <button type="button" data-condition="Amenaza">Amenaza</button>
+            <button type="button" data-condition="Persona en riesgo">Persona en riesgo</button>
+          </div>
+
+          <p class="label">Derivar a</p>
+          <div class="grid route-grid" id="routeGrid">
+            <button type="button" data-route="911">911</button>
+            <button type="button" data-route="107">107</button>
+            <button type="button" data-route="Bomberos">Bomberos</button>
+            <button type="button" data-route="Defensa Civil">Defensa Civil</button>
+            <button type="button" data-route="Transito">Transito</button>
+            <button type="button" data-route="Centro de Monitoreo">Monitoreo</button>
+          </div>
+
+          <button id="sendAlert" class="send-alert" type="button">Comunicar alerta</button>
+          <p class="notice">Demo publica: no captura datos reales ni accede a sensores.</p>
+        </aside>
+      </section>
+
+      <section class="console" aria-label="Consola institucional">
+        <header>
+          <div>
+            <p class="eyebrow">Centro de recepcion</p>
+            <h2>Consola PIPO</h2>
+          </div>
+          <button id="resetDemo" type="button">Reiniciar</button>
+        </header>
+
+        <section class="metrics">
+          <article><span>Activas</span><strong id="activeCount">0</strong></article>
+          <article><span>Derivadas</span><strong id="derivedCount">0</strong></article>
+          <article><span>Cerradas</span><strong id="closedCount">0</strong></article>
+        </section>
+
+        <section class="case-board">
+          <div>
+            <h3>Bandeja</h3>
+            <div id="caseList" class="case-list"></div>
+          </div>
+          <article class="case-detail">
+            <p class="case-id" id="caseId">Sin caso</p>
+            <h3 id="caseTitle">Esperando alerta</h3>
+            <div class="map">
+              <span></span>
+            </div>
+            <dl>
+              <div><dt>Derivacion</dt><dd id="caseRoute">Pendiente</dd></div>
+              <div><dt>Estado</dt><dd id="caseStatus">Sin actividad</dd></div>
+              <div><dt>Cierre</dt><dd id="caseClosure">Requiere cierre</dd></div>
+            </dl>
+            <textarea id="caseNotes">Registro operativo general. No contiene datos personales.</textarea>
+            <button id="closeCase" type="button">Cerrar incidente</button>
+          </article>
+        </section>
+
+        <section class="scope">
+          <h3>Alcance publico seguro</h3>
+          <p>Esta demo muestra el flujo conceptual sin datos reales, sensores del dispositivo ni integraciones reales.</p>
+        </section>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

@@ -51,3 +51,7 @@ Abrir:
 ```text
 http://127.0.0.1:4181
 ```
+
+## Demo web publica
+
+La demo publicable se sirve desde `docs/` mediante GitHub Pages.
