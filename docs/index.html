@@ -9,10 +9,65 @@
     <meta property="og:description" content="Prototipo conceptual de capa visual de emergencia para activacion, derivacion y comunicacion segura desde dispositivos moviles. No reemplaza sistemas oficiales de emergencia." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://angeladrianpagnini-star.github.io/pipo-emergency-layer-public/" />
-    <link rel="stylesheet" href="styles.css?v=34" />
+    <link rel="preload" as="image" href="assets/pipo-presentacion-visual.png" />
+    <link rel="stylesheet" href="styles.css?v=35" />
   </head>
   <body>
-    <main class="app-shell">
+    <section class="cover-entry" aria-label="Presentacion PIPO">
+      <div class="cover-entry-media">
+        <img src="assets/pipo-presentacion-visual.png" alt="PIPO Emergency Layer, capa visual de emergencia para dispositivos moviles" />
+      </div>
+      <div class="cover-entry-copy">
+        <p class="eyebrow">Demo conceptual</p>
+        <h1>PIPO Emergency Layer</h1>
+        <p>
+          Punto Inteligente de Proteccion Operativa: una capa visual de emergencia para activar alerta,
+          derivacion y comunicacion segura desde la pantalla activa del dispositivo.
+        </p>
+        <div class="cover-entry-actions">
+          <a href="#mobile-resumen">Vista movil resumida</a>
+          <a href="#demo-completa">Demo completa</a>
+        </div>
+        <small>No reemplaza sistemas oficiales de emergencia. Presenta una linea de analisis conceptual.</small>
+      </div>
+    </section>
+
+    <section id="mobile-resumen" class="mobile-brief" aria-label="Resumen movil PIPO">
+      <div class="section-title">
+        <h2>Vista movil amigable</h2>
+        <span>Resumen rapido</span>
+      </div>
+      <p class="brief-intro">
+        Para compartir desde celular, esta vista resume el flujo sin obligar a recorrer toda la consola operativa.
+      </p>
+      <div class="brief-flow">
+        <article>
+          <span>1</span>
+          <h3>Capa activa</h3>
+          <p>El punto PIPO queda disponible sobre la pantalla del dispositivo.</p>
+        </article>
+        <article>
+          <span>2</span>
+          <h3>Alerta</h3>
+          <p>Permite reportar condicion, ubicacion, evidencia y derivacion sugerida.</p>
+        </article>
+        <article>
+          <span>3</span>
+          <h3>Recepcion</h3>
+          <p>Monitoreo registra ID, hilo documental, estado y organismo receptor.</p>
+        </article>
+        <article>
+          <span>4</span>
+          <h3>Cierre</h3>
+          <p>El caso conserva trazabilidad, reportes, actas y documentacion asociada.</p>
+        </article>
+      </div>
+      <div class="brief-actions">
+        <a href="#demo-completa">Abrir demo completa</a>
+      </div>
+    </section>
+
+    <main id="demo-completa" class="app-shell">
       <div class="device-column">
         <section class="pre-download-card" aria-label="Identificacion previa a la descarga">
           <div class="cover-illustration" aria-hidden="true">
@@ -537,6 +592,6 @@
       </aside>
     </div>
 
-    <script src="app.js?v=34"></script>
+    <script src="app.js?v=35"></script>
   </body>
 </html>
