@@ -32,6 +32,20 @@ Es una demo explicativa para presentar el concepto de forma responsable.
 - No habilita vigilancia.
 - Toda implementacion real requiere marco legal, autorizaciones, auditoria, seguridad y acuerdos institucionales.
 
+## Tres capas del modelo
+
+La propuesta se ordena en tres niveles:
+
+- Capa ciudadana: boton PIPO, alerta, ubicacion, evidencia disponible y condicion de emergencia.
+- Capa institucional: centro de monitoreo, operador, derivacion, funcionario receptor, organismos intervinientes y cierre del caso.
+- Capa de gobernanza digital: identidad, MFA, roles, auditoria, cifrado proyectado, hash de evidencia, cadena de custodia, proteccion de datos e interoperabilidad.
+
+## Marco legal y gobernanza
+
+Una implementacion real debe definir consentimiento, tratamiento de datos sensibles, biometria, imagen y voz, ubicacion en tiempo real, resguardo de menores, cadena de custodia digital, acceso por funcionario autorizado, prohibicion de vigilancia permanente y auditoria posterior.
+
+Tambien debe existir una autoridad de gobernanza que determine quien administra, quien accede, quien audita, quien conserva evidencia, quien deriva, quien cierra el caso, quien responde por mal uso y quien habilita integraciones externas.
+
 ## Estructura
 
 - `prototype/`: demo visual publica y segura.

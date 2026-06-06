@@ -42,7 +42,8 @@ button {
 }
 
 .cover-entry,
-.mobile-brief {
+.mobile-brief,
+.model-brief {
   width: min(1180px, calc(100% - 32px));
   margin: 24px auto 0;
   border: 1px solid var(--line);
@@ -166,6 +167,42 @@ button {
 
 .brief-actions {
   margin-top: 16px;
+}
+
+.model-brief {
+  padding: 22px;
+}
+
+.model-grid {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.model-grid article,
+.governance-note {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fbf6eb;
+  padding: 16px;
+}
+
+.model-grid p,
+.governance-note p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  line-height: 1.42;
+}
+
+.governance-note {
+  margin-top: 10px;
+  border-left: 4px solid var(--teal);
+}
+
+.governance-note strong {
+  display: block;
+  font-size: 1rem;
 }
 
 .app-shell {
@@ -1838,7 +1875,8 @@ h3 {
 
 @media (max-width: 560px) {
   .cover-entry,
-  .mobile-brief {
+  .mobile-brief,
+  .model-brief {
     width: calc(100% - 20px);
     margin-top: 10px;
     border-radius: 12px;
@@ -1853,11 +1891,13 @@ h3 {
     width: 100%;
   }
 
-  .mobile-brief {
+  .mobile-brief,
+  .model-brief {
     padding: 14px;
   }
 
-  .brief-flow {
+  .brief-flow,
+  .model-grid {
     grid-template-columns: 1fr;
   }
 
