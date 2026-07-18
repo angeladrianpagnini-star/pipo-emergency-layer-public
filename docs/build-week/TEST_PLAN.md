@@ -25,6 +25,7 @@ node docs\build-week\procedure-act.test.js
 node docs\build-week\citizen-closure.test.js
 node docs\build-week\evidence-vault.test.js
 node docs\build-week\server\secure-backend.test.js
+node docs\build-week\release-candidate.test.js
 git diff --check
 ```
 
@@ -141,3 +142,13 @@ Probar en navegador:
 - selector multiperspectiva visible sin overflow;
 - `Citizen Closure` legible en pantalla movil.
 - `Security Status`, `Evidence Vault`, `Access Requests`, `Acquisition Records` y `Transfer History` legibles en escritorio y movil.
+
+## Release candidate - Etapa 6A
+
+- La carga inicial queda en `SIMULATED_DEMO` y no consulta un endpoint experimental inexistente.
+- El backend solo se consulta cuando se selecciona `OPENAI_SECURE_BACKEND` de manera explicita.
+- La perspectiva ciudadana no expone paneles, enlaces ni acciones internas.
+- La consola maestra recupera sus paneles internos al cambiar de perspectiva.
+- Las areas de comentario ciudadano y observacion formal tienen etiqueta accesible.
+- Los mensajes de perspectiva, asistente, acta, boveda y bitacora usan regiones de estado anunciables.
+- El release candidate conserva sin cambios los tres archivos protegidos de v36.

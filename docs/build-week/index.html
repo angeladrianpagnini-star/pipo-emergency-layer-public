@@ -3,13 +3,13 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>PIPO Build Week - Etapa 5.2</title>
+    <title>PIPO Build Week - Etapa 6A Release Candidate</title>
     <meta
       name="description"
-      content="Version separada de PIPO Emergency Layer para OpenAI Build Week. Etapa 5.2: boveda de evidencia, controles criptograficos simulados y adquisicion digital autorizada."
+      content="Version separada de PIPO Emergency Layer para OpenAI Build Week. Etapa 6A: auditoria final, feature freeze y release candidate local."
     />
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="styles.css?v=10" />
+    <link rel="stylesheet" href="styles.css?v=11" />
   </head>
   <body>
     <header class="hero">
@@ -31,19 +31,19 @@
     <nav class="section-nav" aria-label="Navegacion Build Week">
       <a href="#perspectives">Perspectives</a>
       <a href="#citizen-closure">Citizen Closure</a>
-      <a href="#incident-assistant">Incident Assistant</a>
-      <a href="#master-console">Master Console</a>
-      <a href="#field-operators">Field Operators</a>
-      <a href="#individual-acts">Individual Acts</a>
-      <a href="#procedure-act">Procedure Act</a>
-      <a href="#security-status">Security Status</a>
-      <a href="#evidence-vault">Evidence Vault</a>
-      <a href="#access-requests">Access Requests</a>
-      <a href="#acquisition-records">Acquisition Records</a>
-      <a href="#transfer-history">Transfer History</a>
-      <a href="#master-incident-record">Master Incident Record</a>
-      <a href="#audit">Audit</a>
-      <a href="#closure">Closure</a>
+      <a href="#incident-assistant" data-internal-for-citizen>Incident Assistant</a>
+      <a href="#master-console" data-internal-for-citizen>Master Console</a>
+      <a href="#field-operators" data-internal-for-citizen>Field Operators</a>
+      <a href="#individual-acts" data-internal-for-citizen>Individual Acts</a>
+      <a href="#procedure-act" data-internal-for-citizen>Procedure Act</a>
+      <a href="#security-status" data-internal-for-citizen>Security Status</a>
+      <a href="#evidence-vault" data-internal-for-citizen>Evidence Vault</a>
+      <a href="#access-requests" data-internal-for-citizen>Access Requests</a>
+      <a href="#acquisition-records" data-internal-for-citizen>Acquisition Records</a>
+      <a href="#transfer-history" data-internal-for-citizen>Transfer History</a>
+      <a href="#master-incident-record" data-internal-for-citizen>Master Incident Record</a>
+      <a href="#audit" data-internal-for-citizen>Audit</a>
+      <a href="#closure" data-internal-for-citizen>Closure</a>
     </nav>
 
     <main class="layout">
@@ -150,10 +150,10 @@
           <button type="button" data-citizen-action="followup-complete" data-perspective-target="MASTER_CONSOLE FEDERATED_CONSOLE">Completar seguimiento</button>
           <button type="button" data-citizen-action="reset-demo" data-perspective-target="CITIZEN FIELD_OPERATOR FEDERATED_CONSOLE MASTER_CONSOLE">Reset demo data</button>
         </div>
-        <div id="perspectiveMessage" class="access-result"></div>
+        <div id="perspectiveMessage" class="access-result" role="status" aria-live="polite"></div>
       </section>
 
-      <section id="incident-assistant" class="panel assistant-panel">
+      <section id="incident-assistant" class="panel assistant-panel" data-internal-for-citizen>
         <div class="section-title">
           <h2>PIPO AI Incident Assistant</h2>
           <span>Etapa 4A experimental</span>
@@ -293,12 +293,12 @@
               <button type="button" data-assistant="analyze">Analizar incidente</button>
               <button type="button" data-assistant="retry">Reintentar</button>
               <button type="button" data-assistant="use-simulated-demo">Usar demo simulada</button>
-              <button type="button" data-assistant="continue-without-ai">Continue without AI</button>
+              <button type="button" data-assistant="continue-without-ai">Continuar sin IA</button>
             </div>
           </form>
 
           <div class="assistant-output">
-            <div id="assistantStatus" class="access-result"></div>
+            <div id="assistantStatus" class="access-result" role="status" aria-live="polite"></div>
             <div class="assistant-result-grid">
               <article>
                 <span>Tipo sugerido</span>
@@ -397,7 +397,7 @@
         </div>
       </section>
 
-      <section id="field-operators" class="panel field-panel">
+      <section id="field-operators" class="panel field-panel" data-internal-for-citizen>
         <div class="section-title">
           <h2>Field Operator Mobile</h2>
           <span>Etapa 4B</span>
@@ -569,7 +569,7 @@
         </div>
       </section>
 
-      <section id="procedure-act" class="panel procedure-panel">
+      <section id="procedure-act" class="panel procedure-panel" data-internal-for-citizen>
         <div class="section-title">
           <h2>Acta Digital de Procedimiento PIPO</h2>
           <span>Etapa 5</span>
@@ -596,7 +596,7 @@
           <button type="button" data-procedure-action="finalize">Finalizar acta</button>
           <button type="button" data-procedure-action="demo">Demo Etapa 5</button>
         </div>
-        <div id="procedureMessage" class="access-result"></div>
+          <div id="procedureMessage" class="access-result" role="status" aria-live="polite"></div>
         <div class="procedure-grid">
           <article>
             <h3>Acta</h3>
@@ -627,7 +627,7 @@
         </div>
       </section>
 
-      <section id="closure" class="panel procedure-panel">
+      <section id="closure" class="panel procedure-panel" data-internal-for-citizen>
         <div class="section-title">
           <h2>Expediente y cierre trazable</h2>
           <span>Master Incident Record</span>
@@ -666,7 +666,7 @@
         <pre id="procedurePrintView" class="print-preview"></pre>
       </section>
 
-      <section id="security-status" class="panel security-panel">
+      <section id="security-status" class="panel security-panel" data-internal-for-citizen>
         <div class="section-title">
           <h2>Security Status</h2>
           <span>Etapa 5.2</span>
@@ -679,7 +679,7 @@
         <div id="securityControlOverview" class="control-grid"></div>
       </section>
 
-      <section id="evidence-vault" class="panel evidence-panel">
+      <section id="evidence-vault" class="panel evidence-panel" data-internal-for-citizen>
         <div class="section-title">
           <h2>PIPO Evidence Vault</h2>
           <span>Evidencia ficticia</span>
@@ -701,12 +701,12 @@
           <button type="button" data-vault-action="hold">Retencion hold</button>
           <button type="button" data-vault-action="schedule-delete">Programar eliminacion</button>
         </div>
-        <div id="vaultMessage" class="access-result"></div>
+          <div id="vaultMessage" class="access-result" role="status" aria-live="polite"></div>
         <div id="evidenceVaultList" class="vault-grid"></div>
         <div id="retentionPolicyList" class="retention-grid"></div>
       </section>
 
-      <section id="access-requests" class="panel evidence-panel">
+      <section id="access-requests" class="panel evidence-panel" data-internal-for-citizen>
         <div class="section-title">
           <h2>Access Requests</h2>
           <span>Permisos temporales</span>
@@ -725,7 +725,7 @@
         <ol id="evidenceAccessHistory" class="ledger-list"></ol>
       </section>
 
-      <section id="acquisition-records" class="panel evidence-panel">
+      <section id="acquisition-records" class="panel evidence-panel" data-internal-for-citizen>
         <div class="section-title">
           <h2>Digital Acquisition Records</h2>
           <span>Registro autorizado</span>
@@ -744,7 +744,7 @@
         <div id="citizenSanitizedCopy" class="access-result"></div>
       </section>
 
-      <section id="transfer-history" class="panel evidence-panel">
+      <section id="transfer-history" class="panel evidence-panel" data-internal-for-citizen>
         <div class="section-title">
           <h2>Transfer History</h2>
           <span>Demonstration evidence transfer chain</span>
@@ -808,6 +808,7 @@
               <label>Proximos pasos<select id="feedbackNextSteps"></select></label>
               <label>Satisfaccion<select id="feedbackOverall"></select></label>
             </div>
+            <label for="feedbackComment">Comentario opcional</label>
             <textarea id="feedbackComment" placeholder="Comentario opcional simulado"></textarea>
             <div id="citizenFeedback" class="mini-record"></div>
           </article>
@@ -825,6 +826,7 @@
                 <option value="TRATO_O_PROCEDIMIENTO">Trato o procedimiento</option>
               </select>
             </div>
+            <label for="observationDescription">Descripcion de la observacion</label>
             <textarea id="observationDescription">Solicito aclarar los pasos posteriores y documentos habilitados.</textarea>
             <div class="action-row small-actions">
               <button type="button" data-citizen-action="assign-observation" data-perspective-target="MASTER_CONSOLE FEDERATED_CONSOLE">Asignar</button>
@@ -843,7 +845,7 @@
         <pre id="citizenJsonExport" class="print-preview"></pre>
       </section>
 
-      <section id="master-console" class="panel federated-panel">
+      <section id="master-console" class="panel federated-panel" data-internal-for-citizen>
         <div class="section-title">
           <h2>FederatedOperationalConsole</h2>
           <span>Componente configurable</span>
@@ -855,7 +857,7 @@
         <div id="consoleGrid" class="console-grid" aria-label="Consolas federadas"></div>
       </section>
 
-      <section id="individual-acts" class="panel participants-panel">
+      <section id="individual-acts" class="panel participants-panel" data-internal-for-citizen>
         <div class="section-title">
           <h2>Multiintervencion</h2>
           <span>Operadores y actas propias</span>
@@ -878,7 +880,7 @@
         </div>
       </section>
 
-      <section class="panel master-record-panel">
+      <section class="panel master-record-panel" data-internal-for-citizen>
         <div class="section-title">
           <h2>Expediente digital del incidente</h2>
           <span>Acta maestra referenciada</span>
@@ -886,7 +888,7 @@
         <div id="masterRecord" class="master-record"></div>
       </section>
 
-      <section class="panel">
+      <section class="panel" data-internal-for-citizen>
         <div class="section-title">
           <h2>Acceso por finalidad</h2>
           <span>canAccessResource()</span>
@@ -899,7 +901,7 @@
         <div id="accessResult" class="access-result"></div>
       </section>
 
-      <section class="panel cyber-panel">
+      <section class="panel cyber-panel" data-internal-for-citizen>
         <div class="section-title">
           <h2>Ciberdelitos y dispositivo robado</h2>
           <span>Flujos simulados</span>
@@ -920,7 +922,7 @@
         </p>
       </section>
 
-      <section class="panel">
+      <section class="panel" data-internal-for-citizen>
         <div class="section-title">
           <h2>Etapa 1 + 1.1</h2>
           <span>Modelo de datos</span>
@@ -932,7 +934,7 @@
         <div id="modelList" class="model-list" aria-label="Modelos de datos"></div>
       </section>
 
-      <section class="panel detail-panel">
+      <section class="panel detail-panel" data-internal-for-citizen>
         <div class="section-title">
           <h2 id="detailTitle">Modelo seleccionado</h2>
           <span id="detailBadge">Requiere validacion</span>
@@ -950,7 +952,7 @@
         </div>
       </section>
 
-      <section class="panel lifecycle-panel">
+      <section class="panel lifecycle-panel" data-internal-for-citizen>
         <div class="section-title">
           <h2>Ciclo documental simulado</h2>
           <span>Sin borrar eventos</span>
@@ -958,7 +960,7 @@
         <ol id="timeline" class="timeline"></ol>
       </section>
 
-      <section id="audit" class="panel ledger-panel">
+      <section id="audit" class="panel ledger-panel" data-internal-for-citizen>
         <div class="section-title">
           <h2>Bitacora operativa append-only</h2>
           <span>Etapa 2</span>
@@ -977,11 +979,11 @@
           <button type="button" data-action="rectify-ledger">Rectificar evento</button>
           <button type="button" data-action="try-delete-ledger">Intentar borrar evento</button>
         </div>
-        <div id="ledgerValidation" class="access-result"></div>
+          <div id="ledgerValidation" class="access-result" role="status" aria-live="polite"></div>
         <ol id="ledgerList" class="ledger-list"></ol>
       </section>
 
-      <section class="panel compare-panel">
+      <section class="panel compare-panel" data-internal-for-citizen>
         <div class="section-title">
           <h2>IA vs decision humana</h2>
           <span>Auditable</span>
@@ -1001,7 +1003,7 @@
         <p id="humanReason" class="decision-reason"></p>
       </section>
 
-      <section class="panel snapshot-panel">
+      <section class="panel snapshot-panel" data-internal-for-citizen>
         <div class="section-title">
           <h2>Snapshot de datos</h2>
           <span>Demo JSON</span>
@@ -1019,6 +1021,6 @@
     <script src="procedure-act.js?v=1"></script>
     <script src="citizen-closure.js?v=1"></script>
     <script src="evidence-vault.js?v=1"></script>
-    <script src="app.js?v=10"></script>
+    <script src="app.js?v=11"></script>
   </body>
 </html>

@@ -1509,7 +1509,7 @@ function renderTransferHistory() {
 function renderEvidenceVaultSections() {
   syncEvidenceVaultStateToBuildWeek();
   const internalVisible = citizenState.selectedPerspective !== PERSPECTIVES.CITIZEN;
-  document.querySelectorAll("[data-internal-vault]").forEach((element) => {
+  document.querySelectorAll("[data-internal-vault], [data-internal-for-citizen]").forEach((element) => {
     element.hidden = !internalVisible;
   });
   renderSecurityStatus();
@@ -3208,6 +3208,5 @@ els.perspectiveFieldOperatorSelect.addEventListener("change", (event) => {
 initializeAssistantScenarios();
 initializeFieldWorkflowControls();
 initializeCitizenControls();
-refreshBackendStatus();
 render();
 }());

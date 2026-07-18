@@ -1,53 +1,34 @@
-# Demo Script
+# Demo Script - Build Week Release Candidate
 
 Duracion objetivo: menos de tres minutos.
 
-## Recorrido
+## Recorrido prioritario
 
-1. Abrir `docs/build-week/`.
-2. Mostrar que es una rama separada y que v36 queda preservada.
-3. En `Field Operators`, tocar `Demo 4 organismos`.
-4. Explicar el escenario: accidente vial con lesion, derrame, 911, 107, Transito y Bomberos.
-5. Mostrar que cada operador conserva estado, eventos, evidencia simulada y acta individual propia.
-6. Ir a `Procedure Act`.
-7. Tocar `Demo Etapa 5`.
-8. Mostrar `Acta Digital de Procedimiento PIPO`.
-9. Mostrar `Acta 100% completa`.
-10. Mostrar consistencia: inconsistencia horaria simulada, aclaracion y respuesta por anexo.
-11. Mostrar versionado: `v1`, `v2`, `v3`, `v3.1`, `v3.2`.
-12. Mostrar referencia de integridad de demostracion.
-13. Ir a `Closure`.
-14. Mostrar expediente maestro, supervision validada, exportacion JSON y cierre.
-15. Ir a `Perspectives`.
-16. Cambiar entre `Ciudadano`, `Operador de campo`, `Consola federada` y `Consola maestra`.
-17. Mostrar que el ID del incidente y el estado no se reinician.
-18. Tocar `Demo Etapa 5.1`.
-19. Ir a `Citizen Closure`.
-20. Mostrar resumen ciudadano, vista segura, proximos pasos, documentos habilitados, recibo, opinion y
-    observacion formal.
-21. Ir a `Security Status`.
-22. Mostrar transporte: si es local debe decir `LOCAL_DEVELOPMENT` y no prometer TLS productivo.
-23. Ir a `Evidence Vault`.
-24. Tocar `Ejecutar demo 5.2`.
-25. Mostrar evidencia ficticia cifrada, integridad verificada, acceso restringido, retencion y descarga bloqueada.
-26. Ir a `Access Requests` y mostrar historial de vista, denegacion, vencimiento o revocacion.
-27. Ir a `Acquisition Records` y mostrar `DigitalAcquisitionRecord` como registro conceptual, sin adquisicion real.
-28. Ir a `Transfer History` y leer el aviso de cadena de transferencia demostrativa.
-29. Cerrar con el principio: las actuaciones individuales se integran sin ser sustituidas ni reescritas, y
-    la devolucion ciudadana se entrega minimizada y trazable.
+1. Abrir `docs/build-week/` y explicar el problema: una alerta puede perder contexto entre canales y organismos.
+2. Mostrar `Perspectives` en modo ciudadano: informacion minimizada, documentos habilitados y proximos pasos.
+3. Mostrar un relato libre ficticio en `Incident Assistant`.
+4. Ejecutar `Analizar incidente` con `SIMULATED_DEMO`; explicar que no transmite datos y no requiere backend.
+5. Mostrar la sugerencia y confirmar que la decision final es humana.
+6. Volver a `Consola maestra` y mostrar coordinacion sin reescritura de registros ajenos.
+7. Ir a `Field Operators` y ejecutar `Demo 4 organismos`.
+8. Mostrar que cada operador conserva acontecimientos, evidencia ficticia y acta individual propia.
+9. Ir a `Procedure Act` y ejecutar `Demo Etapa 5`.
+10. Mostrar completitud, inconsistencia simulada, aclaracion por anexo, versionado y expediente maestro.
+11. Volver a `Citizen Closure` para mostrar resumen depurado, recibo, documentos habilitados y observacion formal.
+12. Ir a `Evidence Vault` y ejecutar `Demo 5.2`.
+13. Mostrar cifrado local de contenido ficticio, integridad, permisos, descarga bloqueada y retencion simulada.
+14. Cerrar con limites y atribucion: datos ficticios, sin sensores, sin conexiones oficiales, sin validez juridica automatica; la auditoria final se documenta en `GPT_5_6_BUILD_CONTRIBUTION.md`.
 
-## Frase corta
+## Frase de cierre
 
-PIPO no reemplaza emergencias oficiales. Propone una capa de comunicacion, trazabilidad y documentacion
-para reducir perdida de informacion y ordenar la respuesta.
+PIPO no reemplaza emergencias oficiales. Propone una capa conceptual de comunicacion, trazabilidad y
+documentacion para reducir perdida de informacion y ordenar la respuesta con control humano.
 
-## Aviso
+## Limites visibles
 
-Todos los datos son ficticios. No hay sensores reales, camaras, microfonos, ubicacion real, claves en
-frontend ni conexion con sistemas de emergencia.
-
-El resumen ciudadano no es copia del expediente maestro. Excluye identidades protegidas, notas internas,
-operaciones reservadas, evidencia de terceros, comunicaciones internas e informacion judicial restringida.
-
-La boveda de evidencia es una demostracion criptografica local. No es KMS/HSM, no almacena archivos
-sensibles reales y no representa cadena de custodia oficial.
+- Todos los datos son ficticios.
+- No hay sensores reales, camaras, microfonos, ubicacion real ni conexion con sistemas de emergencia.
+- La IA es asesora y requiere validacion humana.
+- El backend es experimental y opcional; la demo funciona sin el.
+- La boveda es una demostracion criptografica local, no KMS/HSM ni cadena de custodia oficial.
+- La vista ciudadana se mantiene minimizada y no expone controles internos.

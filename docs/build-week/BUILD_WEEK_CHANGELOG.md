@@ -1,5 +1,18 @@
 # Build Week Changelog
 
+## Etapa 6A - Final audit, feature freeze and release candidate
+
+- Activa feature freeze: no agrega modulos ni funciones operativas.
+- Elimina la consulta automatica al backend experimental durante la carga de la demo estatica.
+- Conserva el backend experimental como opcion explicita y mantiene `SIMULATED_DEMO` como modo inicial.
+- Corrige el aislamiento de la perspectiva ciudadana: oculta paneles, enlaces y acciones internas.
+- Agrega etiquetas explicitas a los textos ciudadanos y regiones de estado `aria-live`.
+- Normaliza el rotulo `Continuar sin IA`.
+- Agrega `release-candidate.test.js` para ejecutar la suite de etapas, chequeos sintacticos, aislamiento,
+  ausencia de secretos, ausencia de almacenamiento persistente y preservacion de v36.
+- Crea documentacion de trabajo preexistente, atribucion de auditoria, informe final y checklist RC.
+- Mantiene intactos `docs/index.html`, `docs/styles.css`, `docs/app.js` y la version publica v36.
+
 ## Etapa 5.2 - Proteccion criptografica, boveda y adquisicion autorizada
 
 - Agrega `evidence-vault.js` con `PIPO Evidence Vault` para evidencia ficticia.

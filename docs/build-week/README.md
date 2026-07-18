@@ -338,7 +338,7 @@ productivos ni cadena de custodia oficial.
 
 ## Archivos
 
-- `index.html`: visor de Etapas 0, 1, 1.1, 2, 3, 4A, 4B, 5, 5.1 y 5.2.
+- `index.html`: visor de Etapas 0, 1, 1.1, 2, 3, 4A, 4B, 5, 5.1 y 5.2, auditado en Etapa 6A.
 - `styles.css`: estilos independientes de la ruta Build Week.
 - `data-models.js`: definiciones y estado simulado inicial.
 - `ledger.js`: bitacora operativa append-only.
@@ -368,9 +368,15 @@ productivos ni cadena de custodia oficial.
 - `SECURITY_CONTROL_STATUS.md`: matriz de controles implementados, simulados y proyectados.
 - `DEMO_SCRIPT.md`: recorrido publico de menos de tres minutos.
 - `TEST_PLAN.md`: plan de pruebas de Build Week.
+- `PRE_EXISTING_WORK.md`: separacion entre v36 preexistente y el trabajo Build Week con referencias de commit.
+- `GPT_5_6_BUILD_CONTRIBUTION.md`: atribucion prudente de la tarea de auditoria final.
+- `BUILD_WEEK_FINAL_REPORT.md`: informe final de arquitectura, seguridad, pruebas y limites.
+- `RELEASE_CHECKLIST.md`: checklist local de release candidate.
+- `release-candidate.test.js`: prueba consolidada del release candidate.
 - `GUARDIAN_DIGITAL_DEPLOYMENT_PLAN.md`: hoja de ruta futura, sin implementacion ni despliegue.
 
-## Siguiente etapa
+## Etapa 6A - Feature freeze y release candidate
 
-Etapa 6 recomendada: matriz legal-operativa, gobernanza independiente y paquete de presentacion institucional
-para evaluacion externa, sin publicar sobre v36.
+La Etapa 6A no agrega funciones. Audita el recorrido existente, verifica el modo simulado, corrige defectos
+reproducibles de accesibilidad y aislamiento de perspectivas, prepara la documentacion final y genera un
+release candidate local. La rama permanece sin push, merge ni publicacion.
