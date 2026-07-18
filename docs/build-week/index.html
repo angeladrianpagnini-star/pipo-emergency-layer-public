@@ -1,0 +1,1026 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PIPO Build Week - Etapa 6A Release Candidate</title>
+    <meta
+      name="description"
+      content="Version separada de PIPO Emergency Layer para OpenAI Build Week. Etapa 6A: auditoria final, feature freeze y release candidate local."
+    />
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="styles.css?v=11" />
+  </head>
+  <body>
+    <header class="hero">
+      <div>
+        <p class="eyebrow">OpenAI Build Week Edition</p>
+        <h1>PIPO Emergency Layer</h1>
+        <p>
+          Nueva ruta independiente posterior a v36. Esta vista evoluciona el modelo hacia una arquitectura
+          federada: multiples consolas, operadores, actas individuales, ciberdelitos y expediente maestro.
+        </p>
+      </div>
+      <aside class="safety-card">
+        <strong>Preservacion v36</strong>
+        <span>Esta pagina vive en <code>docs/build-week/</code> y no reemplaza la demo publica actual.</span>
+        <span>Datos simulados. Sin API keys. Sin conexion con emergencias reales.</span>
+      </aside>
+    </header>
+
+    <nav class="section-nav" aria-label="Navegacion Build Week">
+      <a href="#perspectives">Perspectives</a>
+      <a href="#citizen-closure">Citizen Closure</a>
+      <a href="#incident-assistant" data-internal-for-citizen>Incident Assistant</a>
+      <a href="#master-console" data-internal-for-citizen>Master Console</a>
+      <a href="#field-operators" data-internal-for-citizen>Field Operators</a>
+      <a href="#individual-acts" data-internal-for-citizen>Individual Acts</a>
+      <a href="#procedure-act" data-internal-for-citizen>Procedure Act</a>
+      <a href="#security-status" data-internal-for-citizen>Security Status</a>
+      <a href="#evidence-vault" data-internal-for-citizen>Evidence Vault</a>
+      <a href="#access-requests" data-internal-for-citizen>Access Requests</a>
+      <a href="#acquisition-records" data-internal-for-citizen>Acquisition Records</a>
+      <a href="#transfer-history" data-internal-for-citizen>Transfer History</a>
+      <a href="#master-incident-record" data-internal-for-citizen>Master Incident Record</a>
+      <a href="#audit" data-internal-for-citizen>Audit</a>
+      <a href="#closure" data-internal-for-citizen>Closure</a>
+    </nav>
+
+    <main class="layout">
+      <section class="panel stage-panel">
+        <div class="section-title">
+          <h2>Etapa 0 + 1.1 + 2</h2>
+          <span>Preservacion y bitacora</span>
+        </div>
+        <div class="checks">
+          <article>
+            <strong>v36 identificada</strong>
+            <span><code>docs/index.html</code>, <code>docs/styles.css</code>, <code>docs/app.js</code></span>
+          </article>
+          <article>
+            <strong>Punto de restauracion</strong>
+            <span><code>pre-build-week-v36</code></span>
+          </article>
+          <article>
+            <strong>Rama de trabajo</strong>
+            <span><code>build-week-2026</code></span>
+          </article>
+          <article>
+            <strong>Publicacion</strong>
+            <span>GitHub Pages sigue apuntando a <code>main:/docs</code>. No se publica esta rama.</span>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel stage-panel federation-principle">
+        <div>
+          <p class="eyebrow">Principio de arquitectura</p>
+          <h2>Integracion sin absorcion documental</h2>
+          <p>
+            La consola maestra integra el incidente y puede solicitar aclaraciones, pero no reescribe,
+            elimina, fusiona ni firma actas individuales de otros organismos.
+          </p>
+        </div>
+        <div class="scenario-picker">
+          <label for="scenarioSelect">Escenario</label>
+          <select id="scenarioSelect">
+            <option value="general">Emergencia general</option>
+            <option value="violence">Violencia</option>
+            <option value="cybercrime">Ciberdelito</option>
+            <option value="stolenDevice">Dispositivo robado</option>
+            <option value="multidisciplinary">Incidente multidisciplinario</option>
+          </select>
+          <p id="scenarioSummary"></p>
+        </div>
+      </section>
+
+      <section id="perspectives" class="panel perspective-panel">
+        <div class="section-title">
+          <h2>Simulacion multiperspectiva</h2>
+          <span>Etapa 5.1</span>
+        </div>
+        <p class="lead">
+          La misma alerta puede verse como ciudadano, operador de campo, consola federada o consola maestra.
+          El cambio de perspectiva no reinicia el incidente: conserva ID, estado, cronologia, actas, evidencia
+          simulada, derivaciones, observaciones y cierre.
+        </p>
+        <div class="perspective-controls" aria-label="Selector de perspectiva">
+          <div class="form-row">
+            <label for="perspectiveSelect">Perspectiva activa</label>
+            <select id="perspectiveSelect">
+              <option value="CITIZEN">Ciudadano</option>
+              <option value="FIELD_OPERATOR">Operador de campo</option>
+              <option value="FEDERATED_CONSOLE">Consola federada</option>
+              <option value="MASTER_CONSOLE">Consola maestra</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label for="perspectiveScenarioSelect">Escenario 5.1</label>
+            <select id="perspectiveScenarioSelect">
+              <option value="A_ACCIDENT">A - Accidente multidisciplinario</option>
+              <option value="B_STOLEN_DEVICE">B - Dispositivo sustraido</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label for="perspectiveConsoleSelect">Base operativa</label>
+            <select id="perspectiveConsoleSelect"></select>
+          </div>
+          <div class="form-row">
+            <label for="perspectiveFieldOperatorSelect">Movil de campo</label>
+            <select id="perspectiveFieldOperatorSelect"></select>
+          </div>
+        </div>
+        <div id="perspectiveHeader" class="perspective-header"></div>
+        <div id="perspectivePermissionCards" class="permission-grid"></div>
+        <div id="perspectiveWorkspace" class="perspective-workspace"></div>
+        <div class="action-row contextual-actions">
+          <button type="button" data-citizen-action="demo-5-1" data-perspective-target="MASTER_CONSOLE FEDERATED_CONSOLE">Demo Etapa 5.1</button>
+          <button type="button" data-citizen-action="generate-summary" data-perspective-target="MASTER_CONSOLE">Generar resumen ciudadano</button>
+          <button type="button" data-citizen-action="review-summary" data-perspective-target="MASTER_CONSOLE">Revision institucional</button>
+          <button type="button" data-citizen-action="package" data-perspective-target="MASTER_CONSOLE">Preparar paquete</button>
+          <button type="button" data-citizen-action="deliver" data-perspective-target="MASTER_CONSOLE">Entregar paquete</button>
+          <button type="button" data-citizen-action="toggle-ai" data-perspective-target="MASTER_CONSOLE">Alternar IA demo</button>
+          <button type="button" data-citizen-action="open" data-perspective-target="CITIZEN">Abrir entrega</button>
+          <button type="button" data-citizen-action="ack" data-perspective-target="CITIZEN">Confirmar recepcion</button>
+          <button type="button" data-citizen-action="request-access" data-perspective-target="CITIZEN">Solicitar documento</button>
+          <button type="button" data-citizen-action="download-doc" data-perspective-target="CITIZEN">Descargar habilitado</button>
+          <button type="button" data-citizen-action="feedback" data-perspective-target="CITIZEN">Enviar opinion</button>
+          <button type="button" data-citizen-action="observation" data-perspective-target="CITIZEN">Crear observacion formal</button>
+          <button type="button" data-citizen-action="followup-required" data-perspective-target="MASTER_CONSOLE">Marcar seguimiento</button>
+          <button type="button" data-citizen-action="followup-complete" data-perspective-target="MASTER_CONSOLE FEDERATED_CONSOLE">Completar seguimiento</button>
+          <button type="button" data-citizen-action="reset-demo" data-perspective-target="CITIZEN FIELD_OPERATOR FEDERATED_CONSOLE MASTER_CONSOLE">Reset demo data</button>
+        </div>
+        <div id="perspectiveMessage" class="access-result" role="status" aria-live="polite"></div>
+      </section>
+
+      <section id="incident-assistant" class="panel assistant-panel" data-internal-for-citizen>
+        <div class="section-title">
+          <h2>PIPO AI Incident Assistant</h2>
+          <span>Etapa 4A experimental</span>
+        </div>
+        <p class="lead strong-warning">
+          Secure backend analysis - human validation required. Analisis asistido por IA - requiere validacion humana.
+        </p>
+        <p class="lead">
+          El asistente ordena informacion, detecta faltantes y sugiere prioridad o consolas. No despacha
+          recursos, no activa camara, microfono ni ubicacion, no cierra incidentes y no sustituye al operador.
+        </p>
+
+        <div class="assistant-flow" aria-label="Flujo del asistente">
+          <span>1. Relato</span>
+          <span>2. Analisis</span>
+          <span>3. Revision humana</span>
+          <span>4. Bitacora</span>
+          <span>5. Derivacion preparada</span>
+        </div>
+
+        <div class="assistant-backend-panel" aria-label="Modo de analisis y estado del backend">
+          <div class="form-row">
+            <label for="assistantModeSelect">Modo de analisis</label>
+            <select id="assistantModeSelect">
+              <option value="SIMULATED_DEMO">Simulated AI Demo</option>
+              <option value="OPENAI_SECURE_BACKEND">Secure OpenAI Backend</option>
+            </select>
+          </div>
+          <article>
+            <span>Modo activo</span>
+            <strong id="assistantActiveMode">Simulated AI Demo</strong>
+          </article>
+          <article>
+            <span>Backend</span>
+            <strong id="assistantBackendStatus">Estado pendiente</strong>
+          </article>
+          <article>
+            <span>RequestId</span>
+            <strong id="assistantRequestId">Pendiente</strong>
+          </article>
+          <article>
+            <span>Version analisis</span>
+            <strong id="assistantAnalysisVersion">Pendiente</strong>
+          </article>
+        </div>
+
+        <p class="lead backend-warning">
+          Datos ficticios para demo. El backend experimental no guarda relatos, ubicaciones, evidencia ni datos
+          personales; solo retorna una sugerencia estructurada para revision humana.
+        </p>
+
+        <div class="assistant-grid">
+          <form id="assistantForm" class="assistant-form">
+            <div class="form-row form-row-wide">
+              <label for="assistantScenarioSelect">Escenario ficticio</label>
+              <select id="assistantScenarioSelect"></select>
+            </div>
+            <div class="form-row form-row-wide">
+              <label for="assistantDescription">Descripcion libre del incidente</label>
+              <textarea id="assistantDescription" rows="6" placeholder="Escribir relato libre o cargar un escenario ficticio"></textarea>
+            </div>
+            <div class="form-row">
+              <label for="assistantChannel">Canal de ingreso</label>
+              <select id="assistantChannel">
+                <option>PIPO Layer</option>
+                <option>Activacion silenciosa</option>
+                <option>Llamada derivada</option>
+                <option>Formulario PIPO</option>
+                <option>Mesa de ayuda PIPO</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="assistantLocation">Ubicacion estimada o declarada</label>
+              <input id="assistantLocation" type="text" placeholder="No informado" />
+            </div>
+            <div class="form-row">
+              <label for="assistantCanSpeak">Puede hablar</label>
+              <select id="assistantCanSpeak">
+                <option value="UNKNOWN">No informado</option>
+                <option value="YES">Si</option>
+                <option value="NO">No</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="assistantCurrentRisk">Riesgo actual</label>
+              <select id="assistantCurrentRisk">
+                <option value="UNKNOWN">No informado</option>
+                <option value="YES">Si</option>
+                <option value="NO">No</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="assistantInjured">Personas lesionadas</label>
+              <select id="assistantInjured">
+                <option value="UNKNOWN">No informado</option>
+                <option value="YES">Si</option>
+                <option value="NO">No</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="assistantMinors">Menores presentes</label>
+              <select id="assistantMinors">
+                <option value="UNKNOWN">No informado</option>
+                <option value="YES">Si</option>
+                <option value="NO">No</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="assistantWeapons">Armas presentes</label>
+              <select id="assistantWeapons">
+                <option value="UNKNOWN">No informado</option>
+                <option value="YES">Si</option>
+                <option value="NO">No</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="assistantDigital">Posible incidente digital</label>
+              <select id="assistantDigital">
+                <option value="UNKNOWN">No informado</option>
+                <option value="YES">Si</option>
+                <option value="NO">No</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="assistantStolenDevice">Dispositivo robado o perdido</label>
+              <select id="assistantStolenDevice">
+                <option value="UNKNOWN">No informado</option>
+                <option value="YES">Si</option>
+                <option value="NO">No</option>
+              </select>
+            </div>
+            <div class="form-row form-row-wide">
+              <label for="assistantAdditional">Informacion adicional opcional</label>
+              <textarea id="assistantAdditional" rows="3" placeholder="Datos complementarios, todos ficticios"></textarea>
+            </div>
+            <div class="action-row form-row-wide">
+              <button type="button" data-assistant="analyze">Analizar incidente</button>
+              <button type="button" data-assistant="retry">Reintentar</button>
+              <button type="button" data-assistant="use-simulated-demo">Usar demo simulada</button>
+              <button type="button" data-assistant="continue-without-ai">Continuar sin IA</button>
+            </div>
+          </form>
+
+          <div class="assistant-output">
+            <div id="assistantStatus" class="access-result" role="status" aria-live="polite"></div>
+            <div class="assistant-result-grid">
+              <article>
+                <span>Tipo sugerido</span>
+                <strong id="assistantType">-</strong>
+              </article>
+              <article>
+                <span>Prioridad sugerida</span>
+                <strong id="assistantPriority">-</strong>
+              </article>
+              <article>
+                <span>Confianza</span>
+                <strong id="assistantConfidence">-</strong>
+              </article>
+            </div>
+            <article class="assistant-block">
+              <h3>Resumen neutral</h3>
+              <p id="assistantSummary">Cargar o escribir un incidente para generar analisis simulado.</p>
+            </article>
+            <div class="split-grid">
+              <article>
+                <h3>Riesgos detectados</h3>
+                <ul id="assistantRisks"></ul>
+              </article>
+              <article>
+                <h3>Datos faltantes</h3>
+                <ul id="assistantMissing"></ul>
+              </article>
+            </div>
+            <div class="split-grid">
+              <article>
+                <h3>Preguntas de seguimiento</h3>
+                <ul id="assistantQuestions"></ul>
+              </article>
+              <article>
+                <h3>Consolas sugeridas</h3>
+                <ul id="assistantConsoles"></ul>
+              </article>
+            </div>
+            <article class="assistant-block">
+              <h3>Fundamento y limites</h3>
+              <p id="assistantReasoning">Sin analisis generado.</p>
+              <ul id="assistantWarnings"></ul>
+              <ul id="assistantUnsupported"></ul>
+            </article>
+          </div>
+        </div>
+
+        <div class="human-review-grid">
+          <article class="human-review">
+            <h3>Decision del operador</h3>
+            <div class="review-actions">
+              <button type="button" data-assistant="accept">Aceptar todo</button>
+              <button type="button" data-assistant="modify">Aceptar parcialmente</button>
+              <button type="button" data-assistant="reject">Rechazar sugerencia</button>
+            </div>
+            <div class="assistant-form compact">
+              <div class="form-row">
+                <label for="humanTypeSelect">Tipo final</label>
+                <input id="humanTypeSelect" type="text" placeholder="Pendiente" />
+              </div>
+              <div class="form-row">
+                <label for="humanPrioritySelect">Prioridad final</label>
+                <select id="humanPrioritySelect">
+                  <option value="UNDETERMINED">UNDETERMINED</option>
+                  <option value="GREEN">GREEN</option>
+                  <option value="YELLOW">YELLOW</option>
+                  <option value="RED">RED</option>
+                </select>
+              </div>
+              <div class="form-row form-row-wide">
+                <label>Consolas finales</label>
+                <div id="humanConsoleOptions" class="console-checkboxes"></div>
+              </div>
+              <div class="form-row form-row-wide">
+                <label for="humanFollowUpAnswers">Respuestas o datos agregados</label>
+                <textarea id="humanFollowUpAnswers" rows="3" placeholder="Permite no se o no puedo responder"></textarea>
+              </div>
+              <div class="form-row form-row-wide">
+                <label for="humanReasonInput">Fundamento humano</label>
+                <textarea id="humanReasonInput" rows="3" placeholder="Obligatorio si modifica o rechaza una sugerencia material"></textarea>
+              </div>
+              <div class="action-row form-row-wide">
+                <button type="button" data-assistant="confirm">Confirmar decision humana</button>
+              </div>
+            </div>
+          </article>
+          <article class="human-review">
+            <div class="section-title">
+              <h3>AI vs. Human Decision</h3>
+              <span>No puntua al operador</span>
+            </div>
+            <div id="assistantComparison" class="comparison-box">
+              <p>La comparacion se genera al confirmar la decision humana.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="field-operators" class="panel field-panel" data-internal-for-citizen>
+        <div class="section-title">
+          <h2>Field Operator Mobile</h2>
+          <span>Etapa 4B</span>
+        </div>
+        <p class="lead strong-warning">
+          Cada intervencion conserva autoria, responsabilidad y trazabilidad propias.
+        </p>
+        <p class="lead">
+          Vista responsive para multiples funcionarios y organismos sobre un mismo incidente. Cada operador
+          registra acontecimientos y evidencia simulada, genera su acta individual y conserva autonomia documental.
+        </p>
+
+        <div class="field-workbench">
+          <section class="field-phone" aria-label="Vista movil del operador de campo">
+            <div class="phone-topbar">
+              <span>PIPO Field</span>
+              <strong id="fieldMobileTime">--:--</strong>
+            </div>
+
+            <div class="field-card primary">
+              <label for="fieldOperatorSelect">Operador ficticio</label>
+              <select id="fieldOperatorSelect"></select>
+              <div id="fieldOperatorMeta" class="field-meta-grid"></div>
+            </div>
+
+            <div class="field-card">
+              <div class="section-title compact-title">
+                <h3>Derivacion</h3>
+                <span id="fieldStatus">ASSIGNED</span>
+              </div>
+              <p id="fieldIncidentSummary"></p>
+              <div id="fieldAssignment" class="field-assignment"></div>
+            </div>
+
+            <div id="fieldStatusFlow" class="status-flow" aria-label="Estados de intervencion"></div>
+
+            <div class="field-card">
+              <label for="fieldActionReason">Motivo u observacion operativa</label>
+              <textarea id="fieldActionReason" rows="3" placeholder="Fundamento para rechazo, cancelacion, cierre o aclaracion"></textarea>
+              <div class="field-action-grid">
+                <button type="button" data-field-action="accept">Aceptar</button>
+                <button type="button" data-field-action="reject">Rechazar</button>
+                <button type="button" data-field-action="depart">Salida</button>
+                <button type="button" data-field-action="arrive">Arribo</button>
+                <button type="button" data-field-action="start">Iniciar</button>
+                <button type="button" data-field-action="active">Activo</button>
+                <button type="button" data-field-action="complete">Completar</button>
+                <button type="button" data-field-action="demo">Demo 4 organismos</button>
+              </div>
+              <p id="fieldActionMessage" class="field-message">Esperando accion del operador.</p>
+            </div>
+          </section>
+
+          <section class="field-console" aria-label="Consola de trabajo de campo">
+            <div class="field-grid">
+              <article class="field-card">
+                <h3>Acontecimientos propios</h3>
+                <div class="field-form-grid">
+                  <div class="form-row">
+                    <label for="fieldEventCategory">Categoria</label>
+                    <select id="fieldEventCategory"></select>
+                  </div>
+                  <div class="form-row">
+                    <label for="fieldEventClassification">Clasificacion</label>
+                    <select id="fieldEventClassification">
+                      <option>OPERATIONAL</option>
+                      <option>SENSITIVE</option>
+                      <option>RESTRICTED_JUDICIAL</option>
+                    </select>
+                  </div>
+                  <div class="form-row form-row-wide">
+                    <label for="fieldEventLocation">Ubicacion simulada</label>
+                    <input id="fieldEventLocation" type="text" />
+                  </div>
+                  <div class="form-row form-row-wide">
+                    <label for="fieldEventDescription">Descripcion</label>
+                    <textarea id="fieldEventDescription" rows="3" placeholder="Registrar hecho observado, manifestacion, actuacion o comunicacion"></textarea>
+                  </div>
+                </div>
+                <div class="action-row">
+                  <button type="button" data-field-action="add-event">Registrar acontecimiento</button>
+                  <button type="button" data-field-action="correct-event">Aclarar ultimo propio</button>
+                </div>
+                <ol id="fieldEventList" class="compact-list"></ol>
+              </article>
+
+              <article class="field-card">
+                <h3>Evidencia simulada</h3>
+                <div class="field-form-grid">
+                  <div class="form-row">
+                    <label for="fieldEvidenceType">Tipo</label>
+                    <select id="fieldEvidenceType"></select>
+                  </div>
+                  <div class="form-row">
+                    <label for="fieldEvidenceClassification">Clasificacion</label>
+                    <select id="fieldEvidenceClassification">
+                      <option>SENSITIVE</option>
+                      <option>OPERATIONAL</option>
+                      <option>RESTRICTED_JUDICIAL</option>
+                    </select>
+                  </div>
+                  <div class="form-row form-row-wide">
+                    <label for="fieldEvidenceDescription">Descripcion</label>
+                    <textarea id="fieldEvidenceDescription" rows="3" placeholder="Solo evidencia ficticia. No sensores reales ni datos personales"></textarea>
+                  </div>
+                </div>
+                <div class="action-row">
+                  <button type="button" data-field-action="add-evidence">Agregar evidencia</button>
+                </div>
+                <ol id="fieldEvidenceList" class="compact-list"></ol>
+              </article>
+            </div>
+
+            <div class="field-grid">
+              <article class="field-card">
+                <h3>Solicitud de apoyo</h3>
+                <div class="field-form-grid">
+                  <div class="form-row">
+                    <label for="fieldSupportConsole">Consola destino</label>
+                    <select id="fieldSupportConsole"></select>
+                  </div>
+                  <div class="form-row">
+                    <label for="fieldSupportUrgency">Urgencia</label>
+                    <select id="fieldSupportUrgency">
+                      <option>YELLOW</option>
+                      <option>RED</option>
+                      <option>GREEN</option>
+                    </select>
+                  </div>
+                  <div class="form-row form-row-wide">
+                    <label for="fieldSupportReason">Motivo</label>
+                    <textarea id="fieldSupportReason" rows="3" placeholder="Motivo, informacion minima y necesidad operativa"></textarea>
+                  </div>
+                </div>
+                <div class="action-row">
+                  <button type="button" data-field-action="request-support">Solicitar apoyo</button>
+                  <button type="button" data-field-action="accept-support">Aceptar apoyo pendiente</button>
+                </div>
+                <ol id="fieldSupportList" class="compact-list"></ol>
+              </article>
+
+              <article class="field-card">
+                <div class="section-title compact-title">
+                  <h3>Acta individual</h3>
+                  <span id="fieldActMeta">Sin acta</span>
+                </div>
+                <p class="warning-copy">
+                  Documento individual del funcionario interviniente. No sustituye las actas de otros operadores.
+                </p>
+                <div class="action-row">
+                  <button type="button" data-field-action="create-act">Crear acta</button>
+                  <button type="button" data-field-action="review-act">Revisar</button>
+                  <button type="button" data-field-action="finalize-act">Finalizar</button>
+                  <button type="button" data-field-action="amend-act">Ampliar version</button>
+                  <button type="button" data-field-action="clarify-act">Solicitar aclaracion</button>
+                </div>
+                <div id="fieldActPreview" class="act-preview"></div>
+              </article>
+            </div>
+
+            <article class="field-card">
+              <div class="section-title compact-title">
+                <h3>Comparacion multioperador</h3>
+                <span>Autonomia documental</span>
+              </div>
+              <div id="fieldComparison" class="field-comparison"></div>
+            </article>
+          </section>
+        </div>
+      </section>
+
+      <section id="procedure-act" class="panel procedure-panel" data-internal-for-citizen>
+        <div class="section-title">
+          <h2>Acta Digital de Procedimiento PIPO</h2>
+          <span>Etapa 5</span>
+        </div>
+        <p class="lead">
+          La consola maestra integra actas individuales, bitacora, evidencia simulada y decisiones humanas.
+          Las fuentes originales se referencian y permanecen preservadas.
+        </p>
+        <div class="assistant-flow compact-flow" aria-label="Flujo documental de Etapa 5">
+          <span>1. Acta</span>
+          <span>2. Borrador IA</span>
+          <span>3. Consistencia</span>
+          <span>4. Supervisor</span>
+          <span>5. Cierre</span>
+        </div>
+        <div class="action-row">
+          <button type="button" data-procedure-action="create">Generar acta</button>
+          <button type="button" data-procedure-action="ai-draft">Borrador IA</button>
+          <button type="button" data-procedure-action="review">Revision operador</button>
+          <button type="button" data-procedure-action="clarify">Solicitar aclaracion</button>
+          <button type="button" data-procedure-action="answer-clarification">Responder aclaracion</button>
+          <button type="button" data-procedure-action="supervisor">Supervisor</button>
+          <button type="button" data-procedure-action="submit">Presentar</button>
+          <button type="button" data-procedure-action="finalize">Finalizar acta</button>
+          <button type="button" data-procedure-action="demo">Demo Etapa 5</button>
+        </div>
+          <div id="procedureMessage" class="access-result" role="status" aria-live="polite"></div>
+        <div class="procedure-grid">
+          <article>
+            <h3>Acta</h3>
+            <div id="procedureActSummary" class="mini-record"></div>
+          </article>
+          <article>
+            <h3>Completitud</h3>
+            <div id="procedureCompleteness" class="mini-record"></div>
+          </article>
+          <article>
+            <h3>Consistencia</h3>
+            <ol id="procedureFindings" class="compact-list"></ol>
+          </article>
+          <article>
+            <h3>Borrador asistido</h3>
+            <div id="procedureAiDraft" class="mini-record"></div>
+          </article>
+        </div>
+        <div class="procedure-grid two-col">
+          <article>
+            <h3>Cronologia automatica</h3>
+            <ol id="procedureChronology" class="compact-list"></ol>
+          </article>
+          <article>
+            <h3>Versionado documental</h3>
+            <ol id="procedureVersions" class="compact-list"></ol>
+          </article>
+        </div>
+      </section>
+
+      <section id="closure" class="panel procedure-panel" data-internal-for-citizen>
+        <div class="section-title">
+          <h2>Expediente y cierre trazable</h2>
+          <span>Master Incident Record</span>
+        </div>
+        <p class="lead">
+          El expediente maestro funciona como indice y sintesis. No crea una narrativa unica que elimine
+          diferencias entre actas, eventos o aclaraciones.
+        </p>
+        <div class="action-row">
+          <button type="button" data-procedure-action="amend">Ampliar version</button>
+          <button type="button" data-procedure-action="rectify">Rectificar</button>
+          <button type="button" data-procedure-action="master-record">Generar expediente</button>
+          <button type="button" data-procedure-action="propose-closure">Proponer cierre</button>
+          <button type="button" data-procedure-action="close">Cerrar incidente</button>
+          <button type="button" data-procedure-action="export">Exportar JSON</button>
+          <button type="button" data-procedure-action="print">Vista impresion</button>
+        </div>
+        <div class="procedure-grid">
+          <article id="master-incident-record">
+            <h3>Expediente Digital del Incidente</h3>
+            <div id="procedureMasterRecordDetail" class="mini-record"></div>
+          </article>
+          <article>
+            <h3>Supervision</h3>
+            <div id="procedureSupervision" class="mini-record"></div>
+          </article>
+          <article>
+            <h3>Cierre obligatorio</h3>
+            <div id="procedureClosure" class="mini-record"></div>
+          </article>
+          <article>
+            <h3>Exportacion e impresion</h3>
+            <div id="procedureExport" class="mini-record"></div>
+          </article>
+        </div>
+        <pre id="procedurePrintView" class="print-preview"></pre>
+      </section>
+
+      <section id="security-status" class="panel security-panel" data-internal-for-citizen>
+        <div class="section-title">
+          <h2>Security Status</h2>
+          <span>Etapa 5.2</span>
+        </div>
+        <p class="lead">
+          Esta vista distingue controles implementados en la demo, simulados para analisis y requisitos de
+          arquitectura productiva. No afirma proteccion de transporte cuando corre en HTTP local.
+        </p>
+        <div id="communicationSecurityStatus" class="transport-status"></div>
+        <div id="securityControlOverview" class="control-grid"></div>
+      </section>
+
+      <section id="evidence-vault" class="panel evidence-panel" data-internal-for-citizen>
+        <div class="section-title">
+          <h2>PIPO Evidence Vault</h2>
+          <span>Evidencia ficticia</span>
+        </div>
+        <p class="lead strong-warning">
+          Local cryptographic demonstration - not a production key-management system.
+        </p>
+        <p class="lead">
+          La boveda trabaja solo con contenido ficticio. La arquitectura productiva requiere cifrado de
+          transporte, envelope encryption, KMS/HSM, rotacion, revocacion, separacion de funciones y auditoria.
+        </p>
+        <div class="action-row vault-actions" data-internal-vault>
+          <button type="button" data-vault-action="demo">Ejecutar demo 5.2</button>
+          <button type="button" data-vault-action="encrypt">Cifrar item</button>
+          <button type="button" data-vault-action="decrypt">Descifrar autorizado</button>
+          <button type="button" data-vault-action="verify">Verificar integridad</button>
+          <button type="button" data-vault-action="tamper">Simular alteracion</button>
+          <button type="button" data-vault-action="download">Probar descarga</button>
+          <button type="button" data-vault-action="hold">Retencion hold</button>
+          <button type="button" data-vault-action="schedule-delete">Programar eliminacion</button>
+        </div>
+          <div id="vaultMessage" class="access-result" role="status" aria-live="polite"></div>
+        <div id="evidenceVaultList" class="vault-grid"></div>
+        <div id="retentionPolicyList" class="retention-grid"></div>
+      </section>
+
+      <section id="access-requests" class="panel evidence-panel" data-internal-for-citizen>
+        <div class="section-title">
+          <h2>Access Requests</h2>
+          <span>Permisos temporales</span>
+        </div>
+        <p class="lead">
+          Cada vista, denegacion, vencimiento o revocacion queda registrada por evidencia, operador, consola,
+          sesion, finalidad, resultado y autorizacion asociada.
+        </p>
+        <div class="action-row vault-actions" data-internal-vault>
+          <button type="button" data-vault-action="request-access">Solicitar acceso</button>
+          <button type="button" data-vault-action="grant">Crear permiso temporal</button>
+          <button type="button" data-vault-action="expire-grant">Vencer permiso</button>
+          <button type="button" data-vault-action="revoke-grant">Revocar permiso</button>
+        </div>
+        <div id="evidenceAccessDecision" class="access-result"></div>
+        <ol id="evidenceAccessHistory" class="ledger-list"></ol>
+      </section>
+
+      <section id="acquisition-records" class="panel evidence-panel" data-internal-for-citizen>
+        <div class="section-title">
+          <h2>Digital Acquisition Records</h2>
+          <span>Registro autorizado</span>
+        </div>
+        <p class="lead">
+          El modelo separa entrega voluntaria, preservacion guiada y adquisicion forense autorizada conceptual.
+          No implementa acceso real a dispositivos, cuentas, camaras, microfonos ni herramientas forenses.
+        </p>
+        <div class="action-row vault-actions" data-internal-vault>
+          <button type="button" data-vault-action="create-acquisition">Crear registro</button>
+          <button type="button" data-vault-action="authorize-acquisition">Autorizar</button>
+          <button type="button" data-vault-action="complete-acquisition">Completar</button>
+          <button type="button" data-vault-action="citizen-copy">Copia ciudadana depurada</button>
+        </div>
+        <div id="digitalAcquisitionList" class="vault-grid"></div>
+        <div id="citizenSanitizedCopy" class="access-result"></div>
+      </section>
+
+      <section id="transfer-history" class="panel evidence-panel" data-internal-for-citizen>
+        <div class="section-title">
+          <h2>Transfer History</h2>
+          <span>Demonstration evidence transfer chain</span>
+        </div>
+        <p class="lead">
+          Esta funcion demuestra el registro de transferencias. Una cadena de custodia oficial requiere
+          protocolos, herramientas, competencias y validaciones adicionales.
+        </p>
+        <div class="action-row vault-actions" data-internal-vault>
+          <button type="button" data-vault-action="transfer">Registrar transferencia</button>
+          <button type="button" data-vault-action="simulate-delete">Eliminacion simulada</button>
+        </div>
+        <ol id="evidenceTransferHistory" class="ledger-list"></ol>
+      </section>
+
+      <section id="citizen-closure" class="panel citizen-panel">
+        <div class="section-title">
+          <h2>Cierre ciudadano y devolucion trazable</h2>
+          <span>Citizen Incident Package</span>
+        </div>
+        <p class="lead">
+          El ciudadano recibe una version depurada: que se hizo, que organismos participaron, que documentos
+          estan habilitados, cuales son los proximos pasos y que datos quedan restringidos por resguardo.
+        </p>
+        <div class="citizen-layout">
+          <article>
+            <h3>Resumen ciudadano</h3>
+            <div id="citizenSummary" class="mini-record"></div>
+          </article>
+          <article>
+            <h3>Vista segura</h3>
+            <div id="citizenSafeView" class="mini-record"></div>
+          </article>
+          <article>
+            <h3>Proximos pasos</h3>
+            <ol id="citizenNextSteps" class="compact-list"></ol>
+          </article>
+          <article>
+            <h3>Documentos habilitados</h3>
+            <div class="form-row">
+              <label for="citizenDocumentSelect">Documento</label>
+              <select id="citizenDocumentSelect"></select>
+            </div>
+            <ol id="citizenDocs" class="compact-list"></ol>
+          </article>
+          <article>
+            <h3>Recibo de entrega</h3>
+            <div id="citizenReceipt" class="mini-record"></div>
+          </article>
+          <article>
+            <h3>Opinion de servicio</h3>
+            <p class="lead compact-lead">
+              Dato de calidad separado: no modifica actas, expediente, sanciones ni cierre.
+            </p>
+            <div class="feedback-grid">
+              <label>Rapidez<select id="feedbackRapidity"></select></label>
+              <label>Claridad<select id="feedbackClarity"></select></label>
+              <label>Trato<select id="feedbackTreatment"></select></label>
+              <label>Coordinacion<select id="feedbackCoordination"></select></label>
+              <label>Proteccion<select id="feedbackProtection"></select></label>
+              <label>Proximos pasos<select id="feedbackNextSteps"></select></label>
+              <label>Satisfaccion<select id="feedbackOverall"></select></label>
+            </div>
+            <label for="feedbackComment">Comentario opcional</label>
+            <textarea id="feedbackComment" placeholder="Comentario opcional simulado"></textarea>
+            <div id="citizenFeedback" class="mini-record"></div>
+          </article>
+          <article>
+            <h3>Observacion formal</h3>
+            <p class="lead compact-lead">
+              Tramite separado: puede pedir aclaracion, ampliacion o rectificacion, pero no altera registros previos.
+            </p>
+            <div class="form-row">
+              <label for="observationCategory">Categoria</label>
+              <select id="observationCategory">
+                <option value="SOLICITUD_DE_ACLARACION">Solicitud de aclaracion</option>
+                <option value="RECTIFICACION_DATOS">Rectificacion de datos</option>
+                <option value="AMPLIACION_INFORMACION">Ampliacion de informacion</option>
+                <option value="TRATO_O_PROCEDIMIENTO">Trato o procedimiento</option>
+              </select>
+            </div>
+            <label for="observationDescription">Descripcion de la observacion</label>
+            <textarea id="observationDescription">Solicito aclarar los pasos posteriores y documentos habilitados.</textarea>
+            <div class="action-row small-actions">
+              <button type="button" data-citizen-action="assign-observation" data-perspective-target="MASTER_CONSOLE FEDERATED_CONSOLE">Asignar</button>
+              <button type="button" data-citizen-action="review-observation" data-perspective-target="MASTER_CONSOLE FEDERATED_CONSOLE">Revisar</button>
+              <button type="button" data-citizen-action="clarify-observation" data-perspective-target="MASTER_CONSOLE FEDERATED_CONSOLE">Pedir aclaracion</button>
+              <button type="button" data-citizen-action="respond-observation" data-perspective-target="MASTER_CONSOLE FEDERATED_CONSOLE">Responder</button>
+            </div>
+            <div id="citizenObservation" class="mini-record"></div>
+          </article>
+          <article>
+            <h3>Impresion / PDF navegador</h3>
+            <pre id="citizenPrintView" class="print-preview"></pre>
+          </article>
+        </div>
+        <h3>Exportacion JSON depurada</h3>
+        <pre id="citizenJsonExport" class="print-preview"></pre>
+      </section>
+
+      <section id="master-console" class="panel federated-panel" data-internal-for-citizen>
+        <div class="section-title">
+          <h2>FederatedOperationalConsole</h2>
+          <span>Componente configurable</span>
+        </div>
+        <p class="lead">
+          Un mismo componente representa consola maestra, 911, ciberdelitos, comisaria y el resto de
+          organismos, variando configuracion, permisos, formularios y politicas de conservacion.
+        </p>
+        <div id="consoleGrid" class="console-grid" aria-label="Consolas federadas"></div>
+      </section>
+
+      <section id="individual-acts" class="panel participants-panel" data-internal-for-citizen>
+        <div class="section-title">
+          <h2>Multiintervencion</h2>
+          <span>Operadores y actas propias</span>
+        </div>
+        <div class="action-row">
+          <button type="button" data-action="join-console">Incorporar consola</button>
+          <button type="button" data-action="join-operator">Incorporar segundo operador</button>
+          <button type="button" data-action="clarification">Solicitar aclaracion</button>
+          <button type="button" data-action="share-evidence">Compartir evidencia</button>
+        </div>
+        <div class="split-grid">
+          <article>
+            <h3>Participantes</h3>
+            <ul id="participantsList"></ul>
+          </article>
+          <article>
+            <h3>Actas individuales</h3>
+            <ul id="individualActsList"></ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel master-record-panel" data-internal-for-citizen>
+        <div class="section-title">
+          <h2>Expediente digital del incidente</h2>
+          <span>Acta maestra referenciada</span>
+        </div>
+        <div id="masterRecord" class="master-record"></div>
+      </section>
+
+      <section class="panel" data-internal-for-citizen>
+        <div class="section-title">
+          <h2>Acceso por finalidad</h2>
+          <span>canAccessResource()</span>
+        </div>
+        <div class="action-row">
+          <button type="button" data-action="test-allowed">Probar permiso vigente</button>
+          <button type="button" data-action="test-denied">Probar denegacion</button>
+          <button type="button" data-action="test-expired">Probar vencimiento</button>
+        </div>
+        <div id="accessResult" class="access-result"></div>
+      </section>
+
+      <section class="panel cyber-panel" data-internal-for-citizen>
+        <div class="section-title">
+          <h2>Ciberdelitos y dispositivo robado</h2>
+          <span>Flujos simulados</span>
+        </div>
+        <div class="split-grid">
+          <article>
+            <h3>Reporte ciber</h3>
+            <ul id="cyberReport"></ul>
+          </article>
+          <article>
+            <h3>Protocolo de recuperacion</h3>
+            <ul id="deviceProtocol"></ul>
+          </article>
+        </div>
+        <p class="warning-copy">
+          Funcion simulada. En una implementacion real requiere base legal, autorizacion competente,
+          alcance limitado y auditoria. No hay rastreo, audio, video ni extraccion real.
+        </p>
+      </section>
+
+      <section class="panel" data-internal-for-citizen>
+        <div class="section-title">
+          <h2>Etapa 1 + 1.1</h2>
+          <span>Modelo de datos</span>
+        </div>
+        <p class="lead">
+          Los modelos separan bitacora operativa, decision humana, sugerencia de IA y Acta Digital de
+          Procedimiento. La IA solo propone; el operador valida.
+        </p>
+        <div id="modelList" class="model-list" aria-label="Modelos de datos"></div>
+      </section>
+
+      <section class="panel detail-panel" data-internal-for-citizen>
+        <div class="section-title">
+          <h2 id="detailTitle">Modelo seleccionado</h2>
+          <span id="detailBadge">Requiere validacion</span>
+        </div>
+        <p id="detailPurpose" class="lead"></p>
+        <div class="detail-grid">
+          <article>
+            <h3>Campos requeridos</h3>
+            <ul id="requiredFields"></ul>
+          </article>
+          <article>
+            <h3>Campos del modelo</h3>
+            <ul id="allFields"></ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel lifecycle-panel" data-internal-for-citizen>
+        <div class="section-title">
+          <h2>Ciclo documental simulado</h2>
+          <span>Sin borrar eventos</span>
+        </div>
+        <ol id="timeline" class="timeline"></ol>
+      </section>
+
+      <section id="audit" class="panel ledger-panel" data-internal-for-citizen>
+        <div class="section-title">
+          <h2>Bitacora operativa append-only</h2>
+          <span>Etapa 2</span>
+        </div>
+        <p class="lead">
+          Cada accion crea un evento nuevo con operador, consola, sesion, clasificacion, referencia de
+          integridad de demo y enlace al evento anterior. Las correcciones no borran el evento original.
+        </p>
+        <div class="action-row">
+          <button type="button" data-ledger="support.requested">Solicitar apoyo</button>
+          <button type="button" data-ledger="support.accepted">Aceptar apoyo</button>
+          <button type="button" data-ledger="field.departed">Registrar salida</button>
+          <button type="button" data-ledger="field.arrived">Registrar arribo</button>
+          <button type="button" data-ledger="intervention.started">Iniciar intervencion</button>
+          <button type="button" data-ledger="act.finalized">Finalizar acta demo</button>
+          <button type="button" data-action="rectify-ledger">Rectificar evento</button>
+          <button type="button" data-action="try-delete-ledger">Intentar borrar evento</button>
+        </div>
+          <div id="ledgerValidation" class="access-result" role="status" aria-live="polite"></div>
+        <ol id="ledgerList" class="ledger-list"></ol>
+      </section>
+
+      <section class="panel compare-panel" data-internal-for-citizen>
+        <div class="section-title">
+          <h2>IA vs decision humana</h2>
+          <span>Auditable</span>
+        </div>
+        <div class="compare-grid">
+          <article>
+            <span>IA sugirio</span>
+            <strong id="aiPriority">-</strong>
+            <p id="aiRouting">-</p>
+          </article>
+          <article>
+            <span>Operador resolvio</span>
+            <strong id="humanPriority">-</strong>
+            <p id="humanRouting">-</p>
+          </article>
+        </div>
+        <p id="humanReason" class="decision-reason"></p>
+      </section>
+
+      <section class="panel snapshot-panel" data-internal-for-citizen>
+        <div class="section-title">
+          <h2>Snapshot de datos</h2>
+          <span>Demo JSON</span>
+        </div>
+        <pre id="snapshot"></pre>
+      </section>
+    </main>
+
+    <script src="data-models.js?v=5"></script>
+    <script src="ledger.js?v=6"></script>
+    <script src="incident-scenarios.js?v=5"></script>
+    <script src="ai-service.js?v=6"></script>
+    <script src="incident-assistant.js?v=5"></script>
+    <script src="field-workflow.js?v=1"></script>
+    <script src="procedure-act.js?v=1"></script>
+    <script src="citizen-closure.js?v=1"></script>
+    <script src="evidence-vault.js?v=1"></script>
+    <script src="app.js?v=11"></script>
+  </body>
+</html>

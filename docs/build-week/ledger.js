@@ -1,0 +1,302 @@
+(function () {
+const LEDGER_EVENT_TYPES = [
+  "incident.created",
+  "ai.analysis.requested",
+  "ai.analysis.completed",
+  "ai.analysis.failed",
+  "ai.suggestion.presented",
+  "human.review.started",
+  "human.suggestion.accepted",
+  "human.suggestion.modified",
+  "human.suggestion.rejected",
+  "human.decision.confirmed",
+  "incident.classification.updated",
+  "console.suggested",
+  "console.assigned",
+  "console.joined",
+  "followup.question.created",
+  "followup.answer.recorded",
+  "operator.authenticated",
+  "operator.joined",
+  "field.assignment.received",
+  "field.assignment.accepted",
+  "field.assignment.rejected",
+  "support.requested",
+  "support.accepted",
+  "field.dispatch.accepted",
+  "field.departed",
+  "field.arrived",
+  "field.intervention.started",
+  "field.observation.created",
+  "field.statement.recorded",
+  "field.action.recorded",
+  "field.communication.recorded",
+  "field.support.requested",
+  "field.support.accepted",
+  "field.evidence.created",
+  "field.intervention.completed",
+  "intervention.started",
+  "intervention.updated",
+  "evidence.created",
+  "evidence.shared",
+  "evidence.accessed",
+  "evidence.access.requested",
+  "evidence.access.granted",
+  "evidence.access.denied",
+  "evidence.access.expired",
+  "evidence.access.revoked",
+  "evidence.viewed",
+  "evidence.download.requested",
+  "evidence.download.allowed",
+  "evidence.download.denied",
+  "evidence.integrity.verified",
+  "evidence.integrity.failed",
+  "evidence.encrypted",
+  "evidence.decrypted",
+  "act.drafted",
+  "act.finalized",
+  "evidence.retention.hold",
+  "evidence.retention.expired",
+  "evidence.retention.deletion_scheduled",
+  "evidence.retention.deleted_simulated",
+  "digital.acquisition.requested",
+  "digital.acquisition.authorized",
+  "digital.acquisition.completed",
+  "digital.acquisition.rejected",
+  "evidence.transfer.recorded",
+  "citizen.evidence_copy.created",
+  "individual.act.created",
+  "individual.act.reviewed",
+  "individual.act.finalized",
+  "individual.act.amended",
+  "procedure.act.created",
+  "procedure.act.ai_draft_generated",
+  "procedure.act.review_started",
+  "procedure.act.consistency_checked",
+  "procedure.act.completeness_updated",
+  "procedure.act.submitted",
+  "procedure.act.supervisor_requested",
+  "procedure.act.returned",
+  "procedure.act.finalized",
+  "procedure.act.amended",
+  "procedure.act.rectified",
+  "procedure.act.annulled",
+  "master.record.generated",
+  "clarification.requested",
+  "clarification.responded",
+  "incident.closure.proposed",
+  "incident.closure.blocked",
+  "act.amended",
+  "judicial.authorization.registered",
+  "device.tracking.authorized",
+  "device.tracking.started",
+  "device.tracking.stopped",
+  "console.participation.closed",
+  "incident.closed",
+  "demo.perspective.changed",
+  "citizen.closure.summary.generated",
+  "citizen.closure.summary.reviewed",
+  "citizen.closure.summary.delivered",
+  "citizen.closure.summary.opened",
+  "citizen.closure.receipt.confirmed",
+  "citizen.next_steps.generated",
+  "citizen.document.access.requested",
+  "citizen.document.downloaded",
+  "citizen.feedback.submitted",
+  "citizen.observation.created",
+  "citizen.observation.assigned",
+  "citizen.observation.reviewed",
+  "citizen.clarification.requested",
+  "citizen.clarification.responded",
+  "citizen.followup.required",
+  "citizen.followup.completed",
+];
+
+const ledgerSeed = [
+  {
+    type: "incident.created",
+    operatorId: "OP-MASTER-01",
+    consoleId: "CON-MASTER",
+    sessionId: "SES-MASTER-20260718",
+    payload: { summary: "Incidente simulado creado desde descripcion libre.", source: "PIPO demo" },
+    classification: "OPERATIONAL",
+  },
+  {
+    type: "operator.authenticated",
+    operatorId: "OP-MASTER-01",
+    consoleId: "CON-MASTER",
+    sessionId: "SES-MASTER-20260718",
+    payload: { mfaVerified: true, localBiometricVerified: true, enrolledDeviceId: "DEV-MASTER-01" },
+    classification: "OPERATIONAL",
+  },
+  {
+    type: "console.assigned",
+    operatorId: "OP-MASTER-01",
+    consoleId: "CON-MASTER",
+    sessionId: "SES-MASTER-20260718",
+    payload: { assignedConsoles: ["CON-911", "CON-CIBER"], principle: "integracion sin absorcion documental" },
+    classification: "OPERATIONAL",
+  },
+  {
+    type: "console.joined",
+    operatorId: "OP-911-01",
+    consoleId: "CON-911",
+    sessionId: "SES-911-20260718",
+    payload: { role: "despacho", status: "Activo" },
+    classification: "SENSITIVE",
+  },
+  {
+    type: "operator.joined",
+    operatorId: "OP-FIELD-01",
+    consoleId: "CON-911",
+    sessionId: "SES-FIELD-20260718",
+    payload: { role: "movil de campo", deviceId: "DEV-FIELD-01" },
+    classification: "SENSITIVE",
+  },
+  {
+    type: "console.joined",
+    operatorId: "OP-CIBER-01",
+    consoleId: "CON-CIBER",
+    sessionId: "SES-CIBER-20260718",
+    payload: { role: "preservacion digital", status: "Activo" },
+    classification: "RESTRICTED_JUDICIAL",
+  },
+  {
+    type: "evidence.created",
+    operatorId: "OP-CIBER-01",
+    consoleId: "CON-CIBER",
+    sessionId: "SES-CIBER-20260718",
+    payload: { evidenceId: "EVI-CIBER-001", origin: "carga voluntaria selectiva", extraction: "no realizada" },
+    classification: "RESTRICTED_JUDICIAL",
+  },
+  {
+    type: "act.drafted",
+    operatorId: "OP-CIBER-01",
+    consoleId: "CON-CIBER",
+    sessionId: "SES-CIBER-20260718",
+    payload: { actId: "ACT-IND-CIBER-001", version: "v1", editableByMaster: false },
+    classification: "RESTRICTED_JUDICIAL",
+  },
+  {
+    type: "clarification.requested",
+    operatorId: "OP-MASTER-01",
+    consoleId: "CON-MASTER",
+    sessionId: "SES-MASTER-20260718",
+    payload: { requestId: "CLAR-001", sourceActId: "ACT-IND-CIBER-001", mode: "ampliacion sin reescritura" },
+    classification: "SENSITIVE",
+  },
+];
+
+const OPERATIONAL_LEDGER = [];
+
+function demoIntegrityHash(value) {
+  const source = JSON.stringify(value);
+  let hash = 2166136261;
+  for (let index = 0; index < source.length; index += 1) {
+    hash ^= source.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return `demo-ref-${(hash >>> 0).toString(16).padStart(8, "0")}`;
+}
+
+function buildLedgerEvent(input) {
+  const previous = OPERATIONAL_LEDGER[OPERATIONAL_LEDGER.length - 1];
+  const event = {
+    eventId: `LEDGER-${String(OPERATIONAL_LEDGER.length + 1).padStart(4, "0")}`,
+    incidentId: input.incidentId || "PIPO-BW-000001",
+    type: input.type,
+    timestamp: input.timestamp || new Date().toISOString(),
+    operatorId: input.operatorId,
+    consoleId: input.consoleId,
+    sessionId: input.sessionId,
+    payload: input.payload || {},
+    classification: input.classification || "OPERATIONAL",
+    integrityReference: null,
+    previousEventReference: previous?.integrityReference || "GENESIS",
+  };
+  event.integrityReference = demoIntegrityHash({
+    eventId: event.eventId,
+    incidentId: event.incidentId,
+    type: event.type,
+    timestamp: event.timestamp,
+    operatorId: event.operatorId,
+    consoleId: event.consoleId,
+    sessionId: event.sessionId,
+    payload: event.payload,
+    classification: event.classification,
+    previousEventReference: event.previousEventReference,
+  });
+  return Object.freeze(event);
+}
+
+function appendLedgerEvent(input) {
+  if (!LEDGER_EVENT_TYPES.includes(input.type)) {
+    throw new Error(`Tipo de evento no permitido: ${input.type}`);
+  }
+  const event = buildLedgerEvent(input);
+  OPERATIONAL_LEDGER.push(event);
+  return event;
+}
+
+function getLedgerEvents() {
+  return OPERATIONAL_LEDGER.map((event) => ({ ...event, payload: { ...event.payload } }));
+}
+
+function deleteLedgerEvent() {
+  return {
+    allowed: false,
+    reason: "La bitacora es append-only. Los eventos no se eliminan ni editan silenciosamente.",
+  };
+}
+
+function appendCorrection(originalEventId, correctionType, summary, operatorId = "OP-MASTER-01") {
+  const original = OPERATIONAL_LEDGER.find((event) => event.eventId === originalEventId);
+  return appendLedgerEvent({
+    type: "intervention.updated",
+    operatorId,
+    consoleId: original?.consoleId || "CON-MASTER",
+    sessionId: original?.sessionId || "SES-MASTER-20260718",
+    payload: {
+      correctionType,
+      summary,
+      originalEventId,
+      originalPreserved: true,
+    },
+    classification: original?.classification || "OPERATIONAL",
+  });
+}
+
+function validateLedgerChain() {
+  const errors = [];
+  OPERATIONAL_LEDGER.forEach((event, index) => {
+    const previous = OPERATIONAL_LEDGER[index - 1];
+    if (index === 0 && event.previousEventReference !== "GENESIS") {
+      errors.push(`${event.eventId}: el primer evento debe iniciar en GENESIS.`);
+    }
+    if (index > 0 && event.previousEventReference !== previous.integrityReference) {
+      errors.push(`${event.eventId}: referencia previa inconsistente.`);
+    }
+    ["eventId", "incidentId", "type", "timestamp", "operatorId", "consoleId", "sessionId", "payload", "classification", "integrityReference"].forEach((field) => {
+      if (event[field] === undefined || event[field] === null || event[field] === "") {
+        errors.push(`${event.eventId}: falta ${field}.`);
+      }
+    });
+  });
+  return {
+    valid: errors.length === 0,
+    errors,
+    count: OPERATIONAL_LEDGER.length,
+  };
+}
+
+ledgerSeed.forEach((event) => appendLedgerEvent(event));
+
+window.PIPOBuildWeekLedger = {
+  LEDGER_EVENT_TYPES,
+  appendLedgerEvent,
+  appendCorrection,
+  deleteLedgerEvent,
+  getLedgerEvents,
+  validateLedgerChain,
+};
+}());
