@@ -17,11 +17,13 @@ node --check docs\build-week\incident-assistant.js
 node --check docs\build-week\field-workflow.js
 node --check docs\build-week\procedure-act.js
 node --check docs\build-week\citizen-closure.js
+node --check docs\build-week\evidence-vault.js
 node --check docs\build-week\app.js
 node docs\build-week\incident-assistant.test.js
 node docs\build-week\field-workflow.test.js
 node docs\build-week\procedure-act.test.js
 node docs\build-week\citizen-closure.test.js
+node docs\build-week\evidence-vault.test.js
 node docs\build-week\server\secure-backend.test.js
 git diff --check
 ```
@@ -30,6 +32,12 @@ git diff --check
 
 ```powershell
 rg -n "sk-[A-Za-z0-9]|OPENAI_API[_-]KEY|api[_-]?key|secr[e]t|pass[word]|private[_-]?key|BEGIN .*K[E]Y|tok[e]n" docs\build-week
+```
+
+## Browser storage scan
+
+```powershell
+rg -n "\.setItem\(|\.getItem\(|\.open\(" docs\build-week\evidence-vault.js docs\build-week\evidence-vault.test.js
 ```
 
 ## Regresion v36
@@ -91,6 +99,36 @@ Debe devolver vacio.
 - prueba escenario B de dispositivo sustraido;
 - funciona con IA disponible y no disponible.
 
+## Casos Etapa 5.2
+
+- muestra estado `LOCAL_DEVELOPMENT` cuando corre HTTP local;
+- muestra `HTTPS_PROTECTED` cuando la pagina se sirve por HTTPS;
+- muestra `TRANSPORT_NOT_VERIFIED` cuando el transporte no puede validarse;
+- cifra contenido ficticio con Web Crypto;
+- usa IV unico por cifrado;
+- calcula SHA-256 del contenido ficticio original;
+- calcula SHA-256 de la representacion cifrada;
+- descifra solo con acceso autorizado;
+- verifica integridad despues de descifrar;
+- detecta alteracion de contenido ficticio;
+- deniega acceso sin MFA, sesion o segunda aprobacion cuando corresponde;
+- permite acceso por finalidad autorizada;
+- deniega finalidad no habilitada;
+- vence permisos temporales y bloquea acceso posterior;
+- revoca permisos temporales y conserva historial;
+- registra cada vista con evidencia, operador, consola, sesion, finalidad, accion, resultado y autorizacion;
+- bloquea descarga por politica;
+- aplica politicas de retencion;
+- simula hold, programacion de eliminacion y eliminacion documentada;
+- crea `DigitalAcquisitionRecord` voluntario;
+- rechaza adquisicion autorizada conceptual sin autoridad o alcance;
+- completa adquisicion autorizada conceptual con hash coincidente;
+- crea `Demonstration evidence transfer chain`;
+- bloquea entrega ciudadana automatica de `RESTRICTED_JUDICIAL`;
+- crea copia ciudadana depurada para material habilitable;
+- verifica que la bitacora no registre contenido de evidencia;
+- verifica que la demo no guarde claves en almacenamiento persistente del navegador.
+
 ## Visual
 
 Probar en navegador:
@@ -102,3 +140,4 @@ Probar en navegador:
 - vista de impresion disponible;
 - selector multiperspectiva visible sin overflow;
 - `Citizen Closure` legible en pantalla movil.
+- `Security Status`, `Evidence Vault`, `Access Requests`, `Acquisition Records` y `Transfer History` legibles en escritorio y movil.

@@ -503,6 +503,34 @@ const BUILD_WEEK_STATE = {
 
 const INFORMATION_LEVELS = ["PUBLIC", "OPERATIONAL", "SENSITIVE", "RESTRICTED_JUDICIAL"];
 
+const AUTHORIZED_ACCESS_PURPOSES = [
+  "OPERATIONAL_RESPONSE",
+  "MEDICAL_ASSISTANCE",
+  "JUDICIAL_REVIEW",
+  "CYBERCRIME_ANALYSIS",
+  "FIELD_DOCUMENTATION",
+  "SUPERVISORY_REVIEW",
+  "CITIZEN_DELIVERY",
+  "QUALITY_AUDIT",
+];
+
+const PURPOSE_ALIASES = {
+  "coordinacion operativa": "OPERATIONAL_RESPONSE",
+  "trazabilidad operativa": "OPERATIONAL_RESPONSE",
+  "expediente maestro": "OPERATIONAL_RESPONSE",
+  "preservacion digital": "CYBERCRIME_ANALYSIS",
+  "recepcion de denuncia": "JUDICIAL_REVIEW",
+  "orientacion comunitaria": "FIELD_DOCUMENTATION",
+  "entrega ciudadana": "CITIZEN_DELIVERY",
+  "auditoria de calidad": "QUALITY_AUDIT",
+};
+
+function normalizeAccessPurpose(purpose) {
+  if (!purpose) return "";
+  const normalized = String(purpose).trim();
+  return PURPOSE_ALIASES[normalized.toLowerCase()] || normalized;
+}
+
 const FEDERATED_CONSOLE_TYPES = [
   "MASTER_MONITORING",
   "SECURITY_911",
@@ -678,9 +706,13 @@ const FEDERATED_MODEL_DEFINITIONS = [
       ["destinationConsoleId", "Consola destino"],
       ["purpose", "Finalidad autorizada"],
       ["fieldsAllowed", "Campos visibles"],
+      ["viewAllowed", "Visualizacion autorizada true/false"],
+      ["downloadAllowed", "Descarga autorizada true/false"],
       ["authorizedBy", "Operador autorizante"],
+      ["startedAt", "Inicio de vigencia"],
       ["expiresAt", "Vencimiento"],
       ["revokedAt", "Revocacion si corresponde"],
+      ["revocationReason", "Motivo de revocacion"],
       ["accessLog", "Visualizaciones y descargas simuladas"],
     ],
   },
@@ -765,6 +797,185 @@ const FEDERATED_MODEL_DEFINITIONS = [
 ];
 
 MODEL_DEFINITIONS.push(...FEDERATED_MODEL_DEFINITIONS);
+
+const SECURITY_EVIDENCE_MODEL_DEFINITIONS = [
+  {
+    key: "evidenceVaultItem",
+    name: "EvidenceVaultItem",
+    purpose: "Elemento ficticio de la boveda con cifrado de demostracion, integridad, retencion y acceso finalista.",
+    required: [
+      "evidenceId",
+      "incidentId",
+      "ownerConsoleId",
+      "createdByOperatorId",
+      "type",
+      "fileName",
+      "classification",
+      "createdAt",
+      "integrityHash",
+      "encryptionStatus",
+      "accessPolicy",
+      "retentionPolicy",
+      "status",
+    ],
+    fields: [
+      ["evidenceId", "Identificador del elemento de evidencia ficticia"],
+      ["incidentId", "Incidente asociado"],
+      ["ownerConsoleId", "Consola titular"],
+      ["createdByOperatorId", "Operador que registra el elemento"],
+      ["type", "Tipo: audio, video, imagen, ubicacion, documento, captura o registro"],
+      ["fileName", "Nombre ficticio del archivo"],
+      ["simulatedSize", "Tamano simulado"],
+      ["classification", "Nivel de informacion"],
+      ["createdAt", "Fecha de creacion"],
+      ["integrityHash", "Referencia SHA-256 del contenido ficticio original"],
+      ["encryptedHash", "Referencia SHA-256 de la representacion cifrada si existe"],
+      ["encryptionStatus", "UNENCRYPTED_DEMO, ENCRYPTED_DEMO o DECRYPTED_FOR_AUTHORIZED_VIEW"],
+      ["accessPolicy", "Politica de roles, finalidades y campos visibles"],
+      ["retentionPolicy", "Politica de retencion aplicada"],
+      ["expirationDate", "Fecha de vencimiento segun retencion simulada"],
+      ["authorizedConsoles", "Consolas autorizadas"],
+      ["authorizedOperators", "Operadores autorizados"],
+      ["accessHistory", "Historial de accesos"],
+      ["sharingHistory", "Historial de permisos temporales"],
+      ["downloadPolicy", "Politica de descarga"],
+      ["status", "ACTIVE, RESTRICTED, SHARED_TEMPORARILY, ACCESS_REVOKED, RETENTION_HOLD, EXPIRED, DELETION_SCHEDULED o DELETED_SIMULATED"],
+    ],
+  },
+  {
+    key: "evidenceAccessRequest",
+    name: "EvidenceAccessRequest",
+    purpose: "Solicitud de acceso a evidencia por finalidad, vencimiento, supervision y autorizacion.",
+    required: ["requestId", "evidenceId", "incidentId", "operatorId", "consoleId", "purpose", "status", "requestedAt"],
+    fields: [
+      ["requestId", "Identificador de solicitud"],
+      ["evidenceId", "Evidencia solicitada"],
+      ["incidentId", "Incidente asociado"],
+      ["operatorId", "Operador solicitante"],
+      ["consoleId", "Consola solicitante"],
+      ["purpose", "Finalidad normalizada"],
+      ["authorizationId", "Autorizacion asociada si aplica"],
+      ["supervision", "Estado de supervision o segunda aprobacion"],
+      ["status", "REQUESTED, GRANTED, DENIED, EXPIRED o REVOKED"],
+      ["decision", "Resultado de canAccessResource"],
+      ["requestedAt", "Fecha de solicitud"],
+      ["expiresAt", "Vencimiento del permiso si existe"],
+    ],
+  },
+  {
+    key: "evidenceAccessHistory",
+    name: "EvidenceAccessHistory",
+    purpose: "Registro de cada vista, solicitud, descarga o denegacion de evidencia.",
+    required: ["evidenceId", "operatorId", "consoleId", "sessionId", "purpose", "timestamp", "action", "result"],
+    fields: [
+      ["evidenceId", "Evidencia afectada"],
+      ["operatorId", "Operador actuante"],
+      ["consoleId", "Consola actuante"],
+      ["sessionId", "Sesion operativa"],
+      ["purpose", "Finalidad declarada"],
+      ["timestamp", "Fecha y hora"],
+      ["action", "view, decrypt, download, grant, revoke o expire"],
+      ["result", "allowed, denied, expired o revoked"],
+      ["authorizationId", "Autorizacion vinculada"],
+      ["deviceId", "Dispositivo enrolado simulado"],
+      ["reason", "Motivo controlado sin contenido sensible"],
+    ],
+  },
+  {
+    key: "evidenceRetentionPolicy",
+    name: "EvidenceRetentionPolicy",
+    purpose: "Politica simulada de conservacion, bloqueo, expiracion y eliminacion documentada.",
+    required: ["id", "retentionDays", "deletionRule", "holdAllowed", "legalReviewRequired", "citizenAccessRule", "auditRequired"],
+    fields: [
+      ["id", "SHORT_OPERATIONAL, STANDARD_INCIDENT, MEDICAL_SENSITIVE, CYBERCRIME_PRESERVATION, JUDICIAL_HOLD, CITIZEN_COPY o TRAINING_DEMO"],
+      ["retentionDays", "Dias simulados de conservacion"],
+      ["deletionRule", "Regla de eliminacion o bloqueo"],
+      ["holdAllowed", "Permite retencion por orden o supervision"],
+      ["legalReviewRequired", "Requiere revision legal antes de borrar"],
+      ["citizenAccessRule", "Regla de acceso ciudadano"],
+      ["auditRequired", "Requiere evento de auditoria"],
+    ],
+  },
+  {
+    key: "digitalAcquisitionRecord",
+    name: "DigitalAcquisitionRecord",
+    purpose: "Registro conceptual de entrega voluntaria, preservacion guiada o adquisicion forense autorizada.",
+    required: ["acquisitionId", "incidentId", "acquisitionType", "authority", "authorizationId", "operatorId", "consoleId", "status"],
+    fields: [
+      ["acquisitionId", "Identificador de adquisicion"],
+      ["incidentId", "Incidente asociado"],
+      ["acquisitionType", "VOLUNTARY_USER_SUBMISSION, GUIDED_PRESERVATION o AUTHORIZED_FORENSIC_ACQUISITION"],
+      ["authority", "Autoridad o area competente"],
+      ["authorizationId", "Autorizacion formal o registro de consentimiento"],
+      ["operatorId", "Operador responsable"],
+      ["consoleId", "Consola responsable"],
+      ["specialty", "Especialidad interviniente"],
+      ["simulatedDeviceId", "Dispositivo ficticio o enrolado simulado"],
+      ["sourceDescription", "Fuente declarada sin contenido sensible"],
+      ["scope", "Alcance autorizado"],
+      ["startedAt", "Inicio"],
+      ["completedAt", "Finalizacion"],
+      ["toolName", "Herramienta especializada declarada para arquitectura futura"],
+      ["toolVersion", "Version declarada"],
+      ["method", "Metodo documentado"],
+      ["acquiredItemIds", "Evidencias creadas o asociadas"],
+      ["originalHash", "Hash de origen si aplica"],
+      ["copyHash", "Hash de copia si aplica"],
+      ["integrityStatus", "INTEGRITY_VERIFIED, INTEGRITY_MISMATCH o NOT_VERIFIED"],
+      ["transferHistory", "Demonstration evidence transfer chain"],
+      ["storageLocationReference", "Referencia interna no sensible"],
+      ["limitations", "Limitaciones declaradas"],
+      ["status", "REQUESTED, AUTHORIZED, IN_PROGRESS, COMPLETED, REJECTED, EXPIRED o CANCELLED_WITH_REASON"],
+      ["integrityReference", "Referencia de integridad del registro"],
+    ],
+  },
+  {
+    key: "evidenceTransferRecord",
+    name: "EvidenceTransferRecord",
+    purpose: "Demonstration evidence transfer chain entre consolas o funcionarios.",
+    required: ["transferId", "evidenceId", "origin", "receiver", "timestamp", "purpose", "status", "integrityReference"],
+    fields: [
+      ["transferId", "Identificador de transferencia"],
+      ["evidenceId", "Evidencia transferida o referenciada"],
+      ["origin", "Operador y consola origen"],
+      ["receiver", "Operador, consola u organismo receptor"],
+      ["timestamp", "Fecha y hora"],
+      ["purpose", "Finalidad"],
+      ["status", "RECORDED, ACCEPTED, OBSERVED o REVOKED"],
+      ["integrityReference", "Referencia de integridad del acto de transferencia"],
+    ],
+  },
+  {
+    key: "citizenSanitizedEvidenceCopy",
+    name: "CitizenSanitizedEvidenceCopy",
+    purpose: "Copia ciudadana depurada, separada de la evidencia interna y sin metadatos protegidos.",
+    required: ["documentId", "incidentId", "version", "hash", "deliveryReceipt", "classification"],
+    fields: [
+      ["documentId", "Identificador de documento ciudadano"],
+      ["incidentId", "Incidente asociado"],
+      ["version", "Version entregable"],
+      ["hash", "Hash de la copia depurada"],
+      ["deliveryReceipt", "Recibo de entrega"],
+      ["classification", "Clasificacion de la copia"],
+      ["redactions", "Campos excluidos o anonimizados"],
+      ["deliveredAt", "Fecha de entrega si corresponde"],
+    ],
+  },
+  {
+    key: "communicationSecurityStatus",
+    name: "CommunicationSecurityStatus",
+    purpose: "Estado de transporte de la demo sin afirmar proteccion TLS cuando corre localmente por HTTP.",
+    required: ["status", "label", "description"],
+    fields: [
+      ["status", "LOCAL_DEVELOPMENT, HTTPS_PROTECTED o TRANSPORT_NOT_VERIFIED"],
+      ["label", "Etiqueta visible"],
+      ["description", "Descripcion del alcance"],
+      ["productiveRequirement", "Requisitos productivos: TLS, WSS, certificados, cabeceras, origen y sesiones"],
+    ],
+  },
+];
+
+MODEL_DEFINITIONS.push(...SECURITY_EVIDENCE_MODEL_DEFINITIONS);
 
 const CITIZEN_MODEL_COMMON_FIELDS = [
   ["id", "Identificador del registro"],
@@ -1189,6 +1400,9 @@ const operatorIdentities = [
     localBiometricVerified: true,
     sessionId: "SES-MASTER-20260718",
     sessionStartedAt: "2026-07-18T09:00:00-03:00",
+    sessionExpiresAt: "2026-07-18T17:00:00-03:00",
+    secondApprovalVerified: true,
+    supervisionActive: true,
   },
   {
     id: "OP-911-01",
@@ -1202,6 +1416,9 @@ const operatorIdentities = [
     localBiometricVerified: true,
     sessionId: "SES-911-20260718",
     sessionStartedAt: "2026-07-18T09:02:00-03:00",
+    sessionExpiresAt: "2026-07-18T17:02:00-03:00",
+    secondApprovalVerified: true,
+    supervisionActive: true,
   },
   {
     id: "OP-CIBER-01",
@@ -1215,6 +1432,9 @@ const operatorIdentities = [
     localBiometricVerified: true,
     sessionId: "SES-CIBER-20260718",
     sessionStartedAt: "2026-07-18T09:04:00-03:00",
+    sessionExpiresAt: "2026-07-18T17:04:00-03:00",
+    secondApprovalVerified: true,
+    supervisionActive: true,
   },
   {
     id: "OP-COM-01",
@@ -1228,6 +1448,9 @@ const operatorIdentities = [
     localBiometricVerified: true,
     sessionId: "SES-COM-20260718",
     sessionStartedAt: "2026-07-18T09:06:00-03:00",
+    sessionExpiresAt: "2026-07-18T17:06:00-03:00",
+    secondApprovalVerified: true,
+    supervisionActive: true,
   },
   {
     id: "OP-FIELD-01",
@@ -1241,6 +1464,9 @@ const operatorIdentities = [
     localBiometricVerified: true,
     sessionId: "SES-FIELD-20260718",
     sessionStartedAt: "2026-07-18T09:08:00-03:00",
+    sessionExpiresAt: "2026-07-18T17:08:00-03:00",
+    secondApprovalVerified: false,
+    supervisionActive: true,
   },
 ];
 
@@ -1364,11 +1590,15 @@ const evidenceSharingGrants = [
     evidenceId: "EVI-CIBER-001",
     sourceConsoleId: "CON-CIBER",
     destinationConsoleId: "CON-FISCALIA",
-    purpose: "preservacion digital",
+    purpose: "CYBERCRIME_ANALYSIS",
     fieldsAllowed: ["id", "type", "origin", "createdAt", "integrityRef", "metadataSources"],
     authorizedBy: "OP-CIBER-01",
+    startedAt: "2026-07-18T09:30:00-03:00",
     expiresAt: "2026-07-18T12:30:00-03:00",
     revokedAt: null,
+    revocationReason: null,
+    viewAllowed: true,
+    downloadAllowed: false,
     accessLog: [],
   },
   {
@@ -1377,11 +1607,15 @@ const evidenceSharingGrants = [
     evidenceId: "EVI-CIBER-001",
     sourceConsoleId: "CON-CIBER",
     destinationConsoleId: "CON-CVGRT",
-    purpose: "orientacion comunitaria",
+    purpose: "FIELD_DOCUMENTATION",
     fieldsAllowed: ["id", "type"],
     authorizedBy: "OP-MASTER-01",
+    startedAt: "2026-07-18T08:00:00-03:00",
     expiresAt: "2026-07-18T08:30:00-03:00",
     revokedAt: null,
+    revocationReason: null,
+    viewAllowed: true,
+    downloadAllowed: false,
     accessLog: [],
   },
 ];
@@ -1569,6 +1803,10 @@ BUILD_WEEK_STATE.evidence[0] = {
   permittedRoles: ["coordinador", "operador", "supervisor"],
   sharingPurpose: "coordinacion operativa",
   retentionRule: "retencion de evidencia simulada",
+  authorizedConsoles: ["CON-MASTER", "CON-911"],
+  authorizedOperators: ["OP-MASTER-01", "OP-911-01"],
+  requiresSecondApproval: false,
+  downloadPolicy: "blocked_without_release",
 };
 
 BUILD_WEEK_STATE.evidence.push({
@@ -1587,6 +1825,10 @@ BUILD_WEEK_STATE.evidence.push({
   sharingPurpose: "preservacion digital",
   retentionRule: "retencion digital restringida",
   metadataSources: ["fecha declarada", "URL aportada", "archivo seleccionado"],
+  authorizedConsoles: ["CON-CIBER", "CON-FISCALIA"],
+  authorizedOperators: ["OP-CIBER-01"],
+  requiresSecondApproval: true,
+  downloadPolicy: "blocked_without_formal_release",
 });
 
 Object.assign(BUILD_WEEK_STATE.digitalAct, {
@@ -1608,9 +1850,18 @@ const citizenServiceFeedback = [];
 const citizenFormalObservations = [];
 const citizenFollowUpActions = [];
 const citizenDeliveryReceipts = [];
+const evidenceVaultItems = [];
+const evidenceAccessRequests = [];
+const evidenceAccessHistory = [];
+const evidenceRetentionPolicies = [];
+const digitalAcquisitionRecords = [];
+const evidenceTransferHistory = [];
+const citizenSanitizedEvidenceCopies = [];
+const communicationSecurityStatuses = [];
 
 Object.assign(BUILD_WEEK_STATE, {
   informationLevels: INFORMATION_LEVELS,
+  authorizedAccessPurposes: AUTHORIZED_ACCESS_PURPOSES,
   federatedConsoleTypes: FEDERATED_CONSOLE_TYPES,
   federatedActions: FEDERATED_ACTIONS,
   operationalConsoles,
@@ -1633,6 +1884,14 @@ Object.assign(BUILD_WEEK_STATE, {
   citizenFormalObservations,
   citizenFollowUpActions,
   citizenDeliveryReceipts,
+  evidenceVaultItems,
+  evidenceAccessRequests,
+  evidenceAccessHistory,
+  evidenceRetentionPolicies,
+  digitalAcquisitionRecords,
+  evidenceTransferHistory,
+  citizenSanitizedEvidenceCopies,
+  communicationSecurityStatuses,
   buildWeekScenarios,
 });
 
@@ -1650,90 +1909,220 @@ function compareInformationLevel(left, right) {
 
 function isGrantActive(grant, now = "2026-07-18T10:00:00-03:00") {
   if (!grant || grant.revokedAt) return false;
+  if (grant.startedAt && new Date(grant.startedAt).getTime() > new Date(now).getTime()) return false;
   return new Date(grant.expiresAt).getTime() > new Date(now).getTime();
 }
 
 function getActiveSharingGrant(operator, resource, purpose) {
+  const normalizedPurpose = normalizeAccessPurpose(purpose);
+  const evidenceId = resource.evidenceId || resource.id;
   return evidenceSharingGrants.find((grant) => (
-    grant.evidenceId === resource.id
+    grant.evidenceId === evidenceId
     && grant.destinationConsoleId === operator.consoleId
-    && grant.purpose === purpose
+    && normalizeAccessPurpose(grant.purpose) === normalizedPurpose
     && isGrantActive(grant)
   ));
 }
 
 function getActiveJudicialAuthorization(operator, resource, purpose, now = "2026-07-18T10:00:00-03:00") {
+  const normalizedPurpose = normalizeAccessPurpose(purpose);
+  const compatibleCapabilities = {
+    CYBERCRIME_ANALYSIS: ["connectionMetadata", "digitalPreservation", "evidenceReview"],
+    JUDICIAL_REVIEW: ["connectionMetadata", "evidenceReview", "location"],
+    OPERATIONAL_RESPONSE: ["location"],
+  }[normalizedPurpose] || [normalizedPurpose];
   return judicialAuthorizations.find((authorization) => (
     authorization.incidentId === resource.incidentId
     && authorization.status === "Activa"
     && authorization.authorizedOperators.includes(operator.id)
-    && authorization.permittedCapabilities.includes(purpose)
+    && authorization.permittedCapabilities.some((capability) => compatibleCapabilities.includes(capability))
     && new Date(authorization.validFrom).getTime() <= new Date(now).getTime()
     && new Date(authorization.expiresAt).getTime() > new Date(now).getTime()
   ));
 }
 
-function canAccessResource(operator, resource, purpose) {
+function accessDecision({
+  allowed = false,
+  reason,
+  limitations = [],
+  expiresAt = null,
+  requiresSecondApproval = false,
+  visibleFields = [],
+  downloadable = false,
+  watermarkedViewRequired = true,
+  authorizationId = null,
+}) {
+  return {
+    allowed,
+    reason,
+    limitations,
+    expiresAt,
+    expiration: expiresAt,
+    requiresSecondApproval,
+    visibleFields,
+    downloadable,
+    watermarkedViewRequired,
+    authorizationId,
+  };
+}
+
+function isSessionActive(operator, now = "2026-07-18T10:00:00-03:00") {
+  if (!operator?.sessionId) return false;
+  if (!operator.sessionExpiresAt) return true;
+  return new Date(operator.sessionExpiresAt).getTime() > new Date(now).getTime();
+}
+
+function canAccessResource(operator, resource, purposeOrContext) {
+  const context = typeof purposeOrContext === "object" && purposeOrContext !== null
+    ? purposeOrContext
+    : { purpose: purposeOrContext };
+  const purpose = context.purpose;
+  const normalizedPurpose = normalizeAccessPurpose(purpose);
+  const now = context.now || "2026-07-18T10:00:00-03:00";
+  const visibleFieldsDefault = [
+    "id",
+    "evidenceId",
+    "incidentId",
+    "type",
+    "origin",
+    "createdAt",
+    "classification",
+    "integrityRef",
+    "integrityHash",
+  ];
+
   if (!operator) {
-    return { allowed: false, reason: "Operador no identificado.", limitations: ["requiere identidad"], expiration: null };
+    return accessDecision({
+      reason: "Operador no identificado.",
+      limitations: ["requiere identidad"],
+      visibleFields: [],
+      downloadable: false,
+    });
   }
 
-  if (!operator.sessionId || !operator.mfaVerified || !operator.localBiometricVerified) {
-    return {
-      allowed: false,
+  if (!resource) {
+    return accessDecision({
+      reason: "Recurso no identificado.",
+      limitations: ["recurso inexistente o no seleccionado"],
+      visibleFields: [],
+      downloadable: false,
+    });
+  }
+
+  if (!isSessionActive(operator, now) || !operator.mfaVerified || !operator.localBiometricVerified) {
+    return accessDecision({
       reason: "Sesion, MFA o biometria local simulada no verificada.",
       limitations: ["requiere sesion vigente", "requiere MFA", "requiere biometria local"],
-      expiration: null,
-    };
+      visibleFields: [],
+      downloadable: false,
+    });
+  }
+
+  if (!AUTHORIZED_ACCESS_PURPOSES.includes(normalizedPurpose)) {
+    return accessDecision({
+      reason: "Finalidad no habilitada para acceder al recurso.",
+      limitations: ["usar una finalidad autorizada", "registrar motivo operativo"],
+      visibleFields: [],
+      downloadable: false,
+    });
   }
 
   const operatorConsole = getConsoleById(operator.consoleId);
   const resourceLevel = resource.classification || "OPERATIONAL";
   const consoleLevel = operatorConsole?.accessLevel || "PUBLIC";
-  const sameOwner = resource.ownerConsole === operator.consoleId;
+  const ownerConsole = resource.ownerConsole || resource.ownerConsoleId;
+  const resourceAuthorizedConsoles = resource.authorizedConsoles || [ownerConsole].filter(Boolean);
+  const resourceAuthorizedOperators = resource.authorizedOperators || [];
+  const sameOwner = ownerConsole === operator.consoleId;
+  const consoleAuthorized = resourceAuthorizedConsoles.includes(operator.consoleId) || sameOwner;
+  const operatorAuthorized = !resourceAuthorizedOperators.length || resourceAuthorizedOperators.includes(operator.id);
   const permittedRoles = (resource.permittedRoles || []).map((role) => role.toLowerCase());
   const roleAllowed = !resource.permittedRoles
     || permittedRoles.includes((operator.rankOrRole || "").toLowerCase())
     || permittedRoles.includes((operator.specialty || "").toLowerCase());
-  const samePurpose = !resource.sharingPurpose || resource.sharingPurpose === purpose;
-  const activeGrant = getActiveSharingGrant(operator, resource, purpose);
+  const samePurpose = !resource.sharingPurpose || normalizeAccessPurpose(resource.sharingPurpose) === normalizedPurpose;
+  const activeGrant = getActiveSharingGrant(operator, resource, normalizedPurpose);
   const judicialAuthorization = resourceLevel === "RESTRICTED_JUDICIAL"
-    ? getActiveJudicialAuthorization(operator, resource, purpose)
+    ? getActiveJudicialAuthorization(operator, resource, normalizedPurpose, now)
     : null;
+  const secondApprovalRequired = Boolean(resource.requiresSecondApproval || resourceLevel === "RESTRICTED_JUDICIAL" || context.requiresSecondApproval);
+  const secondApprovalOk = !secondApprovalRequired || Boolean(context.secondApprovalVerified ?? operator.secondApprovalVerified);
+  const supervisionOk = Boolean(context.supervisionActive ?? operator.supervisionActive ?? !operatorConsole?.requiresSupervision);
+  const levelAllowed = compareInformationLevel(consoleLevel, resourceLevel) >= 0;
+  const requestedDownload = Boolean(context.requestedDownload);
+  const downloadBlocked = resource.downloadPolicy?.includes("blocked") || activeGrant?.downloadAllowed === false;
+  const downloadable = requestedDownload && !downloadBlocked && Boolean(activeGrant?.downloadAllowed || context.downloadAuthorization);
 
-  if (sameOwner && roleAllowed && samePurpose && compareInformationLevel(consoleLevel, resourceLevel) >= 0) {
-    return {
+  if (resourceLevel === "RESTRICTED_JUDICIAL") {
+    if (!judicialAuthorization) {
+      return accessDecision({
+        reason: "Recurso restringido: requiere autorizacion activa compatible.",
+        limitations: ["autorizacion vigente", "finalidad compatible", "registro de auditoria"],
+        requiresSecondApproval: true,
+        visibleFields: [],
+        downloadable: false,
+      });
+    }
+    if (!operatorAuthorized || !consoleAuthorized || !secondApprovalOk || !supervisionOk || !roleAllowed || !samePurpose || !levelAllowed) {
+      return accessDecision({
+        reason: "Recurso restringido: condiciones de operador, consola, supervision o finalidad insuficientes.",
+        limitations: [
+          "operador autorizado",
+          "consola autorizada",
+          "segunda aprobacion simulada",
+          "supervision activa",
+          "nivel compatible",
+        ],
+        expiresAt: judicialAuthorization.expiresAt,
+        requiresSecondApproval: true,
+        visibleFields: [],
+        downloadable: false,
+        authorizationId: judicialAuthorization.id,
+      });
+    }
+    return accessDecision({
+      allowed: true,
+      reason: "Acceso permitido por autorizacion activa, finalidad, operador, MFA, sesion y supervision.",
+      limitations: [judicialAuthorization.scope, resource.retentionRule || "retencion proporcional"],
+      expiresAt: judicialAuthorization.expiresAt,
+      requiresSecondApproval: true,
+      visibleFields: activeGrant?.fieldsAllowed || visibleFieldsDefault,
+      downloadable,
+      watermarkedViewRequired: true,
+      authorizationId: judicialAuthorization.id,
+    });
+  }
+
+  if (sameOwner && roleAllowed && samePurpose && levelAllowed && operatorAuthorized && consoleAuthorized && supervisionOk) {
+    return accessDecision({
       allowed: true,
       reason: "Acceso permitido por titularidad documental, rol, finalidad y nivel.",
       limitations: ["uso limitado al incidente", resource.retentionRule || "retencion proporcional"],
-      expiration: null,
-    };
+      visibleFields: visibleFieldsDefault,
+      downloadable,
+      watermarkedViewRequired: resourceLevel !== "PUBLIC",
+    });
   }
 
-  if (activeGrant && compareInformationLevel(consoleLevel, resourceLevel) >= 0) {
-    return {
+  if (activeGrant && levelAllowed && supervisionOk) {
+    return accessDecision({
       allowed: true,
-      reason: "Acceso permitido por grant temporal de evidencia.",
+      reason: "Acceso permitido por permiso temporal de evidencia.",
       limitations: [`campos: ${activeGrant.fieldsAllowed.join(", ")}`],
-      expiration: activeGrant.expiresAt,
-    };
+      expiresAt: activeGrant.expiresAt,
+      visibleFields: activeGrant.fieldsAllowed,
+      downloadable,
+      watermarkedViewRequired: true,
+      authorizationId: activeGrant.id,
+    });
   }
 
-  if (judicialAuthorization) {
-    return {
-      allowed: true,
-      reason: "Acceso permitido por autorizacion judicial simulada vigente.",
-      limitations: [judicialAuthorization.scope],
-      expiration: judicialAuthorization.expiresAt,
-    };
-  }
-
-  return {
-    allowed: false,
+  return accessDecision({
     reason: "Acceso denegado: rol, finalidad, organismo o autorizacion temporal insuficiente.",
     limitations: ["no compartir fuera de finalidad", "solicitar aclaracion o permiso temporal"],
-    expiration: null,
-  };
+    visibleFields: [],
+    downloadable: false,
+  });
 }
 
 function canModifyIndividualAct(operator, act) {
@@ -1764,6 +2153,8 @@ window.PIPOBuildWeekModels = {
   MODEL_DEFINITIONS,
   BUILD_WEEK_STATE,
   INFORMATION_LEVELS,
+  AUTHORIZED_ACCESS_PURPOSES,
+  normalizeAccessPurpose,
   FEDERATED_CONSOLE_TYPES,
   FEDERATED_ACTIONS,
   getConsoleById,

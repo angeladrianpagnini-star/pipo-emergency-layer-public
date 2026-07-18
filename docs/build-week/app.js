@@ -2,6 +2,7 @@
 const {
   MODEL_DEFINITIONS,
   BUILD_WEEK_STATE,
+  AUTHORIZED_ACCESS_PURPOSES,
   canAccessResource,
   canModifyIndividualAct,
   getConsoleById,
@@ -125,6 +126,33 @@ const {
   runCitizenClosureDemoSequence,
 } = window.PIPOCitizenClosure;
 
+const {
+  VAULT_NOTICE,
+  TRANSFER_NOTICE,
+  DELETION_NOTICE,
+  RETENTION_POLICIES,
+  ACQUISITION_TYPES,
+  createEvidenceVaultState,
+  findEvidence,
+  createAccessRequest,
+  encryptEvidenceContent,
+  decryptEvidenceContent,
+  verifyEvidenceIntegrity,
+  grantTemporaryEvidenceAccess,
+  revokeEvidenceAccess,
+  expireEvidenceGrant,
+  requestEvidenceDownload,
+  placeRetentionHold,
+  scheduleEvidenceDeletion,
+  simulateEvidenceDeletion,
+  createDigitalAcquisitionRecord,
+  authorizeDigitalAcquisition,
+  completeDigitalAcquisition,
+  createTransferRecord,
+  buildCitizenSanitizedEvidenceCopy,
+  runEvidenceVaultDemoSequence,
+} = window.PIPOEvidenceVault;
+
 const stateByModel = {
   incident: BUILD_WEEK_STATE.incident,
   event: BUILD_WEEK_STATE.events[0],
@@ -158,6 +186,14 @@ const stateByModel = {
   citizenFormalObservation: BUILD_WEEK_STATE.citizenFormalObservations[0],
   citizenFollowUpAction: BUILD_WEEK_STATE.citizenFollowUpActions[0],
   citizenDeliveryReceipt: BUILD_WEEK_STATE.citizenDeliveryReceipts[0],
+  evidenceVaultItem: BUILD_WEEK_STATE.evidenceVaultItems[0],
+  evidenceAccessRequest: BUILD_WEEK_STATE.evidenceAccessRequests[0],
+  evidenceAccessHistory: BUILD_WEEK_STATE.evidenceAccessHistory[0],
+  evidenceRetentionPolicy: BUILD_WEEK_STATE.evidenceRetentionPolicies[0],
+  digitalAcquisitionRecord: BUILD_WEEK_STATE.digitalAcquisitionRecords[0],
+  evidenceTransferRecord: BUILD_WEEK_STATE.evidenceTransferHistory[0],
+  citizenSanitizedEvidenceCopy: BUILD_WEEK_STATE.citizenSanitizedEvidenceCopies[0],
+  communicationSecurityStatus: BUILD_WEEK_STATE.communicationSecurityStatuses[0],
   ledgerEvent: getLedgerEvents()[0],
 };
 
@@ -287,6 +323,16 @@ const els = {
   feedbackComment: document.querySelector("#feedbackComment"),
   observationCategory: document.querySelector("#observationCategory"),
   observationDescription: document.querySelector("#observationDescription"),
+  communicationSecurityStatus: document.querySelector("#communicationSecurityStatus"),
+  securityControlOverview: document.querySelector("#securityControlOverview"),
+  vaultMessage: document.querySelector("#vaultMessage"),
+  evidenceVaultList: document.querySelector("#evidenceVaultList"),
+  retentionPolicyList: document.querySelector("#retentionPolicyList"),
+  evidenceAccessDecision: document.querySelector("#evidenceAccessDecision"),
+  evidenceAccessHistory: document.querySelector("#evidenceAccessHistory"),
+  digitalAcquisitionList: document.querySelector("#digitalAcquisitionList"),
+  citizenSanitizedCopy: document.querySelector("#citizenSanitizedCopy"),
+  evidenceTransferHistory: document.querySelector("#evidenceTransferHistory"),
 };
 
 let selectedModel = MODEL_DEFINITIONS[0].key;
@@ -299,6 +345,12 @@ const procedureState = createProcedureActState(BUILD_WEEK_STATE, fieldState, get
 let procedureMessage = "Acta Digital de Procedimiento pendiente de generar.";
 let citizenState = createCitizenClosureState(BUILD_WEEK_STATE, fieldState, procedureState, getLedgerEvents());
 let citizenMessage = "Simulacion multiperspectiva pendiente de ejecutar.";
+const evidenceVaultState = createEvidenceVaultState(BUILD_WEEK_STATE, getLedgerEvents(), {
+  appendLedgerEvent,
+  canAccessResource,
+  locationLike: window.location,
+});
+let vaultMessage = "Boveda inicializada con evidencia ficticia y controles simulados.";
 let assistantState = {
   suggestion: BUILD_WEEK_STATE.aiSuggestion,
   humanDraft: createHumanDecisionDraft(BUILD_WEEK_STATE.aiSuggestion, getOperatorById("OP-MASTER-01")),
@@ -772,6 +824,25 @@ function syncCitizenStateToBuildWeek() {
   stateByModel.citizenDeliveryReceipt = citizenState.receipts[citizenState.receipts.length - 1];
 }
 
+function syncEvidenceVaultStateToBuildWeek() {
+  BUILD_WEEK_STATE.evidenceVaultItems = evidenceVaultState.items;
+  BUILD_WEEK_STATE.evidenceAccessRequests = evidenceVaultState.accessRequests;
+  BUILD_WEEK_STATE.evidenceAccessHistory = evidenceVaultState.accessHistory;
+  BUILD_WEEK_STATE.evidenceRetentionPolicies = Object.values(evidenceVaultState.retentionPolicies);
+  BUILD_WEEK_STATE.digitalAcquisitionRecords = evidenceVaultState.acquisitions;
+  BUILD_WEEK_STATE.evidenceTransferHistory = evidenceVaultState.transferHistory;
+  BUILD_WEEK_STATE.citizenSanitizedEvidenceCopies = evidenceVaultState.citizenCopies;
+  BUILD_WEEK_STATE.communicationSecurityStatuses = [evidenceVaultState.communicationStatus];
+  stateByModel.evidenceVaultItem = evidenceVaultState.items[0];
+  stateByModel.evidenceAccessRequest = evidenceVaultState.accessRequests[evidenceVaultState.accessRequests.length - 1];
+  stateByModel.evidenceAccessHistory = evidenceVaultState.accessHistory[evidenceVaultState.accessHistory.length - 1];
+  stateByModel.evidenceRetentionPolicy = Object.values(evidenceVaultState.retentionPolicies)[0];
+  stateByModel.digitalAcquisitionRecord = evidenceVaultState.acquisitions[evidenceVaultState.acquisitions.length - 1];
+  stateByModel.evidenceTransferRecord = evidenceVaultState.transferHistory[evidenceVaultState.transferHistory.length - 1];
+  stateByModel.citizenSanitizedEvidenceCopy = evidenceVaultState.citizenCopies[evidenceVaultState.citizenCopies.length - 1];
+  stateByModel.communicationSecurityStatus = evidenceVaultState.communicationStatus;
+}
+
 function selectedFieldOperator() {
   return getFieldOperator(fieldState, selectedFieldOperatorId);
 }
@@ -1235,6 +1306,217 @@ function renderMiniRecord(element, rows, fallback = "Pendiente") {
     paragraph.innerHTML = `<strong>${label}:</strong> ${value || "-"}`;
     element.appendChild(paragraph);
   });
+}
+
+function setVaultMessage(message, isError = false) {
+  vaultMessage = message;
+  if (els.vaultMessage) {
+    els.vaultMessage.className = `access-result ${isError ? "denied" : "allowed"}`;
+    els.vaultMessage.innerHTML = `
+      <strong>${isError ? "Control observado" : "Etapa 5.2"}</strong>
+      <span>${message}</span>
+    `;
+  }
+}
+
+function vaultOperator(operatorId = "OP-CIBER-01") {
+  return getOperatorById(operatorId) || getOperatorById("OP-MASTER-01");
+}
+
+function renderVaultBadges(items) {
+  return (items && items.length ? items : ["Simulated control"])
+    .map((item) => `<span>${item}</span>`)
+    .join("");
+}
+
+function renderSecurityStatus() {
+  if (!els.communicationSecurityStatus) return;
+  const transport = evidenceVaultState.communicationStatus;
+  els.communicationSecurityStatus.innerHTML = `
+    <article class="transport-card ${transport.status.toLowerCase()}">
+      <span>Transporte</span>
+      <strong>${transport.status}</strong>
+      <p>${transport.label}: ${transport.description}</p>
+    </article>
+    <article class="transport-card">
+      <span>Finalidades autorizadas</span>
+      <strong>${AUTHORIZED_ACCESS_PURPOSES.length}</strong>
+      <p>${AUTHORIZED_ACCESS_PURPOSES.join(" / ")}</p>
+    </article>
+  `;
+
+  els.securityControlOverview.innerHTML = "";
+  evidenceVaultState.controlStatus.forEach((control) => {
+    const card = document.createElement("article");
+    card.innerHTML = `
+      <span>${control.category}</span>
+      <strong>${control.control}</strong>
+      <p>${control.evidence}</p>
+      <small>${control.limitation}</small>
+    `;
+    els.securityControlOverview.appendChild(card);
+  });
+}
+
+function renderEvidenceVault() {
+  if (!els.evidenceVaultList) return;
+  if (!els.vaultMessage.textContent) setVaultMessage(vaultMessage);
+  els.evidenceVaultList.innerHTML = "";
+  evidenceVaultState.items.forEach((evidence) => {
+    const selected = evidence.evidenceId === evidenceVaultState.selectedEvidenceId;
+    const card = document.createElement("article");
+    card.className = `vault-card ${selected ? "selected" : ""}`;
+    card.innerHTML = `
+      <button type="button" data-vault-action="select" data-evidence-id="${evidence.evidenceId}">
+        ${selected ? "Seleccionado" : "Seleccionar"}
+      </button>
+      <span>${evidence.classification} / ${evidence.status}</span>
+      <strong>${evidence.evidenceId}</strong>
+      <p>${evidence.type} - ${evidence.fileName}</p>
+      <div class="chip-grid">${renderVaultBadges(evidence.badges)}</div>
+      <div class="mini-record">
+        <p><strong>Consola titular:</strong> ${evidence.ownerConsoleId}</p>
+        <p><strong>Cifrado:</strong> ${evidence.encryptionStatus}</p>
+        <p><strong>Integridad:</strong> ${evidence.integrityStatus}</p>
+        <p><strong>Hash original:</strong> ${evidence.integrityHash || "pendiente"}</p>
+        <p><strong>Hash cifrado:</strong> ${evidence.encryptedHash || "pendiente"}</p>
+        <p><strong>Retencion:</strong> ${evidence.retentionPolicy} / ${evidence.expirationDate || "hold"}</p>
+      </div>
+    `;
+    els.evidenceVaultList.appendChild(card);
+  });
+
+  els.retentionPolicyList.innerHTML = "";
+  Object.values(RETENTION_POLICIES).forEach((policy) => {
+    const item = document.createElement("article");
+    item.innerHTML = `
+      <span>${policy.id}</span>
+      <strong>${policy.retentionDays ? `${policy.retentionDays} dias` : "bloqueo"}</strong>
+      <p>${policy.deletionRule}</p>
+      <small>Revision legal: ${policy.legalReviewRequired ? "si" : "no"} / Auditoria: ${policy.auditRequired ? "si" : "no"}</small>
+    `;
+    els.retentionPolicyList.appendChild(item);
+  });
+}
+
+function renderEvidenceAccess() {
+  if (!els.evidenceAccessDecision) return;
+  const lastRequest = evidenceVaultState.accessRequests[evidenceVaultState.accessRequests.length - 1];
+  const lastHistory = evidenceVaultState.accessHistory[evidenceVaultState.accessHistory.length - 1];
+  const decision = lastRequest?.decision;
+  els.evidenceAccessDecision.className = `access-result ${decision?.allowed ? "allowed" : "denied"}`;
+  els.evidenceAccessDecision.innerHTML = decision ? `
+    <strong>${decision.allowed ? "Acceso permitido" : "Acceso denegado"}</strong>
+    <span>${decision.reason}</span>
+    <span>Campos visibles: ${formatList(decision.visibleFields)}</span>
+    <span>Vencimiento: ${decision.expiresAt || "no aplica"} / Descarga: ${decision.downloadable ? "habilitada" : "bloqueada"}</span>
+    <span>Marca de agua: ${decision.watermarkedViewRequired ? "requerida" : "no requerida"} / Segunda aprobacion: ${decision.requiresSecondApproval ? "si" : "no"}</span>
+  ` : `
+    <strong>Sin solicitud reciente</strong>
+    <span>Ejecute una accion de acceso para ver la decision.</span>
+  `;
+
+  els.evidenceAccessHistory.innerHTML = "";
+  const history = evidenceVaultState.accessHistory.length ? evidenceVaultState.accessHistory.slice(-10).reverse() : [lastHistory].filter(Boolean);
+  if (!history.length) {
+    const item = document.createElement("li");
+    item.textContent = "Sin historial de acceso.";
+    els.evidenceAccessHistory.appendChild(item);
+    return;
+  }
+  history.forEach((entry) => {
+    const item = document.createElement("li");
+    item.innerHTML = `
+      <strong>${entry.action} / ${entry.result}</strong>
+      <span>${entry.timestamp} / ${entry.evidenceId}</span>
+      <span>${entry.consoleId} / ${entry.operatorId} / ${entry.purpose}</span>
+      <code>${entry.authorizationId || "sin autorizacion asociada"} / ${entry.reason}</code>
+    `;
+    els.evidenceAccessHistory.appendChild(item);
+  });
+}
+
+function renderDigitalAcquisitions() {
+  if (!els.digitalAcquisitionList) return;
+  els.digitalAcquisitionList.innerHTML = "";
+  const records = evidenceVaultState.acquisitions.length ? evidenceVaultState.acquisitions : [{
+    acquisitionId: "Sin registros",
+    acquisitionType: "pendiente",
+    status: "Pendiente",
+    authority: "Crear registro para visualizar.",
+    scope: "No hay adquisicion digital registrada.",
+    integrityStatus: "NOT_VERIFIED",
+    limitations: ["No hay datos reales."],
+  }];
+  records.slice(-6).reverse().forEach((record) => {
+    const card = document.createElement("article");
+    card.className = "vault-card";
+    card.innerHTML = `
+      <span>${record.acquisitionType}</span>
+      <strong>${record.acquisitionId}</strong>
+      <p>${record.status} / ${record.authority}</p>
+      <div class="mini-record">
+        <p><strong>Alcance:</strong> ${record.scope}</p>
+        <p><strong>Metodo:</strong> ${record.method || "pendiente"}</p>
+        <p><strong>Items:</strong> ${formatList(record.acquiredItemIds)}</p>
+        <p><strong>Integridad:</strong> ${record.integrityStatus}</p>
+        <p><strong>Referencia:</strong> ${record.integrityReference || "pendiente"}</p>
+      </div>
+      <div class="chip-grid warning-chips">${renderPlainChipList(record.limitations || [])}</div>
+    `;
+    els.digitalAcquisitionList.appendChild(card);
+  });
+
+  const copy = evidenceVaultState.citizenCopies[evidenceVaultState.citizenCopies.length - 1];
+  els.citizenSanitizedCopy.className = `access-result ${copy ? "allowed" : "denied"}`;
+  els.citizenSanitizedCopy.innerHTML = copy ? `
+    <strong>Copia ciudadana depurada</strong>
+    <span>${copy.documentId} / ${copy.version} / ${copy.classification}</span>
+    <span>Hash: ${copy.hash}</span>
+    <span>Recibo: ${copy.deliveryReceipt.receiptId}</span>
+    <span>Redacciones: ${formatList(copy.redactions)}</span>
+  ` : `
+    <strong>Copia ciudadana pendiente</strong>
+    <span>No se entrega automaticamente material judicial restringido.</span>
+  `;
+}
+
+function renderTransferHistory() {
+  if (!els.evidenceTransferHistory) return;
+  els.evidenceTransferHistory.innerHTML = "";
+  const transfers = evidenceVaultState.transferHistory.length ? evidenceVaultState.transferHistory.slice().reverse() : [{
+    transferId: "sin-transferencias",
+    evidenceId: "-",
+    timestamp: "-",
+    purpose: "-",
+    status: "Pendiente",
+    origin: { operatorId: "-", consoleId: "-" },
+    receiver: { operatorId: "-", consoleId: "-" },
+    integrityReference: TRANSFER_NOTICE,
+  }];
+  transfers.forEach((transfer) => {
+    const item = document.createElement("li");
+    item.innerHTML = `
+      <strong>${transfer.transferId} / ${transfer.status}</strong>
+      <span>${transfer.timestamp} / ${transfer.evidenceId} / ${transfer.purpose}</span>
+      <span>Origen: ${transfer.origin.consoleId}/${transfer.origin.operatorId} - Receptor: ${transfer.receiver.consoleId}/${transfer.receiver.operatorId}</span>
+      <code>${transfer.integrityReference}</code>
+    `;
+    els.evidenceTransferHistory.appendChild(item);
+  });
+}
+
+function renderEvidenceVaultSections() {
+  syncEvidenceVaultStateToBuildWeek();
+  const internalVisible = citizenState.selectedPerspective !== PERSPECTIVES.CITIZEN;
+  document.querySelectorAll("[data-internal-vault]").forEach((element) => {
+    element.hidden = !internalVisible;
+  });
+  renderSecurityStatus();
+  renderEvidenceVault();
+  renderEvidenceAccess();
+  renderDigitalAcquisitions();
+  renderTransferHistory();
 }
 
 function findingBadgeClass(type) {
@@ -2166,6 +2448,153 @@ function runCitizenAction(action) {
   }
 }
 
+function selectedVaultContext(evidence) {
+  const restricted = evidence?.classification === "RESTRICTED_JUDICIAL";
+  const operator = restricted ? vaultOperator("OP-CIBER-01") : vaultOperator("OP-911-01");
+  return {
+    operator,
+    purpose: restricted ? "CYBERCRIME_ANALYSIS" : "OPERATIONAL_RESPONSE",
+    secondApprovalVerified: true,
+    supervisionActive: true,
+  };
+}
+
+async function runVaultAction(action, button) {
+  const selectedId = button?.dataset?.evidenceId || evidenceVaultState.selectedEvidenceId;
+  const evidence = findEvidence(evidenceVaultState, selectedId);
+
+  try {
+    if (action === "select") {
+      evidenceVaultState.selectedEvidenceId = selectedId;
+      setVaultMessage(`${selectedId} seleccionado.`);
+      render();
+      return;
+    }
+
+    if (action === "demo") {
+      await runEvidenceVaultDemoSequence(evidenceVaultState);
+      setVaultMessage("Demo 5.2 ejecutada: cifrado, acceso, descarga bloqueada, retencion, adquisicion, transferencia y copia depurada.");
+    }
+
+    if (action === "encrypt") {
+      const actor = selectedVaultContext(evidence).operator;
+      const result = await encryptEvidenceContent(evidenceVaultState, selectedId, `fictitious-content-${selectedId}`, actor);
+      setVaultMessage(result.ok ? `${selectedId} cifrado con hash original y hash cifrado.` : "No se pudo cifrar el elemento.", !result.ok);
+    }
+
+    if (action === "decrypt") {
+      const result = await decryptEvidenceContent(evidenceVaultState, selectedId, selectedVaultContext(evidence));
+      setVaultMessage(result.ok ? `${selectedId} descifrado solo para vista autorizada.` : `Acceso bloqueado: ${result.errorCode}.`, !result.ok);
+    }
+
+    if (action === "verify") {
+      const actor = selectedVaultContext(evidence).operator;
+      const result = await verifyEvidenceIntegrity(evidenceVaultState, selectedId, `fictitious-content-${selectedId}`, actor);
+      setVaultMessage(`${selectedId}: ${result.integrityStatus}.`, !result.ok);
+    }
+
+    if (action === "tamper") {
+      const actor = selectedVaultContext(evidence).operator;
+      const result = await verifyEvidenceIntegrity(evidenceVaultState, selectedId, `altered-fictitious-content-${selectedId}`, actor);
+      setVaultMessage(`${selectedId}: alteracion simulada detectada como ${result.integrityStatus}.`, !result.ok);
+    }
+
+    if (action === "request-access") {
+      const result = createAccessRequest(evidenceVaultState, selectedId, selectedVaultContext(evidence));
+      setVaultMessage(`Solicitud ${result.request.requestId}: ${result.request.status}.`, !result.decision.allowed);
+    }
+
+    if (action === "download") {
+      const result = requestEvidenceDownload(evidenceVaultState, selectedId, selectedVaultContext(evidence));
+      setVaultMessage(`Descarga ${result.result}.`, result.result !== "ALLOWED");
+    }
+
+    if (action === "grant") {
+      const grant = grantTemporaryEvidenceAccess(evidenceVaultState, selectedId, {
+        destinationConsoleId: "CON-107",
+        purpose: "MEDICAL_ASSISTANCE",
+        fieldsAllowed: ["evidenceId", "type", "createdAt", "classification", "integrityHash"],
+        downloadAllowed: false,
+      });
+      setVaultMessage(`${grant.id} creado para CON-107 con descarga bloqueada.`);
+    }
+
+    if (action === "expire-grant") {
+      const grant = evidenceVaultState.sharingGrants[evidenceVaultState.sharingGrants.length - 1];
+      const result = expireEvidenceGrant(evidenceVaultState, grant?.id);
+      setVaultMessage(result.ok ? `${grant.id} vencido y denegado hacia adelante.` : "No hay permiso para vencer.", !result.ok);
+    }
+
+    if (action === "revoke-grant") {
+      const grant = evidenceVaultState.sharingGrants[evidenceVaultState.sharingGrants.length - 1];
+      const result = revokeEvidenceAccess(evidenceVaultState, grant?.id, "Revocacion por supervision de demo.");
+      setVaultMessage(result.ok ? `${grant.id} revocado.` : "No hay permiso para revocar.", !result.ok);
+    }
+
+    if (action === "hold") {
+      const result = placeRetentionHold(evidenceVaultState, selectedId);
+      setVaultMessage(result.ok ? `${selectedId} colocado en retention hold.` : "No se pudo aplicar retencion.", !result.ok);
+    }
+
+    if (action === "schedule-delete") {
+      const result = scheduleEvidenceDeletion(evidenceVaultState, selectedId);
+      setVaultMessage(result.ok ? `${selectedId}: ${DELETION_NOTICE}` : "No se pudo programar eliminacion.", !result.ok);
+    }
+
+    if (action === "simulate-delete") {
+      const result = simulateEvidenceDeletion(evidenceVaultState, selectedId);
+      setVaultMessage(result.ok ? `${selectedId}: ${result.notice}` : "No se pudo simular eliminacion.", !result.ok);
+    }
+
+    if (action === "create-acquisition") {
+      const record = await createDigitalAcquisitionRecord(evidenceVaultState, {
+        acquisitionType: ACQUISITION_TYPES.GUIDED_PRESERVATION,
+        authority: "Equipo ciber institucional simulado",
+        authorizationId: "PRESERVE-SIM-UI",
+        scope: "Preservacion guiada de evidencia ficticia seleccionada.",
+        acquiredItemIds: [selectedId],
+      });
+      setVaultMessage(`${record.acquisitionId} creado en estado ${record.status}.`);
+    }
+
+    if (action === "authorize-acquisition") {
+      const record = evidenceVaultState.acquisitions[evidenceVaultState.acquisitions.length - 1];
+      const result = authorizeDigitalAcquisition(evidenceVaultState, record?.acquisitionId, {
+        authority: "Fiscalia simulada",
+        authorizationId: "AUTH-SIM-UI",
+        scope: "Alcance acotado a elementos ficticios ya registrados.",
+      });
+      setVaultMessage(result.ok ? `${record.acquisitionId} autorizado conceptualmente.` : "No hay registro para autorizar.", !result.ok);
+    }
+
+    if (action === "complete-acquisition") {
+      const record = evidenceVaultState.acquisitions[evidenceVaultState.acquisitions.length - 1];
+      const result = completeDigitalAcquisition(evidenceVaultState, record?.acquisitionId, {
+        originalHash: evidence?.integrityHash || "demo-sha256-original-reference",
+        copyHash: evidence?.integrityHash || "demo-sha256-original-reference",
+      });
+      setVaultMessage(result.ok ? `${record.acquisitionId} completado.` : "No hay registro listo para completar.", !result.ok);
+    }
+
+    if (action === "transfer") {
+      const transfer = await createTransferRecord(evidenceVaultState, {
+        evidenceId: selectedId,
+        purpose: "JUDICIAL_REVIEW",
+        receiver: { operatorId: "OP-COM-01", consoleId: "CON-COMISARIA" },
+      });
+      setVaultMessage(`${transfer.transferId} registrado. ${TRANSFER_NOTICE}`);
+    }
+
+    if (action === "citizen-copy") {
+      const result = await buildCitizenSanitizedEvidenceCopy(evidenceVaultState, selectedId);
+      setVaultMessage(result.ok ? `${result.copy.documentId} creado para entrega depurada.` : result.reason, !result.ok);
+    }
+  } catch (error) {
+    setVaultMessage(`Operacion observada: ${error.code || "vault_action_failed"}.`, true);
+  }
+  render();
+}
+
 function renderComparison() {
   const ai = BUILD_WEEK_STATE.aiSuggestion;
   const human = BUILD_WEEK_STATE.humanDecision;
@@ -2194,6 +2623,10 @@ function renderSnapshot() {
       citizenSummaries: snapshot.citizenClosureSummaries.length,
       citizenPackages: snapshot.citizenIncidentPackages.length,
       citizenObservations: snapshot.citizenFormalObservations.length,
+      evidenceVaultItems: snapshot.evidenceVaultItems.length,
+      evidenceAccessHistory: snapshot.evidenceAccessHistory.length,
+      acquisitionRecords: snapshot.digitalAcquisitionRecords.length,
+      transferRecords: snapshot.evidenceTransferHistory.length,
     },
     latestProcedure: {
       actId: snapshot.procedureActWorkflow?.procedureAct?.actId || null,
@@ -2207,6 +2640,13 @@ function renderSnapshot() {
       receipt: snapshot.citizenDeliveryReceipts.slice(-1)[0],
       feedback: snapshot.citizenServiceFeedback.slice(-1)[0],
       observation: snapshot.citizenFormalObservations.slice(-1)[0],
+    },
+    evidenceProtection: {
+      transport: snapshot.communicationSecurityStatuses[0],
+      latestEvidence: snapshot.evidenceVaultItems[0],
+      latestAccess: snapshot.evidenceAccessHistory.slice(-1)[0],
+      latestAcquisition: snapshot.digitalAcquisitionRecords.slice(-1)[0],
+      latestCitizenCopy: snapshot.citizenSanitizedEvidenceCopies.slice(-1)[0],
     },
     operationalLedgerTail: ledgerEvents.slice(-12),
   }, null, 2);
@@ -2495,6 +2935,7 @@ function render() {
   syncFieldStateToBuildWeek();
   syncProcedureStateToBuildWeek();
   syncCitizenStateToBuildWeek();
+  syncEvidenceVaultStateToBuildWeek();
   renderScenario();
   renderConsoles();
   renderParticipants();
@@ -2511,13 +2952,19 @@ function render() {
   renderProcedureAct();
   renderPerspective();
   renderCitizenClosure();
+  renderEvidenceVaultSections();
   renderComparison();
   renderSnapshot();
 }
 
-document.addEventListener("click", (event) => {
-  const button = event.target.closest("[data-model], [data-action], [data-ledger], [data-assistant], [data-field-action], [data-procedure-action], [data-citizen-action]");
+document.addEventListener("click", async (event) => {
+  const button = event.target.closest("[data-model], [data-action], [data-ledger], [data-assistant], [data-field-action], [data-procedure-action], [data-citizen-action], [data-vault-action]");
   if (!button) return;
+
+  if (button.dataset.vaultAction) {
+    await runVaultAction(button.dataset.vaultAction, button);
+    return;
+  }
 
   if (button.dataset.citizenAction) {
     runCitizenAction(button.dataset.citizenAction);

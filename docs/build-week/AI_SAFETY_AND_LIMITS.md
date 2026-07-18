@@ -176,6 +176,30 @@ La opinion de servicio no puntua publicamente al operador y no modifica actas, e
 cierre. La observacion formal es un tramite separado que conserva los registros previos y puede derivar en
 aclaracion, ampliacion, rectificacion o revision administrativa simulada.
 
+## Evidencia, boveda y adquisicion digital
+
+En Etapa 5.2 la IA no decide:
+
+- acceso a evidencia;
+- descarga de material;
+- revocacion de permisos;
+- retencion;
+- eliminacion;
+- adquisicion digital;
+- entrega ciudadana de evidencia;
+- autorizaciones judiciales;
+- segunda aprobacion.
+
+La boveda usa contenido ficticio. Las acciones sensibles dependen de `canAccessResource()`, autorizacion
+activa, finalidad, sesion, MFA, supervision y auditoria. El material `RESTRICTED_JUDICIAL` no se entrega
+automaticamente al ciudadano.
+
+La frase correcta para presentacion institucional es:
+
+`Arquitectura proyectada con cifrado, control de acceso, hash de evidencia y auditoria.`
+
+No debe presentarse como cifrado productivo completo ni como cadena de custodia oficial.
+
 ## Backend experimental
 
 Configuracion:

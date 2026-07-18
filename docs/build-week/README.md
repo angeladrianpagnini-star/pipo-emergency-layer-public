@@ -294,6 +294,35 @@ maestro. La vista segura se construye con `buildCitizenSafeView(masterRecord, ac
 La opinion de servicio no modifica actas, expediente, sanciones ni cierre. La observacion formal es un
 tramite separado que puede originar aclaracion, ampliacion, rectificacion o revision administrativa simulada.
 
+## Etapa 5.2 - Boveda de evidencia y proteccion criptografica
+
+Se agrega `evidence-vault.js` para demostrar controles de evidencia ficticia:
+
+- `PIPO Evidence Vault`;
+- deteccion de transporte `LOCAL_DEVELOPMENT`, `HTTPS_PROTECTED` y `TRANSPORT_NOT_VERIFIED`;
+- cifrado local de demostracion con Web Crypto, AES-GCM e IV unico;
+- SHA-256 del contenido ficticio original y de la representacion cifrada;
+- verificacion de integridad y deteccion de alteracion;
+- permisos por finalidad, sesion, MFA, rol, consola, supervision y vencimiento;
+- acceso `RESTRICTED_JUDICIAL` con autorizacion activa y segunda aprobacion simulada;
+- permisos temporales, vencimiento y revocacion;
+- historial de acceso, vistas y descargas bloqueadas;
+- politicas de retencion y eliminacion simulada;
+- `DigitalAcquisitionRecord`;
+- `Demonstration evidence transfer chain`;
+- copia ciudadana depurada separada de la evidencia interna.
+
+Aviso obligatorio:
+
+> Local cryptographic demonstration - not a production key-management system.
+
+La frase institucional recomendada es:
+
+> Arquitectura proyectada con cifrado, control de acceso, hash de evidencia y auditoria.
+
+No se implementa adquisicion real, sensores reales, seguimiento real, KMS/HSM, base de datos, certificados
+productivos ni cadena de custodia oficial.
+
 ## Principios de seguridad
 
 - Datos simulados.
@@ -309,7 +338,7 @@ tramite separado que puede originar aclaracion, ampliacion, rectificacion o revi
 
 ## Archivos
 
-- `index.html`: visor de Etapas 0, 1, 1.1, 2, 3, 4A, 4B y 5.
+- `index.html`: visor de Etapas 0, 1, 1.1, 2, 3, 4A, 4B, 5, 5.1 y 5.2.
 - `styles.css`: estilos independientes de la ruta Build Week.
 - `data-models.js`: definiciones y estado simulado inicial.
 - `ledger.js`: bitacora operativa append-only.
@@ -323,6 +352,8 @@ tramite separado que puede originar aclaracion, ampliacion, rectificacion o revi
 - `procedure-act.test.js`: pruebas de Etapa 5.
 - `citizen-closure.js`: perspectivas, resumen ciudadano, paquete, recibo, opinion, observacion y seguimiento.
 - `citizen-closure.test.js`: pruebas de Etapa 5.1.
+- `evidence-vault.js`: boveda de evidencia ficticia, cifrado de demo, permisos, retencion y adquisicion conceptual.
+- `evidence-vault.test.js`: pruebas de Etapa 5.2.
 - `app.js`: render de modelos, asistente, campo, acta, expediente, cierre, perspectiva ciudadana y snapshot JSON.
 - `server/`: backend seguro experimental, validadores, cliente proveedor, auditoria y pruebas.
 - `FIELD_OPERATOR_WORKFLOW.md`: documentacion del flujo de campo.
@@ -331,6 +362,10 @@ tramite separado que puede originar aclaracion, ampliacion, rectificacion o revi
 - `MULTI_PERSPECTIVE_DEMO.md`: guia de vistas ciudadano, campo, consola federada y consola maestra.
 - `CITIZEN_CLOSURE_WORKFLOW.md`: flujo de cierre ciudadano y entrega trazable.
 - `CITIZEN_DATA_ACCESS_POLICY.md`: politica de minimizacion y acceso ciudadano.
+- `SECURITY_AND_EVIDENCE_PROTECTION.md`: controles de seguridad, marco legal y gobernanza.
+- `EVIDENCE_VAULT_ARCHITECTURE.md`: arquitectura de la boveda y politicas de evidencia.
+- `DIGITAL_ACQUISITION_WORKFLOW.md`: adquisicion digital voluntaria, guiada y autorizada conceptual.
+- `SECURITY_CONTROL_STATUS.md`: matriz de controles implementados, simulados y proyectados.
 - `DEMO_SCRIPT.md`: recorrido publico de menos de tres minutos.
 - `TEST_PLAN.md`: plan de pruebas de Build Week.
 - `GUARDIAN_DIGITAL_DEPLOYMENT_PLAN.md`: hoja de ruta futura, sin implementacion ni despliegue.

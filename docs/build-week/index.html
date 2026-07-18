@@ -3,12 +3,13 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>PIPO Build Week - Etapa 5.1</title>
+    <title>PIPO Build Week - Etapa 5.2</title>
     <meta
       name="description"
-      content="Version separada de PIPO Emergency Layer para OpenAI Build Week. Etapa 5.1: simulacion multiperspectiva, cierre ciudadano y devolucion trazable."
+      content="Version separada de PIPO Emergency Layer para OpenAI Build Week. Etapa 5.2: boveda de evidencia, controles criptograficos simulados y adquisicion digital autorizada."
     />
-    <link rel="stylesheet" href="styles.css?v=9" />
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="styles.css?v=10" />
   </head>
   <body>
     <header class="hero">
@@ -35,6 +36,11 @@
       <a href="#field-operators">Field Operators</a>
       <a href="#individual-acts">Individual Acts</a>
       <a href="#procedure-act">Procedure Act</a>
+      <a href="#security-status">Security Status</a>
+      <a href="#evidence-vault">Evidence Vault</a>
+      <a href="#access-requests">Access Requests</a>
+      <a href="#acquisition-records">Acquisition Records</a>
+      <a href="#transfer-history">Transfer History</a>
       <a href="#master-incident-record">Master Incident Record</a>
       <a href="#audit">Audit</a>
       <a href="#closure">Closure</a>
@@ -660,6 +666,100 @@
         <pre id="procedurePrintView" class="print-preview"></pre>
       </section>
 
+      <section id="security-status" class="panel security-panel">
+        <div class="section-title">
+          <h2>Security Status</h2>
+          <span>Etapa 5.2</span>
+        </div>
+        <p class="lead">
+          Esta vista distingue controles implementados en la demo, simulados para analisis y requisitos de
+          arquitectura productiva. No afirma proteccion de transporte cuando corre en HTTP local.
+        </p>
+        <div id="communicationSecurityStatus" class="transport-status"></div>
+        <div id="securityControlOverview" class="control-grid"></div>
+      </section>
+
+      <section id="evidence-vault" class="panel evidence-panel">
+        <div class="section-title">
+          <h2>PIPO Evidence Vault</h2>
+          <span>Evidencia ficticia</span>
+        </div>
+        <p class="lead strong-warning">
+          Local cryptographic demonstration - not a production key-management system.
+        </p>
+        <p class="lead">
+          La boveda trabaja solo con contenido ficticio. La arquitectura productiva requiere cifrado de
+          transporte, envelope encryption, KMS/HSM, rotacion, revocacion, separacion de funciones y auditoria.
+        </p>
+        <div class="action-row vault-actions" data-internal-vault>
+          <button type="button" data-vault-action="demo">Ejecutar demo 5.2</button>
+          <button type="button" data-vault-action="encrypt">Cifrar item</button>
+          <button type="button" data-vault-action="decrypt">Descifrar autorizado</button>
+          <button type="button" data-vault-action="verify">Verificar integridad</button>
+          <button type="button" data-vault-action="tamper">Simular alteracion</button>
+          <button type="button" data-vault-action="download">Probar descarga</button>
+          <button type="button" data-vault-action="hold">Retencion hold</button>
+          <button type="button" data-vault-action="schedule-delete">Programar eliminacion</button>
+        </div>
+        <div id="vaultMessage" class="access-result"></div>
+        <div id="evidenceVaultList" class="vault-grid"></div>
+        <div id="retentionPolicyList" class="retention-grid"></div>
+      </section>
+
+      <section id="access-requests" class="panel evidence-panel">
+        <div class="section-title">
+          <h2>Access Requests</h2>
+          <span>Permisos temporales</span>
+        </div>
+        <p class="lead">
+          Cada vista, denegacion, vencimiento o revocacion queda registrada por evidencia, operador, consola,
+          sesion, finalidad, resultado y autorizacion asociada.
+        </p>
+        <div class="action-row vault-actions" data-internal-vault>
+          <button type="button" data-vault-action="request-access">Solicitar acceso</button>
+          <button type="button" data-vault-action="grant">Crear permiso temporal</button>
+          <button type="button" data-vault-action="expire-grant">Vencer permiso</button>
+          <button type="button" data-vault-action="revoke-grant">Revocar permiso</button>
+        </div>
+        <div id="evidenceAccessDecision" class="access-result"></div>
+        <ol id="evidenceAccessHistory" class="ledger-list"></ol>
+      </section>
+
+      <section id="acquisition-records" class="panel evidence-panel">
+        <div class="section-title">
+          <h2>Digital Acquisition Records</h2>
+          <span>Registro autorizado</span>
+        </div>
+        <p class="lead">
+          El modelo separa entrega voluntaria, preservacion guiada y adquisicion forense autorizada conceptual.
+          No implementa acceso real a dispositivos, cuentas, camaras, microfonos ni herramientas forenses.
+        </p>
+        <div class="action-row vault-actions" data-internal-vault>
+          <button type="button" data-vault-action="create-acquisition">Crear registro</button>
+          <button type="button" data-vault-action="authorize-acquisition">Autorizar</button>
+          <button type="button" data-vault-action="complete-acquisition">Completar</button>
+          <button type="button" data-vault-action="citizen-copy">Copia ciudadana depurada</button>
+        </div>
+        <div id="digitalAcquisitionList" class="vault-grid"></div>
+        <div id="citizenSanitizedCopy" class="access-result"></div>
+      </section>
+
+      <section id="transfer-history" class="panel evidence-panel">
+        <div class="section-title">
+          <h2>Transfer History</h2>
+          <span>Demonstration evidence transfer chain</span>
+        </div>
+        <p class="lead">
+          Esta funcion demuestra el registro de transferencias. Una cadena de custodia oficial requiere
+          protocolos, herramientas, competencias y validaciones adicionales.
+        </p>
+        <div class="action-row vault-actions" data-internal-vault>
+          <button type="button" data-vault-action="transfer">Registrar transferencia</button>
+          <button type="button" data-vault-action="simulate-delete">Eliminacion simulada</button>
+        </div>
+        <ol id="evidenceTransferHistory" class="ledger-list"></ol>
+      </section>
+
       <section id="citizen-closure" class="panel citizen-panel">
         <div class="section-title">
           <h2>Cierre ciudadano y devolucion trazable</h2>
@@ -918,6 +1018,7 @@
     <script src="field-workflow.js?v=1"></script>
     <script src="procedure-act.js?v=1"></script>
     <script src="citizen-closure.js?v=1"></script>
-    <script src="app.js?v=9"></script>
+    <script src="evidence-vault.js?v=1"></script>
+    <script src="app.js?v=10"></script>
   </body>
 </html>

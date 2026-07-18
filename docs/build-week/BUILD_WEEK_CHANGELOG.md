@@ -1,5 +1,24 @@
 # Build Week Changelog
 
+## Etapa 5.2 - Proteccion criptografica, boveda y adquisicion autorizada
+
+- Agrega `evidence-vault.js` con `PIPO Evidence Vault` para evidencia ficticia.
+- Agrega deteccion visible de transporte: `LOCAL_DEVELOPMENT`, `HTTPS_PROTECTED` y `TRANSPORT_NOT_VERIFIED`.
+- Agrega cifrado local de demostracion con Web Crypto, AES-GCM, IV unico y claves temporales en memoria.
+- Agrega hash SHA-256 de contenido ficticio original, hash de representacion cifrada y verificacion de integridad.
+- Extiende `canAccessResource()` con finalidad, vencimiento, autorizacion, supervision, campos visibles, descarga y marca de agua.
+- Agrega controles `RESTRICTED_JUDICIAL` con autorizacion activa, operador autorizado, MFA, sesion vigente y segunda aprobacion simulada.
+- Agrega permisos temporales con inicio, vencimiento, revocacion, campos visibles y descarga bloqueada.
+- Agrega historial de acceso con evidencia, operador, consola, sesion, finalidad, accion, resultado y autorizacion.
+- Agrega politicas de retencion, hold, eliminacion simulada y certificado de demo.
+- Agrega `DigitalAcquisitionRecord` para entrega voluntaria, preservacion guiada y adquisicion autorizada conceptual.
+- Agrega `Demonstration evidence transfer chain` y aviso de limitacion frente a cadena de custodia oficial.
+- Agrega copia ciudadana depurada y bloqueo de entrega automatica para material `RESTRICTED_JUDICIAL`.
+- Agrega secciones UI: Security Status, Evidence Vault, Access Requests, Acquisition Records y Transfer History.
+- Agrega `evidence-vault.test.js`.
+- Crea `SECURITY_AND_EVIDENCE_PROTECTION.md`, `EVIDENCE_VAULT_ARCHITECTURE.md`, `DIGITAL_ACQUISITION_WORKFLOW.md` y `SECURITY_CONTROL_STATUS.md`.
+- Mantiene intactos `docs/index.html`, `docs/styles.css`, `docs/app.js` y la version publica v36.
+
 ## Etapa 5.1 - Simulacion multiperspectiva y cierre ciudadano
 
 - Agrega `citizen-closure.js` con selector de perspectiva: `CITIZEN`, `FIELD_OPERATOR`, `FEDERATED_CONSOLE` y `MASTER_CONSOLE`.

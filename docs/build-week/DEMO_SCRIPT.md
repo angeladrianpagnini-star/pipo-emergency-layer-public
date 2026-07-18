@@ -25,7 +25,15 @@ Duracion objetivo: menos de tres minutos.
 19. Ir a `Citizen Closure`.
 20. Mostrar resumen ciudadano, vista segura, proximos pasos, documentos habilitados, recibo, opinion y
     observacion formal.
-21. Cerrar con el principio: las actuaciones individuales se integran sin ser sustituidas ni reescritas, y
+21. Ir a `Security Status`.
+22. Mostrar transporte: si es local debe decir `LOCAL_DEVELOPMENT` y no prometer TLS productivo.
+23. Ir a `Evidence Vault`.
+24. Tocar `Ejecutar demo 5.2`.
+25. Mostrar evidencia ficticia cifrada, integridad verificada, acceso restringido, retencion y descarga bloqueada.
+26. Ir a `Access Requests` y mostrar historial de vista, denegacion, vencimiento o revocacion.
+27. Ir a `Acquisition Records` y mostrar `DigitalAcquisitionRecord` como registro conceptual, sin adquisicion real.
+28. Ir a `Transfer History` y leer el aviso de cadena de transferencia demostrativa.
+29. Cerrar con el principio: las actuaciones individuales se integran sin ser sustituidas ni reescritas, y
     la devolucion ciudadana se entrega minimizada y trazable.
 
 ## Frase corta
@@ -40,3 +48,6 @@ frontend ni conexion con sistemas de emergencia.
 
 El resumen ciudadano no es copia del expediente maestro. Excluye identidades protegidas, notas internas,
 operaciones reservadas, evidencia de terceros, comunicaciones internas e informacion judicial restringida.
+
+La boveda de evidencia es una demostracion criptografica local. No es KMS/HSM, no almacena archivos
+sensibles reales y no representa cadena de custodia oficial.

@@ -133,6 +133,80 @@ Toda capacidad de imagen, voz, ubicacion en tiempo real, dispositivo robado, cib
 menores exige finalidad, base legal, autorizacion competente, acceso por rol y auditoria posterior. El
 backend de Etapa 4A no ejecuta ninguna de esas acciones.
 
+## Etapa 5.2 - Boveda y seguridad de evidencia
+
+La Etapa 5.2 agrega una capa especifica de proteccion documental:
+
+- `PIPO Evidence Vault`: boveda de evidencia ficticia con estado, clasificacion, titularidad, politica de acceso y retencion.
+- `CommunicationSecurityStatus`: estado visible de transporte local, HTTPS o no verificado.
+- `EvidenceAccessRequest` y `EvidenceAccessHistory`: solicitud, decision, historial de vista y descarga.
+- `EvidenceSharingGrant`: permiso temporal y revocable por finalidad y campos visibles.
+- `EvidenceRetentionPolicy`: politica de conservacion, hold y eliminacion simulada.
+- `DigitalAcquisitionRecord`: registro conceptual de entrega voluntaria, preservacion guiada o adquisicion autorizada.
+- `EvidenceTransferRecord`: cadena de transferencia demostrativa.
+- `CitizenSanitizedEvidenceCopy`: copia ciudadana depurada separada de la evidencia interna.
+
+### Control de acceso
+
+`canAccessResource()` conserva compatibilidad con usos anteriores y agrega respuesta ampliada:
+
+- `allowed`;
+- `reason`;
+- `limitations`;
+- `expiresAt`;
+- `requiresSecondApproval`;
+- `visibleFields`;
+- `downloadable`;
+- `watermarkedViewRequired`.
+
+Finalidades autorizadas:
+
+- `OPERATIONAL_RESPONSE`;
+- `MEDICAL_ASSISTANCE`;
+- `JUDICIAL_REVIEW`;
+- `CYBERCRIME_ANALYSIS`;
+- `FIELD_DOCUMENTATION`;
+- `SUPERVISORY_REVIEW`;
+- `CITIZEN_DELIVERY`;
+- `QUALITY_AUDIT`.
+
+Para `RESTRICTED_JUDICIAL` se exige finalidad compatible, autorizacion activa, operador autorizado, MFA,
+sesion vigente, segunda aprobacion simulada, supervision y auditoria.
+
+### Criptografia
+
+La demo cifra solo contenido ficticio:
+
+- Web Crypto;
+- AES-GCM;
+- IV unico;
+- SHA-256 independiente;
+- verificacion despues de descifrar;
+- revocacion logica.
+
+Aviso obligatorio:
+
+`Local cryptographic demonstration - not a production key-management system.`
+
+Arquitectura productiva:
+
+- HTTPS/TLS;
+- WSS;
+- certificados;
+- proteccion contra downgrade;
+- cabeceras seguras;
+- restriccion de origen;
+- autenticacion de servicio;
+- vencimiento de sesiones;
+- reintentos seguros;
+- revocacion;
+- envelope encryption;
+- KMS/HSM;
+- rotacion;
+- separacion de funciones;
+- respaldo seguro;
+- destruccion segura.
+
 ## Bitacora
 
 Los eventos de IA y decision humana se agregan a la cadena append-only:

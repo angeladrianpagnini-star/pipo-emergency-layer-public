@@ -1192,6 +1192,124 @@ li {
   color: var(--muted);
 }
 
+.security-panel,
+.evidence-panel {
+  grid-column: 1 / -1;
+}
+
+.transport-status,
+.control-grid,
+.vault-grid,
+.retention-grid {
+  margin-top: 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.transport-status {
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+}
+
+.control-grid,
+.retention-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.vault-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.transport-card,
+.control-grid article,
+.vault-card,
+.retention-grid article {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fbf6eb;
+  padding: 14px;
+}
+
+.transport-card.local_development {
+  border-left: 4px solid var(--amber);
+}
+
+.transport-card.https_protected {
+  border-left: 4px solid var(--teal);
+}
+
+.transport-card.transport_not_verified {
+  border-left: 4px solid var(--coral);
+}
+
+.transport-card span,
+.control-grid article span,
+.vault-card span,
+.retention-grid article span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.transport-card strong,
+.control-grid article strong,
+.vault-card strong,
+.retention-grid article strong {
+  display: block;
+  margin-top: 5px;
+  font-size: 1.02rem;
+}
+
+.transport-card p,
+.control-grid article p,
+.vault-card p,
+.retention-grid article p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  line-height: 1.38;
+}
+
+.control-grid article small,
+.retention-grid article small {
+  display: block;
+  margin-top: 8px;
+  color: var(--teal-dark);
+  font-weight: 850;
+  line-height: 1.32;
+}
+
+.vault-card {
+  position: relative;
+}
+
+.vault-card.selected {
+  border-color: var(--teal);
+  box-shadow: inset 4px 0 0 var(--teal);
+}
+
+.vault-card > button {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  min-height: 34px;
+  border-radius: 8px;
+  background: #ece6d9;
+  color: var(--ink);
+  padding: 0 10px;
+  font-size: 0.76rem;
+  font-weight: 900;
+}
+
+.vault-card .mini-record {
+  margin-top: 10px;
+}
+
+.vault-actions[hidden] {
+  display: none;
+}
+
 .decision-reason {
   margin: 12px 0 0;
   border-left: 4px solid var(--amber);
@@ -1259,6 +1377,10 @@ pre {
     .permission-grid,
     .perspective-workspace,
     .citizen-layout,
+    .transport-status,
+    .control-grid,
+    .vault-grid,
+    .retention-grid,
     .human-review-grid,
   .review-actions,
   .console-checkboxes,
