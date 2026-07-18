@@ -29,6 +29,33 @@ Se crean modelos de demostracion para:
 - cierre;
 - auditoria.
 
+## Etapa 1.1 - Arquitectura federada, ciberdelitos y multiintervencion
+
+Se extiende el modelo sin reemplazar lo anterior para representar:
+
+- consolas federadas configurables;
+- operadores con identidad simulada, MFA, biometria local verificada como booleano y sesion;
+- participantes de incidente;
+- intervenciones por consola;
+- actas individuales por organismo;
+- expediente digital maestro referenciado;
+- solicitudes de aclaracion;
+- permisos temporales de evidencia;
+- autorizaciones judiciales simuladas;
+- protocolo de dispositivo robado;
+- reporte de ciberdelito;
+- registro separado de comisaria.
+
+Principio rector:
+
+> Integracion sin absorcion documental.
+
+La consola maestra puede integrar, consultar, pedir aclaraciones y marcar contradicciones. No puede reescribir,
+eliminar, fusionar alterando texto original ni firmar actas individuales de otros organismos.
+
+Tambien se agrega `canAccessResource(operator, resource, purpose)`, que evalua rol, organismo, incidente,
+finalidad, nivel de sensibilidad y autorizacion temporal.
+
 ## Principios de seguridad
 
 - Datos simulados.

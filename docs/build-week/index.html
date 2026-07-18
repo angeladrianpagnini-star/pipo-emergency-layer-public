@@ -3,12 +3,12 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>PIPO Build Week - Etapa 1</title>
+    <title>PIPO Build Week - Etapa 1.1</title>
     <meta
       name="description"
-      content="Version separada de PIPO Emergency Layer para OpenAI Build Week. Etapa 1: modelos de datos simulados con validacion humana obligatoria."
+      content="Version separada de PIPO Emergency Layer para OpenAI Build Week. Etapa 1.1: arquitectura federada, ciberdelitos y multiintervencion."
     />
-    <link rel="stylesheet" href="styles.css?v=1" />
+    <link rel="stylesheet" href="styles.css?v=2" />
   </head>
   <body>
     <header class="hero">
@@ -16,8 +16,8 @@
         <p class="eyebrow">OpenAI Build Week Edition</p>
         <h1>PIPO Emergency Layer</h1>
         <p>
-          Nueva ruta independiente posterior a v36. Esta vista inicia la evolucion con modelos de datos
-          para incidente, bitacora, IA simulada, decision humana, acta digital, cierre y auditoria.
+          Nueva ruta independiente posterior a v36. Esta vista evoluciona el modelo hacia una arquitectura
+          federada: multiples consolas, operadores, actas individuales, ciberdelitos y expediente maestro.
         </p>
       </div>
       <aside class="safety-card">
@@ -30,8 +30,8 @@
     <main class="layout">
       <section class="panel stage-panel">
         <div class="section-title">
-          <h2>Etapa 0</h2>
-          <span>Preservacion</span>
+          <h2>Etapa 0 + 1.1</h2>
+          <span>Preservacion federada</span>
         </div>
         <div class="checks">
           <article>
@@ -53,9 +53,108 @@
         </div>
       </section>
 
+      <section class="panel stage-panel federation-principle">
+        <div>
+          <p class="eyebrow">Principio de arquitectura</p>
+          <h2>Integracion sin absorcion documental</h2>
+          <p>
+            La consola maestra integra el incidente y puede solicitar aclaraciones, pero no reescribe,
+            elimina, fusiona ni firma actas individuales de otros organismos.
+          </p>
+        </div>
+        <div class="scenario-picker">
+          <label for="scenarioSelect">Escenario</label>
+          <select id="scenarioSelect">
+            <option value="general">Emergencia general</option>
+            <option value="violence">Violencia</option>
+            <option value="cybercrime">Ciberdelito</option>
+            <option value="stolenDevice">Dispositivo robado</option>
+            <option value="multidisciplinary">Incidente multidisciplinario</option>
+          </select>
+          <p id="scenarioSummary"></p>
+        </div>
+      </section>
+
+      <section class="panel federated-panel">
+        <div class="section-title">
+          <h2>FederatedOperationalConsole</h2>
+          <span>Componente configurable</span>
+        </div>
+        <p class="lead">
+          Un mismo componente representa consola maestra, 911, ciberdelitos, comisaria y el resto de
+          organismos, variando configuracion, permisos, formularios y politicas de conservacion.
+        </p>
+        <div id="consoleGrid" class="console-grid" aria-label="Consolas federadas"></div>
+      </section>
+
+      <section class="panel participants-panel">
+        <div class="section-title">
+          <h2>Multiintervencion</h2>
+          <span>Operadores y actas propias</span>
+        </div>
+        <div class="action-row">
+          <button type="button" data-action="join-console">Incorporar consola</button>
+          <button type="button" data-action="join-operator">Incorporar segundo operador</button>
+          <button type="button" data-action="clarification">Solicitar aclaracion</button>
+          <button type="button" data-action="share-evidence">Compartir evidencia</button>
+        </div>
+        <div class="split-grid">
+          <article>
+            <h3>Participantes</h3>
+            <ul id="participantsList"></ul>
+          </article>
+          <article>
+            <h3>Actas individuales</h3>
+            <ul id="individualActsList"></ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel master-record-panel">
+        <div class="section-title">
+          <h2>Expediente digital del incidente</h2>
+          <span>Acta maestra referenciada</span>
+        </div>
+        <div id="masterRecord" class="master-record"></div>
+      </section>
+
       <section class="panel">
         <div class="section-title">
-          <h2>Etapa 1</h2>
+          <h2>Acceso por finalidad</h2>
+          <span>canAccessResource()</span>
+        </div>
+        <div class="action-row">
+          <button type="button" data-action="test-allowed">Probar permiso vigente</button>
+          <button type="button" data-action="test-denied">Probar denegacion</button>
+          <button type="button" data-action="test-expired">Probar vencimiento</button>
+        </div>
+        <div id="accessResult" class="access-result"></div>
+      </section>
+
+      <section class="panel cyber-panel">
+        <div class="section-title">
+          <h2>Ciberdelitos y dispositivo robado</h2>
+          <span>Flujos simulados</span>
+        </div>
+        <div class="split-grid">
+          <article>
+            <h3>Reporte ciber</h3>
+            <ul id="cyberReport"></ul>
+          </article>
+          <article>
+            <h3>Protocolo de recuperacion</h3>
+            <ul id="deviceProtocol"></ul>
+          </article>
+        </div>
+        <p class="warning-copy">
+          Funcion simulada. En una implementacion real requiere base legal, autorizacion competente,
+          alcance limitado y auditoria. No hay rastreo, audio, video ni extraccion real.
+        </p>
+      </section>
+
+      <section class="panel">
+        <div class="section-title">
+          <h2>Etapa 1 + 1.1</h2>
           <span>Modelo de datos</span>
         </div>
         <p class="lead">
@@ -120,7 +219,7 @@
       </section>
     </main>
 
-    <script src="data-models.js?v=1"></script>
-    <script src="app.js?v=1"></script>
+    <script src="data-models.js?v=2"></script>
+    <script src="app.js?v=2"></script>
   </body>
 </html>

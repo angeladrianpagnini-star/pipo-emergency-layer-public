@@ -36,6 +36,18 @@ button {
   font: inherit;
 }
 
+select {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0 12px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 750;
+}
+
 code,
 pre {
   font-family: "Cascadia Mono", Consolas, monospace;
@@ -130,6 +142,50 @@ pre {
   grid-column: 1 / -1;
 }
 
+.federated-panel,
+.master-record-panel,
+.cyber-panel {
+  grid-column: 1 / -1;
+}
+
+.federation-principle {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.federation-principle h2 {
+  font-size: clamp(1.6rem, 4vw, 2.6rem);
+}
+
+.federation-principle p,
+.warning-copy {
+  margin: 10px 0 0;
+  color: var(--muted);
+  line-height: 1.48;
+}
+
+.scenario-picker {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fbf6eb;
+  padding: 14px;
+}
+
+.scenario-picker label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.scenario-picker p {
+  margin: 10px 0 0;
+}
+
 .section-title {
   display: flex;
   align-items: center;
@@ -177,7 +233,11 @@ h3 {
 .checks article,
 .model-card,
 .detail-grid article,
-.compare-grid article {
+.compare-grid article,
+.console-card,
+.split-grid article,
+.master-record article,
+.access-result {
   border: 1px solid var(--line);
   border-radius: 10px;
   background: #fbf6eb;
@@ -211,6 +271,121 @@ h3 {
 .model-card.active {
   border-color: var(--teal);
   box-shadow: inset 4px 0 0 var(--teal);
+}
+
+.console-grid {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.console-card {
+  min-height: 220px;
+  display: grid;
+  align-content: start;
+  gap: 8px;
+}
+
+.console-card.priority {
+  border-color: var(--teal);
+  box-shadow: inset 4px 0 0 var(--teal);
+}
+
+.console-card strong,
+.console-card span,
+.console-card small {
+  display: block;
+}
+
+.console-card strong {
+  font-size: 1rem;
+}
+
+.console-card span {
+  color: var(--muted);
+  line-height: 1.32;
+}
+
+.console-card small,
+.pill {
+  width: fit-content;
+  border-radius: 999px;
+  background: #e7f2ef;
+  color: var(--teal-dark);
+  padding: 5px 8px;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.console-actions-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.console-actions-list em {
+  border-radius: 999px;
+  background: #ece6d9;
+  padding: 4px 7px;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.action-row {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.action-row button {
+  min-height: 42px;
+  border-radius: 8px;
+  padding: 0 12px;
+  background: var(--teal);
+  color: #fff;
+  font-weight: 850;
+}
+
+.action-row button:nth-child(even) {
+  background: #ece6d9;
+  color: var(--ink);
+}
+
+.split-grid,
+.master-record {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.master-record {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.master-record strong,
+.access-result strong {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.access-result {
+  margin-top: 12px;
+}
+
+.access-result.allowed {
+  border-color: var(--teal);
+  box-shadow: inset 4px 0 0 var(--teal);
+}
+
+.access-result.denied {
+  border-color: var(--coral);
+  box-shadow: inset 4px 0 0 var(--coral);
 }
 
 .model-card strong {
@@ -324,7 +499,11 @@ pre {
 
   .checks,
   .detail-grid,
-  .compare-grid {
+  .compare-grid,
+  .federation-principle,
+  .console-grid,
+  .split-grid,
+  .master-record {
     grid-template-columns: 1fr;
   }
 }
