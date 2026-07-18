@@ -1,5 +1,25 @@
 # Demo Script - Build Week Release Candidate
 
+## Etapa 6C.1 - Recorrido operativo principal
+
+1. Iniciar `Recorrido operativo PIPO` y presentar el escenario ficticio de accidente vial.
+2. Mostrar el dispositivo ciudadano: punto PIPO, condicion seleccionada, permisos simulados, ID y alerta recibida por
+   la Consola Maestra PIPO.
+3. Avanzar a la recepcion maestra: contexto disponible, prioridad preliminar, riesgos y datos pendientes.
+4. Avanzar a la derivacion simultanea: 911 Seguridad, 107 Salud, Transito y Bomberos reciben la misma alerta
+   ficticia en paralelo.
+5. Mostrar los cuatro recursos sugeridos, la distancia y ETA simuladas, la regla explicada y la confirmacion humana
+   de demostracion.
+6. Mostrar estados paralelos de campo, contexto prearribo simulado y el mapa abstracto sin servicios externos.
+7. Mostrar que cada organismo conserva un acta individual y que la consola maestra integra referencias sin reescribir
+   su contenido.
+8. Finalizar con cierre institucional y paquete ciudadano depurado: estado, organismos participantes, acciones,
+   documentos habilitados, proximo paso y referencia.
+9. Cambiar idioma o region para demostrar que se actualizan etiquetas de interfaz, no capacidades ni integraciones.
+
+El recorrido dura aproximadamente un minuto. Sus eventos, medios, personas, recursos, tiempos, ubicaciones y
+organismos son ficticios y permanecen en memoria durante la demostracion.
+
 ## Etapa 6C.0 - Recorrido ciudadano recomendado
 
 1. Abrir `docs/build-week/` y explicar que PIPO se proyecta como una aplicacion descargable de activacion inmediata.

@@ -12,6 +12,7 @@ const testFiles = [
   "citizen-closure.test.js",
   "evidence-vault.test.js",
   "citizen-activation.test.js",
+  "operational-journey.test.js",
   path.join("server", "secure-backend.test.js"),
 ];
 const requiredDocumentation = [
@@ -28,6 +29,7 @@ const requiredDocumentation = [
   "RELEASE_CHECKLIST.md",
   "CITIZEN_ACTIVATION_WORKFLOW.md",
   "LOCALIZATION_AND_REGION.md",
+  "OPERATIONAL_JOURNEY.md",
 ];
 
 function run(command, args, options = {}) {

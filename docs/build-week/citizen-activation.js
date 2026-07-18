@@ -631,7 +631,8 @@
     technicalDetails.innerHTML = `<summary>${text("technical")}</summary><p>${text("technicalLead")}</p>`;
     const technicalBody = document.createElement("div");
     technicalBody.className = "pipo-legacy-body";
-    root.after(technicalDetails);
+    const operationalJourney = document.getElementById("pipoOperationalJourney");
+    (operationalJourney || root).after(technicalDetails);
     technicalDetails.appendChild(technicalBody);
     technicalBody.appendChild(legacyHero);
     const stagePanel = legacyMain.querySelector(":scope > .stage-panel");
@@ -801,7 +802,7 @@
       button.addEventListener("click", () => {
         const action = button.dataset.pipoAction;
         if (action === "go-activation") document.getElementById("pipoActivation").scrollIntoView({ behavior: "smooth", block: "start" });
-        if (action === "go-coordination") document.getElementById("pipoCoordination").scrollIntoView({ behavior: "smooth", block: "start" });
+        if (action === "go-coordination") (document.getElementById("pipoOperationalJourney") || document.getElementById("pipoCoordination")).scrollIntoView({ behavior: "smooth", block: "start" });
         if (action === "focus-language") document.getElementById("pipoLocaleSelect").focus();
         if (action === "toggle-access") {
           state.menuOpen = !state.menuOpen;
@@ -875,6 +876,7 @@
     localeSelect.addEventListener("change", () => {
       state.locale = localeSelect.value;
       persistLocale(state.locale);
+      window.dispatchEvent(new CustomEvent("pipo-demo-locale-change", { detail: { locale: state.locale } }));
       state.message = "";
       render();
     });
@@ -882,6 +884,7 @@
     const regionSelect = root.querySelector("[data-pipo-region]");
     regionSelect.addEventListener("change", () => {
       state.region = regionSelect.value;
+      window.dispatchEvent(new CustomEvent("pipo-demo-region-change", { detail: { region: state.region } }));
       state.message = "";
       render();
     });

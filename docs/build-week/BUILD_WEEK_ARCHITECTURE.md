@@ -42,6 +42,18 @@ real.
 La localizacion de la capa ciudadana se resuelve en `citizen-activation.js` para `es-AR` y `en-US`. La region
 operativa solo cambia etiquetas de demostracion, no capacidades ni conexiones institucionales.
 
+## Etapa 6C.1 - Orquestacion visual del incidente
+
+`operational-journey.js` organiza el recorrido principal como una maquina de estado solo en memoria. Sus ocho etapas
+recorren activacion ciudadana, recepcion maestra, derivacion simultanea, seleccion humana de recursos, campo,
+documentacion, cierre y paquete ciudadano. La superficie se divide en tres zonas responsivas: ciudadania,
+coordinacion institucional y campo.
+
+La orquestacion no reemplaza los modelos institucionales existentes. Cada organismo conserva recurso, operador,
+estado y acta individual ficticios. La Consola Maestra recibe referencias para integrar el recorrido sin absorber ni
+reescribir los registros de origen. Los eventos se agregan a una bitacora de demostracion enlazada por referencia
+previa; no hay almacenamiento persistente, cadena de custodia oficial, despacho ni integracion externa.
+
 ## Etapa 3
 
 `PIPO AI Incident Assistant` queda desacoplado de la interfaz:

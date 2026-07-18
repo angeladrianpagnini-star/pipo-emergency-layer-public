@@ -51,6 +51,16 @@ El backend tampoco puede ejecutar acciones operativas. No tiene funciones para l
 activar sensores, consultar cuentas, rastrear dispositivos, abrir camara, abrir microfono, emitir ordenes
 ni cerrar reportes.
 
+## Recorrido operativo guiado - Etapa 6C.1
+
+El recorrido operativo muestra una secuencia visual ficticia: alerta ciudadana, recepcion maestra, derivacion paralela,
+asignacion humana simulada, trabajo de campo, documentacion, cierre y devolucion ciudadana. No representa despacho,
+asignacion de recursos, comunicaciones, ubicacion, personas, video, audio ni organismos reales.
+
+Los identificadores, distancias, tiempos estimados, operadores, recursos y estados se generan solo para la demostracion
+en memoria. La Consola Maestra integra referencias de las actuaciones individuales y no sustituye la autoria documental
+de ningun organismo. La bitacora del recorrido ilustra trazabilidad de demostracion; no es una cadena de custodia oficial.
+
 ## Dispositivo robado
 
 Para ubicacion, audio o video institucional simulado se exige:

@@ -1,5 +1,22 @@
 # Build Week Changelog
 
+## Etapa 6C.1 - Recorrido operativo principal y orquestacion visual del incidente
+
+- Agrega `Recorrido operativo PIPO` como experiencia principal guiada de ocho etapas.
+- Presenta el escenario ficticio de accidente vial con una persona lesionada, posible derrame, riesgo de incendio y
+  transito afectado.
+- Expone tres zonas claras: dispositivo ciudadano, coordinacion institucional y recursos de campo.
+- Conecta una Consola Maestra PIPO con 911 Seguridad, 107 Salud, Transito y Bomberos mediante derivacion simultanea
+  de demostracion.
+- Muestra recursos ficticios, reglas de seleccion explicadas y confirmacion humana simulada por organismo.
+- Representa estados paralelos de campo, actas individuales, integracion documental por referencias, cierre y
+  devolucion ciudadana depurada.
+- Agrega bitacora in-memory enlazada por referencias previas para todos los eventos del recorrido y muestra la cadena
+  completa sin borrar ni ocultar los eventos anteriores del mismo recorrido.
+- Integra `es-AR` y `en-US` con los selectores existentes de idioma y region, sin recargar ni cambiar conexiones.
+- Agrega `operational-journey.js`, `operational-journey.test.js` y `OPERATIONAL_JOURNEY.md`.
+- Mantiene intactos `docs/index.html`, `docs/styles.css`, `docs/app.js`, la configuracion de Pages y v36.
+
 ## Etapa 6C.0 - Citizen activation, product clarity and localization hotfix
 
 - Reordena la entrada publica de Build Week hacia una portada centrada en PIPO Emergency Layer.
