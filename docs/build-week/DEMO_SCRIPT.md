@@ -1,5 +1,29 @@
 # Demo Script - Build Week Release Candidate
 
+## Etapa 6C.0 - Recorrido ciudadano recomendado
+
+1. Abrir `docs/build-week/` y explicar que PIPO se proyecta como una aplicacion descargable de activacion inmediata.
+2. Mostrar el telefono ficticio y aclarar que el punto PIPO representa un acceso autorizado segun el sistema operativo,
+   no una burbuja universal ya implementada.
+3. Abrir el punto PIPO con teclado o puntero y elegir una condicion de emergencia ficticia.
+4. Mostrar que ubicacion, audio, video, descripcion e informacion de dispositivo son permisos simulados e
+   independientes, inicialmente desactivados.
+5. Iniciar la alerta simulada y recorrer el video abstracto, la onda de audio, el mapa, el temporizador, el incidente
+   y las acciones para detener cada medio simulado.
+6. Mostrar la tarjeta de recepcion institucional y el flujo ciudadano -> consola maestra -> organismo competente ->
+   campo -> acta -> cierre.
+7. Cambiar idioma y region en forma independiente. Aclarar que los nombres locales son etiquetas de demostracion y no
+   integraciones reales.
+8. Cerrar con el aviso: la IA no activa sensores; la persona inicia la sesion y las decisiones son humanas.
+9. Abrir `Informacion tecnica de Build Week` o `Ver modulos avanzados` solo para profundizar en los componentes previos.
+
+## Limites de este recorrido
+
+- No hay aplicacion nativa instalada.
+- No hay sensores, camara, microfono, geolocalizacion, rastreo, despacho ni comunicacion institucional real.
+- No se guarda ningun incidente ni permiso; solo la preferencia `pipo_demo_locale` puede persistir.
+- La bitacora visible es una cadena de demostracion en memoria y no una cadena de custodia oficial.
+
 Duracion objetivo: menos de tres minutos.
 
 ## Recorrido prioritario

@@ -1,5 +1,18 @@
 # Build Week Changelog
 
+## Etapa 6C.0 - Citizen activation, product clarity and localization hotfix
+
+- Reordena la entrada publica de Build Week hacia una portada centrada en PIPO Emergency Layer.
+- Agrega un telefono ficticio con punto PIPO, menu accesible de condiciones de emergencia y confirmacion de permisos
+  simulados individuales.
+- Agrega una sesion visual simulada con video abstracto, onda de audio, mapa, temporizador, controles de detencion y
+  tarjeta de recepcion institucional.
+- Agrega bitacora in-memory append-only para los eventos de activacion ciudadana de demostracion.
+- Agrega `es-AR` y `en-US`, deteccion por `navigator.language`, selector persistente solo para `pipo_demo_locale` y
+  selector de region independiente.
+- Mueve el contexto de v36, rama, restauracion y modulos previos a secciones tecnicas colapsables.
+- Mantiene intactos `docs/index.html`, `docs/styles.css`, `docs/app.js`, la configuracion de Pages y v36.
+
 ## Etapa 6A - Final audit, feature freeze and release candidate
 
 - Activa feature freeze: no agrega modulos ni funciones operativas.

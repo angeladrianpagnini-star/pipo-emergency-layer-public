@@ -1,5 +1,23 @@
 # PIPO Build Week 2026
 
+## Etapa 6C.0 - Activacion ciudadana e internacionalizacion
+
+La entrada de `docs/build-week/` ahora prioriza una simulacion de producto: una persona ve un punto PIPO en una
+pantalla ficticia, elige una condicion de emergencia, habilita permisos simulados de manera independiente y observa
+como el contexto simulado llega a una consola institucional. La experiencia es una demo conceptual: no instala una
+app nativa, no contacta organismos y no activa camara, microfono, ubicacion ni sensores reales.
+
+PIPO se proyecta como una aplicacion descargable de activacion inmediata. En Android compatible podria usar un punto
+flotante autorizado por la persona. En otros sistemas podria presentarse mediante widget, pantalla bloqueada, control
+del sistema, acceso directo o boton de accion; la disponibilidad final depende del sistema operativo y de permisos
+explicitos.
+
+El selector `Idioma / Language` soporta `es-AR` y `en-US` sin recargar. El selector de region es independiente y solo
+presenta vocabulario de demostracion para Argentina - Buenos Aires o una vista internacional generica. La unica
+preferencia persistida es `pipo_demo_locale`; incidentes, permisos, evidencia y medios simulados no se guardan.
+
+Documentacion relacionada: `CITIZEN_ACTIVATION_WORKFLOW.md` y `LOCALIZATION_AND_REGION.md`.
+
 Ruta independiente para evolucionar PIPO Emergency Layer sin alterar la version publica v36.
 
 ## Etapa 0 - Preservacion

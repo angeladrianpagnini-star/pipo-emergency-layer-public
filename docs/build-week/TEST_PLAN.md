@@ -18,12 +18,14 @@ node --check docs\build-week\field-workflow.js
 node --check docs\build-week\procedure-act.js
 node --check docs\build-week\citizen-closure.js
 node --check docs\build-week\evidence-vault.js
+node --check docs\build-week\citizen-activation.js
 node --check docs\build-week\app.js
 node docs\build-week\incident-assistant.test.js
 node docs\build-week\field-workflow.test.js
 node docs\build-week\procedure-act.test.js
 node docs\build-week\citizen-closure.test.js
 node docs\build-week\evidence-vault.test.js
+node docs\build-week\citizen-activation.test.js
 node docs\build-week\server\secure-backend.test.js
 node docs\build-week\release-candidate.test.js
 git diff --check
@@ -152,3 +154,22 @@ Probar en navegador:
 - Las areas de comentario ciudadano y observacion formal tienen etiqueta accesible.
 - Los mensajes de perspectiva, asistente, acta, boveda y bitacora usan regiones de estado anunciables.
 - El release candidate conserva sin cambios los tres archivos protegidos de v36.
+
+## Citizen activation and localization - Etapa 6C.0
+
+- La primera pantalla identifica a PIPO como aplicacion proyectada de activacion inmediata.
+- El telefono ficticio muestra un punto PIPO, indicacion de simulacion y acceso disponible.
+- El punto abre por puntero, foco de teclado y se cierra con Escape.
+- Las nueve condiciones de emergencia se pueden seleccionar.
+- Ubicacion, audio, video, descripcion e informacion ficticia de dispositivo se activan o retiran de forma
+  independiente y no hay ninguna seleccion inicial automatica.
+- Iniciar alerta crea solo una sesion en memoria y permite detener audio, video y ubicacion simulados.
+- La recepcion institucional presenta alerta, permisos, prioridad, operador, consolas, hora e incidente ficticio.
+- La bitacora agrega eventos con referencia previa; no ofrece borrado ni reescritura.
+- El codigo no contiene APIs de sensores reales, `getUserMedia`, geolocalizacion real o persistencia de incidentes.
+- `es-AR` y `en-US` actualizan los controles principales sin recargar y actualizan `document.documentElement.lang`.
+- La region Argentina - Buenos Aires y la demostracion internacional cambian etiquetas sin afirmar integracion real.
+- Escritorio y movil no presentan overflow horizontal, los controles conservan foco visible y los movimientos respetan
+  `prefers-reduced-motion`.
+- Los textos ingleses de navegacion tecnica se traducen al elegir `es-AR`; los terminos internos pueden quedar solo
+  dentro de la seccion tecnica secundaria.

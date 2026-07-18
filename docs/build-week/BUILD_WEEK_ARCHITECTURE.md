@@ -28,6 +28,20 @@
    - proteccion de datos;
    - interoperabilidad.
 
+## Etapa 6C.0 - Entrada ciudadana simulada
+
+La ruta Build Week agrega una capa visual de activacion anterior a las consolas y modulos tecnicos. La capa usa un
+estado transitorio en memoria: condicion seleccionada, permisos simulados, sesion simulada y una bitacora enlazada por
+referencias de demostracion. No consume APIs de dispositivos, no almacena incidencias y no reemplaza los modelos de
+datos ni la bitacora institucional existentes.
+
+El flujo visible es: ciudadano -> consola maestra -> organismo competente -> operador de campo -> acta y expediente
+-> cierre ciudadano. El proposito es hacer comprensible el recorrido del contexto sin afirmar despacho o integracion
+real.
+
+La localizacion de la capa ciudadana se resuelve en `citizen-activation.js` para `es-AR` y `en-US`. La region
+operativa solo cambia etiquetas de demostracion, no capacidades ni conexiones institucionales.
+
 ## Etapa 3
 
 `PIPO AI Incident Assistant` queda desacoplado de la interfaz:

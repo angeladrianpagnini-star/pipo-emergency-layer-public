@@ -11,6 +11,7 @@ const testFiles = [
   "procedure-act.test.js",
   "citizen-closure.test.js",
   "evidence-vault.test.js",
+  "citizen-activation.test.js",
   path.join("server", "secure-backend.test.js"),
 ];
 const requiredDocumentation = [
@@ -25,6 +26,8 @@ const requiredDocumentation = [
   "GPT_5_6_BUILD_CONTRIBUTION.md",
   "BUILD_WEEK_FINAL_REPORT.md",
   "RELEASE_CHECKLIST.md",
+  "CITIZEN_ACTIVATION_WORKFLOW.md",
+  "LOCALIZATION_AND_REGION.md",
 ];
 
 function run(command, args, options = {}) {

@@ -37,6 +37,16 @@ ficticios y respuesta estructurada. La salida se valida antes de llegar a la int
 - modificar evidencia;
 - ocultar recomendaciones rechazadas.
 
+## Activacion ciudadana simulada - Etapa 6C.0
+
+La nueva entrada ciudadana no cambia estos limites. La IA no abre el punto PIPO, no selecciona una condicion, no
+habilita permisos, no inicia audio, video o ubicacion, y no finaliza la sesion. La persona inicia de forma expresa una
+alerta simulada y elige en forma individual que informacion ficticia comparte en esa demostracion.
+
+La pantalla representa medios y ubicacion abstractos. No usa `getUserMedia`, APIs de geolocalizacion, camara,
+microfono, rastreo ni datos de dispositivos. Las decisiones de prioridad, derivacion y cierre siguen bajo control
+humano y no se ejecuta ningun despacho real.
+
 El backend tampoco puede ejecutar acciones operativas. No tiene funciones para llamar organismos,
 activar sensores, consultar cuentas, rastrear dispositivos, abrir camara, abrir microfono, emitir ordenes
 ni cerrar reportes.
