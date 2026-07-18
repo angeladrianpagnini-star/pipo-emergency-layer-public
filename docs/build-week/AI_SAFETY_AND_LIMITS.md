@@ -147,6 +147,35 @@ La IA no puede:
 El sistema permite continuar sin IA. La completitud, la consistencia, la supervision y el cierre son
 controles documentales y humanos, no decisiones autonomas del modelo.
 
+## Cierre ciudadano
+
+En Etapa 5.1 la IA puede asistir la redaccion del resumen ciudadano:
+
+- mejorar lenguaje claro;
+- resumir estado y acciones relevantes;
+- detectar informacion restringida antes de entregar;
+- proponer preguntas frecuentes;
+- ordenar proximos pasos informativos.
+
+Aviso visible:
+
+`AI-assisted citizen summary - institutionally reviewed.`
+
+La IA no puede:
+
+- decidir que evidencia se entrega;
+- revelar informacion judicial restringida;
+- definir derechos;
+- validar si una observacion formal es procedente;
+- evaluar si una actuacion fue correcta;
+- modificar el expediente maestro;
+- cerrar una observacion ciudadana;
+- ocultar informacion que deba ser revisada por autoridad competente.
+
+La opinion de servicio no puntua publicamente al operador y no modifica actas, expediente, sanciones ni
+cierre. La observacion formal es un tramite separado que conserva los registros previos y puede derivar en
+aclaracion, ampliacion, rectificacion o revision administrativa simulada.
+
 ## Backend experimental
 
 Configuracion:

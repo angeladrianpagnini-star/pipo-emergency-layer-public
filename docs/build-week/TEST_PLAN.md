@@ -16,10 +16,12 @@ node --check docs\build-week\ai-service.js
 node --check docs\build-week\incident-assistant.js
 node --check docs\build-week\field-workflow.js
 node --check docs\build-week\procedure-act.js
+node --check docs\build-week\citizen-closure.js
 node --check docs\build-week\app.js
 node docs\build-week\incident-assistant.test.js
 node docs\build-week\field-workflow.test.js
 node docs\build-week\procedure-act.test.js
+node docs\build-week\citizen-closure.test.js
 node docs\build-week\server\secure-backend.test.js
 git diff --check
 ```
@@ -63,6 +65,32 @@ Debe devolver vacio.
 - conserva varias actas independientes;
 - valida bitacora append-only.
 
+## Casos Etapa 5.1
+
+- cambia perspectiva entre ciudadano, campo, consola federada y consola maestra;
+- conserva ID, estado, cronologia, operadores, actas, evidencia simulada, observaciones y cierre;
+- muestra rol, permisos, informacion disponible y funciones restringidas;
+- reutiliza `field-workflow.js` para la vista de operador de campo;
+- limita la consola federada a incidentes, operadores, intervenciones y documentos propios;
+- permite a la consola maestra ver referencias en solo lectura y coordinar entrega;
+- impide representar a la consola maestra como autora de actas ajenas;
+- genera `CitizenClosureSummary`;
+- separa entrega automatica, entrega a pedido e informacion restringida;
+- explica cada exclusion con motivo generico;
+- genera proximos pasos con categorias normalizadas y aviso de variacion por autoridad competente;
+- prepara `CitizenIncidentPackage`;
+- muestra impresion, PDF por navegador y JSON depurado;
+- registra entrega, apertura y confirmacion de recibo;
+- procesa solicitud y descarga simulada de documento habilitado;
+- bloquea descarga de documento restringido;
+- registra opinion de servicio sin modificar expediente;
+- registra observacion formal como tramite separado;
+- diferencia opinion de servicio y observacion formal;
+- registra eventos de bitacora de cierre ciudadano;
+- prueba escenario A de accidente multidisciplinario;
+- prueba escenario B de dispositivo sustraido;
+- funciona con IA disponible y no disponible.
+
 ## Visual
 
 Probar en navegador:
@@ -71,4 +99,6 @@ Probar en navegador:
 - movil: paneles apilados y navegacion utilizable;
 - foco visible en botones, inputs, selects y textareas;
 - mensajes de bloqueo comprensibles;
-- vista de impresion disponible.
+- vista de impresion disponible;
+- selector multiperspectiva visible sin overflow;
+- `Citizen Closure` legible en pantalla movil.

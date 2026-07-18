@@ -18,7 +18,15 @@ Duracion objetivo: menos de tres minutos.
 12. Mostrar referencia de integridad de demostracion.
 13. Ir a `Closure`.
 14. Mostrar expediente maestro, supervision validada, exportacion JSON y cierre.
-15. Cerrar con el principio: las actuaciones individuales se integran sin ser sustituidas ni reescritas.
+15. Ir a `Perspectives`.
+16. Cambiar entre `Ciudadano`, `Operador de campo`, `Consola federada` y `Consola maestra`.
+17. Mostrar que el ID del incidente y el estado no se reinician.
+18. Tocar `Demo Etapa 5.1`.
+19. Ir a `Citizen Closure`.
+20. Mostrar resumen ciudadano, vista segura, proximos pasos, documentos habilitados, recibo, opinion y
+    observacion formal.
+21. Cerrar con el principio: las actuaciones individuales se integran sin ser sustituidas ni reescritas, y
+    la devolucion ciudadana se entrega minimizada y trazable.
 
 ## Frase corta
 
@@ -29,3 +37,6 @@ para reducir perdida de informacion y ordenar la respuesta.
 
 Todos los datos son ficticios. No hay sensores reales, camaras, microfonos, ubicacion real, claves en
 frontend ni conexion con sistemas de emergencia.
+
+El resumen ciudadano no es copia del expediente maestro. Excluye identidades protegidas, notas internas,
+operaciones reservadas, evidencia de terceros, comunicaciones internas e informacion judicial restringida.

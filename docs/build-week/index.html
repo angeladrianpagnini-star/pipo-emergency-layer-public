@@ -3,12 +3,12 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>PIPO Build Week - Etapa 5</title>
+    <title>PIPO Build Week - Etapa 5.1</title>
     <meta
       name="description"
-      content="Version separada de PIPO Emergency Layer para OpenAI Build Week. Etapa 5: acta digital de procedimiento, expediente maestro y cierre trazable."
+      content="Version separada de PIPO Emergency Layer para OpenAI Build Week. Etapa 5.1: simulacion multiperspectiva, cierre ciudadano y devolucion trazable."
     />
-    <link rel="stylesheet" href="styles.css?v=8" />
+    <link rel="stylesheet" href="styles.css?v=9" />
   </head>
   <body>
     <header class="hero">
@@ -28,6 +28,8 @@
     </header>
 
     <nav class="section-nav" aria-label="Navegacion Build Week">
+      <a href="#perspectives">Perspectives</a>
+      <a href="#citizen-closure">Citizen Closure</a>
       <a href="#incident-assistant">Incident Assistant</a>
       <a href="#master-console">Master Console</a>
       <a href="#field-operators">Field Operators</a>
@@ -84,6 +86,65 @@
           </select>
           <p id="scenarioSummary"></p>
         </div>
+      </section>
+
+      <section id="perspectives" class="panel perspective-panel">
+        <div class="section-title">
+          <h2>Simulacion multiperspectiva</h2>
+          <span>Etapa 5.1</span>
+        </div>
+        <p class="lead">
+          La misma alerta puede verse como ciudadano, operador de campo, consola federada o consola maestra.
+          El cambio de perspectiva no reinicia el incidente: conserva ID, estado, cronologia, actas, evidencia
+          simulada, derivaciones, observaciones y cierre.
+        </p>
+        <div class="perspective-controls" aria-label="Selector de perspectiva">
+          <div class="form-row">
+            <label for="perspectiveSelect">Perspectiva activa</label>
+            <select id="perspectiveSelect">
+              <option value="CITIZEN">Ciudadano</option>
+              <option value="FIELD_OPERATOR">Operador de campo</option>
+              <option value="FEDERATED_CONSOLE">Consola federada</option>
+              <option value="MASTER_CONSOLE">Consola maestra</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label for="perspectiveScenarioSelect">Escenario 5.1</label>
+            <select id="perspectiveScenarioSelect">
+              <option value="A_ACCIDENT">A - Accidente multidisciplinario</option>
+              <option value="B_STOLEN_DEVICE">B - Dispositivo sustraido</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label for="perspectiveConsoleSelect">Base operativa</label>
+            <select id="perspectiveConsoleSelect"></select>
+          </div>
+          <div class="form-row">
+            <label for="perspectiveFieldOperatorSelect">Movil de campo</label>
+            <select id="perspectiveFieldOperatorSelect"></select>
+          </div>
+        </div>
+        <div id="perspectiveHeader" class="perspective-header"></div>
+        <div id="perspectivePermissionCards" class="permission-grid"></div>
+        <div id="perspectiveWorkspace" class="perspective-workspace"></div>
+        <div class="action-row contextual-actions">
+          <button type="button" data-citizen-action="demo-5-1" data-perspective-target="MASTER_CONSOLE FEDERATED_CONSOLE">Demo Etapa 5.1</button>
+          <button type="button" data-citizen-action="generate-summary" data-perspective-target="MASTER_CONSOLE">Generar resumen ciudadano</button>
+          <button type="button" data-citizen-action="review-summary" data-perspective-target="MASTER_CONSOLE">Revision institucional</button>
+          <button type="button" data-citizen-action="package" data-perspective-target="MASTER_CONSOLE">Preparar paquete</button>
+          <button type="button" data-citizen-action="deliver" data-perspective-target="MASTER_CONSOLE">Entregar paquete</button>
+          <button type="button" data-citizen-action="toggle-ai" data-perspective-target="MASTER_CONSOLE">Alternar IA demo</button>
+          <button type="button" data-citizen-action="open" data-perspective-target="CITIZEN">Abrir entrega</button>
+          <button type="button" data-citizen-action="ack" data-perspective-target="CITIZEN">Confirmar recepcion</button>
+          <button type="button" data-citizen-action="request-access" data-perspective-target="CITIZEN">Solicitar documento</button>
+          <button type="button" data-citizen-action="download-doc" data-perspective-target="CITIZEN">Descargar habilitado</button>
+          <button type="button" data-citizen-action="feedback" data-perspective-target="CITIZEN">Enviar opinion</button>
+          <button type="button" data-citizen-action="observation" data-perspective-target="CITIZEN">Crear observacion formal</button>
+          <button type="button" data-citizen-action="followup-required" data-perspective-target="MASTER_CONSOLE">Marcar seguimiento</button>
+          <button type="button" data-citizen-action="followup-complete" data-perspective-target="MASTER_CONSOLE FEDERATED_CONSOLE">Completar seguimiento</button>
+          <button type="button" data-citizen-action="reset-demo" data-perspective-target="CITIZEN FIELD_OPERATOR FEDERATED_CONSOLE MASTER_CONSOLE">Reset demo data</button>
+        </div>
+        <div id="perspectiveMessage" class="access-result"></div>
       </section>
 
       <section id="incident-assistant" class="panel assistant-panel">
@@ -599,6 +660,89 @@
         <pre id="procedurePrintView" class="print-preview"></pre>
       </section>
 
+      <section id="citizen-closure" class="panel citizen-panel">
+        <div class="section-title">
+          <h2>Cierre ciudadano y devolucion trazable</h2>
+          <span>Citizen Incident Package</span>
+        </div>
+        <p class="lead">
+          El ciudadano recibe una version depurada: que se hizo, que organismos participaron, que documentos
+          estan habilitados, cuales son los proximos pasos y que datos quedan restringidos por resguardo.
+        </p>
+        <div class="citizen-layout">
+          <article>
+            <h3>Resumen ciudadano</h3>
+            <div id="citizenSummary" class="mini-record"></div>
+          </article>
+          <article>
+            <h3>Vista segura</h3>
+            <div id="citizenSafeView" class="mini-record"></div>
+          </article>
+          <article>
+            <h3>Proximos pasos</h3>
+            <ol id="citizenNextSteps" class="compact-list"></ol>
+          </article>
+          <article>
+            <h3>Documentos habilitados</h3>
+            <div class="form-row">
+              <label for="citizenDocumentSelect">Documento</label>
+              <select id="citizenDocumentSelect"></select>
+            </div>
+            <ol id="citizenDocs" class="compact-list"></ol>
+          </article>
+          <article>
+            <h3>Recibo de entrega</h3>
+            <div id="citizenReceipt" class="mini-record"></div>
+          </article>
+          <article>
+            <h3>Opinion de servicio</h3>
+            <p class="lead compact-lead">
+              Dato de calidad separado: no modifica actas, expediente, sanciones ni cierre.
+            </p>
+            <div class="feedback-grid">
+              <label>Rapidez<select id="feedbackRapidity"></select></label>
+              <label>Claridad<select id="feedbackClarity"></select></label>
+              <label>Trato<select id="feedbackTreatment"></select></label>
+              <label>Coordinacion<select id="feedbackCoordination"></select></label>
+              <label>Proteccion<select id="feedbackProtection"></select></label>
+              <label>Proximos pasos<select id="feedbackNextSteps"></select></label>
+              <label>Satisfaccion<select id="feedbackOverall"></select></label>
+            </div>
+            <textarea id="feedbackComment" placeholder="Comentario opcional simulado"></textarea>
+            <div id="citizenFeedback" class="mini-record"></div>
+          </article>
+          <article>
+            <h3>Observacion formal</h3>
+            <p class="lead compact-lead">
+              Tramite separado: puede pedir aclaracion, ampliacion o rectificacion, pero no altera registros previos.
+            </p>
+            <div class="form-row">
+              <label for="observationCategory">Categoria</label>
+              <select id="observationCategory">
+                <option value="SOLICITUD_DE_ACLARACION">Solicitud de aclaracion</option>
+                <option value="RECTIFICACION_DATOS">Rectificacion de datos</option>
+                <option value="AMPLIACION_INFORMACION">Ampliacion de informacion</option>
+                <option value="TRATO_O_PROCEDIMIENTO">Trato o procedimiento</option>
+              </select>
+            </div>
+            <textarea id="observationDescription">Solicito aclarar los pasos posteriores y documentos habilitados.</textarea>
+            <div class="action-row small-actions">
+              <button type="button" data-citizen-action="assign-observation" data-perspective-target="MASTER_CONSOLE FEDERATED_CONSOLE">Asignar</button>
+              <button type="button" data-citizen-action="review-observation" data-perspective-target="MASTER_CONSOLE FEDERATED_CONSOLE">Revisar</button>
+              <button type="button" data-citizen-action="clarify-observation" data-perspective-target="MASTER_CONSOLE FEDERATED_CONSOLE">Pedir aclaracion</button>
+              <button type="button" data-citizen-action="respond-observation" data-perspective-target="MASTER_CONSOLE FEDERATED_CONSOLE">Responder</button>
+            </div>
+            <div id="citizenObservation" class="mini-record"></div>
+          </article>
+          <article>
+            <h3>Impresion / PDF navegador</h3>
+            <pre id="citizenPrintView" class="print-preview"></pre>
+          </article>
+        </div>
+        <h3>Exportacion JSON depurada</h3>
+        <pre id="citizenJsonExport" class="print-preview"></pre>
+      </section>
+
       <section id="master-console" class="panel federated-panel">
         <div class="section-title">
           <h2>FederatedOperationalConsole</h2>
@@ -773,6 +917,7 @@
     <script src="incident-assistant.js?v=5"></script>
     <script src="field-workflow.js?v=1"></script>
     <script src="procedure-act.js?v=1"></script>
-    <script src="app.js?v=8"></script>
+    <script src="citizen-closure.js?v=1"></script>
+    <script src="app.js?v=9"></script>
   </body>
 </html>

@@ -525,6 +525,146 @@ h3 {
   max-height: 260px;
 }
 
+.perspective-panel,
+.citizen-panel {
+  grid-column: 1 / -1;
+}
+
+.perspective-controls {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.perspective-header {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) minmax(180px, 260px);
+  gap: 12px;
+  align-items: stretch;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fbf6eb;
+  padding: 14px;
+}
+
+.perspective-icon {
+  width: 58px;
+  min-height: 58px;
+  border-radius: 12px;
+  background: var(--teal-dark);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-weight: 950;
+}
+
+.perspective-header h3 {
+  margin-bottom: 6px;
+  font-size: 1.5rem;
+}
+
+.perspective-header p {
+  margin: 0 0 6px;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.state-preserved {
+  display: grid;
+  gap: 6px;
+  align-content: center;
+  border-left: 4px solid var(--teal);
+  padding-left: 12px;
+}
+
+.state-preserved span {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.permission-grid,
+.perspective-workspace,
+.citizen-layout {
+  margin-top: 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.permission-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.perspective-workspace {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.citizen-layout {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.permission-grid article,
+.perspective-workspace article,
+.citizen-layout article {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fbf6eb;
+  padding: 14px;
+}
+
+.chip-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip-grid span {
+  border-radius: 999px;
+  background: #e7f2ef;
+  color: var(--teal-dark);
+  padding: 6px 8px;
+  font-size: 0.73rem;
+  font-weight: 900;
+}
+
+.warning-chips span {
+  background: #fff7e5;
+  color: #6c4708;
+}
+
+.contextual-actions button[hidden] {
+  display: none;
+}
+
+.compact-lead {
+  margin: 0 0 10px;
+  font-size: 0.88rem;
+}
+
+.feedback-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.feedback-grid label {
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.small-actions {
+  margin-top: 10px;
+}
+
+.small-actions button {
+  min-height: 38px;
+  font-size: 0.82rem;
+}
+
 .assistant-backend-panel {
   margin-top: 14px;
   display: grid;
@@ -1113,8 +1253,13 @@ pre {
   .procedure-grid,
   .procedure-grid.two-col,
   .assistant-form,
-  .assistant-result-grid,
-  .human-review-grid,
+    .assistant-result-grid,
+    .perspective-controls,
+    .perspective-header,
+    .permission-grid,
+    .perspective-workspace,
+    .citizen-layout,
+    .human-review-grid,
   .review-actions,
   .console-checkboxes,
   .console-grid,

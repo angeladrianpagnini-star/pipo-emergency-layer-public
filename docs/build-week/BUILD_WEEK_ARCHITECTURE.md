@@ -321,3 +321,75 @@ deterministico cuando no lo esta.
 
 No afirma firma digital certificada, cadena de custodia judicial completa, inmutabilidad absoluta,
 certificacion estatal ni prueba judicial automatica.
+
+## Etapa 5.1 - Multiperspectiva y devolucion ciudadana
+
+`citizen-closure.js` agrega una capa de presentacion y entrega ciudadana sobre el expediente ya generado.
+No reemplaza `procedure-act.js`: consume el expediente, actas, cronologia y bitacora para construir una
+vista depurada.
+
+### Perspectivas
+
+- `CITIZEN`: ve estado general, organismos participantes, documentos habilitados, proximos pasos y canales
+  de consulta. No ve identidades protegidas, notas internas, operaciones reservadas, evidencia de terceros,
+  comunicaciones internas ni informacion `RESTRICTED_JUDICIAL`.
+- `FIELD_OPERATOR`: reutiliza `field-workflow.js`; ve su asignacion, minimo necesario, acontecimientos,
+  evidencia y actas propias. No firma por terceros ni edita actas ajenas.
+- `FEDERATED_CONSOLE`: ve incidentes asignados, operadores propios, evidencia compartida por finalidad,
+  documentos propios y estado de participacion.
+- `MASTER_CONSOLE`: puede mapear el incidente completo, ver referencias en solo lectura, pedir aclaraciones,
+  coordinar cierre y generar el paquete ciudadano. No borra eventos, no altera evidencia y no convierte
+  divergencias en un relato unico.
+
+### Modelos
+
+La etapa agrega:
+
+- `DemoPerspectiveSession`;
+- `CitizenClosureSummary`;
+- `CitizenIncidentPackage`;
+- `CitizenDocumentAccess`;
+- `CitizenServiceFeedback`;
+- `CitizenFormalObservation`;
+- `CitizenFollowUpAction`;
+- `CitizenDeliveryReceipt`.
+
+Todos comparten `id`, `incidentId`, `createdAt`, `createdBy`, `status`, `version`, `classification` e
+`integrityReference`.
+
+### Vista segura
+
+`buildCitizenSafeView(masterRecord, accessContext)` aplica minimizacion y devuelve:
+
+- `deliverableAutomatically`;
+- `deliverableOnRequest`;
+- `restricted`;
+- `visibleTimeline`;
+- `minimizationNotice`.
+
+Cada exclusion informa un motivo generico. El motivo evita exponer datos de terceros, tacticas operativas,
+medidas judiciales o comunicaciones internas.
+
+### Cierre ciudadano
+
+`CitizenClosureSummary` contiene:
+
+- ID de incidente;
+- fecha de inicio y cierre;
+- descripcion inicial depurada;
+- estado final;
+- organismos participantes;
+- acciones relevantes;
+- derivaciones;
+- referencias simuladas de acta, denuncia o constancia;
+- documentos habilitados;
+- medidas pendientes;
+- organismo responsable;
+- proximos pasos;
+- recomendaciones de cuidado;
+- canales de consulta;
+- referencia de integridad.
+
+El paquete ciudadano incluye impresion, guardado como PDF desde navegador y JSON depurado. La opinion de
+servicio es dato de calidad separado. La observacion formal tiene circuito propio y no altera el expediente
+por si misma.

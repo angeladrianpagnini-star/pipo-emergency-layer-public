@@ -258,6 +258,42 @@ Principio obligatorio:
 La IA solo genera un borrador trazable. No finaliza, no firma, no bloquea, no borra y no reemplaza el
 criterio humano. El sistema tambien funciona sin IA.
 
+## Etapa 5.1 - Simulacion multiperspectiva y cierre ciudadano
+
+Se agrega `citizen-closure.js` para separar la devolucion al ciudadano del expediente interno.
+
+La demo incorpora cuatro perspectivas:
+
+- `CITIZEN`: consulta estado, recibe resumen depurado, descarga documentos habilitados, confirma recepcion,
+  envia opinion de servicio y puede iniciar observacion formal;
+- `FIELD_OPERATOR`: reutiliza el flujo de `field-workflow.js` y muestra asignacion, acontecimientos,
+  evidencia y actas propias;
+- `FEDERATED_CONSOLE`: ve incidentes asignados, operadores propios, intervenciones propias, evidencia
+  compartida y participacion de su base;
+- `MASTER_CONSOLE`: integra el mapa completo del incidente, puede pedir aclaraciones, coordinar cierre y
+  preparar el paquete ciudadano, pero no reescribe actas ajenas ni altera evidencia.
+
+Nuevos artefactos:
+
+- `DemoPerspectiveSession`;
+- `CitizenClosureSummary`;
+- `CitizenIncidentPackage`;
+- `CitizenDocumentAccess`;
+- `CitizenServiceFeedback`;
+- `CitizenFormalObservation`;
+- `CitizenFollowUpAction`;
+- `CitizenDeliveryReceipt`.
+
+El resumen ciudadano usa lenguaje claro, minimizacion y exclusiones genericas. No es copia del expediente
+maestro. La vista segura se construye con `buildCitizenSafeView(masterRecord, accessContext)` y separa:
+
+- entrega automatica;
+- entrega a pedido;
+- informacion restringida con motivo generico.
+
+La opinion de servicio no modifica actas, expediente, sanciones ni cierre. La observacion formal es un
+tramite separado que puede originar aclaracion, ampliacion, rectificacion o revision administrativa simulada.
+
 ## Principios de seguridad
 
 - Datos simulados.
@@ -285,16 +321,21 @@ criterio humano. El sistema tambien funciona sin IA.
 - `field-workflow.test.js`: pruebas de estados, eventos, evidencia, apoyo, bloqueo de actas y aclaraciones.
 - `procedure-act.js`: Acta Digital de Procedimiento, completitud, consistencia, expediente, integridad y cierre.
 - `procedure-act.test.js`: pruebas de Etapa 5.
-- `app.js`: render de modelos, asistente, campo, acta, expediente, cierre y snapshot JSON.
+- `citizen-closure.js`: perspectivas, resumen ciudadano, paquete, recibo, opinion, observacion y seguimiento.
+- `citizen-closure.test.js`: pruebas de Etapa 5.1.
+- `app.js`: render de modelos, asistente, campo, acta, expediente, cierre, perspectiva ciudadana y snapshot JSON.
 - `server/`: backend seguro experimental, validadores, cliente proveedor, auditoria y pruebas.
 - `FIELD_OPERATOR_WORKFLOW.md`: documentacion del flujo de campo.
 - `PROCEDURE_ACT_WORKFLOW.md`: documentacion del Acta Digital de Procedimiento.
 - `MASTER_INCIDENT_RECORD.md`: documentacion del expediente maestro.
+- `MULTI_PERSPECTIVE_DEMO.md`: guia de vistas ciudadano, campo, consola federada y consola maestra.
+- `CITIZEN_CLOSURE_WORKFLOW.md`: flujo de cierre ciudadano y entrega trazable.
+- `CITIZEN_DATA_ACCESS_POLICY.md`: politica de minimizacion y acceso ciudadano.
 - `DEMO_SCRIPT.md`: recorrido publico de menos de tres minutos.
 - `TEST_PLAN.md`: plan de pruebas de Build Week.
 - `GUARDIAN_DIGITAL_DEPLOYMENT_PLAN.md`: hoja de ruta futura, sin implementacion ni despliegue.
 
 ## Siguiente etapa
 
-Etapa 6 recomendada: preparacion de evaluacion externa, matriz legal-operativa y paquete de presentacion
-institucional sin publicar sobre v36.
+Etapa 6 recomendada: matriz legal-operativa, gobernanza independiente y paquete de presentacion institucional
+para evaluacion externa, sin publicar sobre v36.

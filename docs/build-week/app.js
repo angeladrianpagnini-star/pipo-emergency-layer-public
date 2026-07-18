@@ -95,6 +95,36 @@ const {
   runProcedureDemoSequence,
 } = window.PIPOProcedureAct;
 
+const {
+  PERSPECTIVES,
+  PERSPECTIVE_DETAILS,
+  NEXT_STEP_CATEGORIES,
+  CITIZEN_SCENARIOS,
+  createCitizenClosureState,
+  changePerspective,
+  setCitizenAiAvailability,
+  getPerspectiveView,
+  buildCitizenSafeView,
+  generateCitizenNextSteps,
+  generateCitizenClosureSummary,
+  reviewCitizenClosureSummary,
+  createCitizenIncidentPackage,
+  deliverCitizenPackage,
+  openCitizenPackage,
+  confirmCitizenReceipt,
+  requestCitizenDocumentAccess,
+  downloadCitizenDocument,
+  submitCitizenServiceFeedback,
+  createCitizenFormalObservation,
+  assignCitizenObservation,
+  reviewCitizenObservation,
+  requestCitizenClarification,
+  respondCitizenObservation,
+  markCitizenFollowUpRequired,
+  completeCitizenFollowUp,
+  runCitizenClosureDemoSequence,
+} = window.PIPOCitizenClosure;
+
 const stateByModel = {
   incident: BUILD_WEEK_STATE.incident,
   event: BUILD_WEEK_STATE.events[0],
@@ -120,6 +150,14 @@ const stateByModel = {
   deviceRecoveryProtocol: BUILD_WEEK_STATE.deviceRecoveryProtocols[0],
   cybercrimeReport: BUILD_WEEK_STATE.cybercrimeReports[0],
   policeStationReceptionRecord: BUILD_WEEK_STATE.policeStationReceptionRecords[0],
+  demoPerspectiveSession: BUILD_WEEK_STATE.demoPerspectiveSessions[0],
+  citizenClosureSummary: BUILD_WEEK_STATE.citizenClosureSummaries[0],
+  citizenIncidentPackage: BUILD_WEEK_STATE.citizenIncidentPackages[0],
+  citizenDocumentAccess: BUILD_WEEK_STATE.citizenDocumentAccesses[0],
+  citizenServiceFeedback: BUILD_WEEK_STATE.citizenServiceFeedback[0],
+  citizenFormalObservation: BUILD_WEEK_STATE.citizenFormalObservations[0],
+  citizenFollowUpAction: BUILD_WEEK_STATE.citizenFollowUpActions[0],
+  citizenDeliveryReceipt: BUILD_WEEK_STATE.citizenDeliveryReceipts[0],
   ledgerEvent: getLedgerEvents()[0],
 };
 
@@ -221,6 +259,34 @@ const els = {
   procedureClosure: document.querySelector("#procedureClosure"),
   procedureExport: document.querySelector("#procedureExport"),
   procedurePrintView: document.querySelector("#procedurePrintView"),
+  perspectiveSelect: document.querySelector("#perspectiveSelect"),
+  perspectiveScenarioSelect: document.querySelector("#perspectiveScenarioSelect"),
+  perspectiveConsoleSelect: document.querySelector("#perspectiveConsoleSelect"),
+  perspectiveFieldOperatorSelect: document.querySelector("#perspectiveFieldOperatorSelect"),
+  perspectiveHeader: document.querySelector("#perspectiveHeader"),
+  perspectivePermissionCards: document.querySelector("#perspectivePermissionCards"),
+  perspectiveWorkspace: document.querySelector("#perspectiveWorkspace"),
+  perspectiveMessage: document.querySelector("#perspectiveMessage"),
+  citizenSummary: document.querySelector("#citizenSummary"),
+  citizenSafeView: document.querySelector("#citizenSafeView"),
+  citizenNextSteps: document.querySelector("#citizenNextSteps"),
+  citizenDocumentSelect: document.querySelector("#citizenDocumentSelect"),
+  citizenDocs: document.querySelector("#citizenDocs"),
+  citizenReceipt: document.querySelector("#citizenReceipt"),
+  citizenFeedback: document.querySelector("#citizenFeedback"),
+  citizenObservation: document.querySelector("#citizenObservation"),
+  citizenPrintView: document.querySelector("#citizenPrintView"),
+  citizenJsonExport: document.querySelector("#citizenJsonExport"),
+  feedbackRapidity: document.querySelector("#feedbackRapidity"),
+  feedbackClarity: document.querySelector("#feedbackClarity"),
+  feedbackTreatment: document.querySelector("#feedbackTreatment"),
+  feedbackCoordination: document.querySelector("#feedbackCoordination"),
+  feedbackProtection: document.querySelector("#feedbackProtection"),
+  feedbackNextSteps: document.querySelector("#feedbackNextSteps"),
+  feedbackOverall: document.querySelector("#feedbackOverall"),
+  feedbackComment: document.querySelector("#feedbackComment"),
+  observationCategory: document.querySelector("#observationCategory"),
+  observationDescription: document.querySelector("#observationDescription"),
 };
 
 let selectedModel = MODEL_DEFINITIONS[0].key;
@@ -231,6 +297,8 @@ let selectedFieldOperatorId = fieldState.selectedOperatorId;
 let fieldMessage = "Esperando accion del operador.";
 const procedureState = createProcedureActState(BUILD_WEEK_STATE, fieldState, getLedgerEvents());
 let procedureMessage = "Acta Digital de Procedimiento pendiente de generar.";
+let citizenState = createCitizenClosureState(BUILD_WEEK_STATE, fieldState, procedureState, getLedgerEvents());
+let citizenMessage = "Simulacion multiperspectiva pendiente de ejecutar.";
 let assistantState = {
   suggestion: BUILD_WEEK_STATE.aiSuggestion,
   humanDraft: createHumanDecisionDraft(BUILD_WEEK_STATE.aiSuggestion, getOperatorById("OP-MASTER-01")),
@@ -648,6 +716,60 @@ function syncProcedureStateToBuildWeek() {
     };
     stateByModel.closure = BUILD_WEEK_STATE.closure;
   }
+}
+
+function citizenContext() {
+  return {
+    buildWeekState: BUILD_WEEK_STATE,
+    fieldState,
+    procedureState,
+    ledgerEvents: getLedgerEvents(),
+    scenarioId: citizenState.scenarioId,
+  };
+}
+
+function appendCitizenLedger(result) {
+  if (!result?.ok || !result.ledger) return null;
+  return appendLedgerEvent({
+    type: result.ledger.type,
+    operatorId: result.ledger.operatorId,
+    consoleId: result.ledger.consoleId,
+    sessionId: result.ledger.sessionId,
+    payload: result.ledger.payload,
+    classification: result.ledger.classification,
+  });
+}
+
+function setCitizenMessage(message, isError = false) {
+  citizenMessage = message;
+  if (els.perspectiveMessage) {
+    els.perspectiveMessage.className = `access-result ${isError ? "denied" : "allowed"}`;
+    els.perspectiveMessage.innerHTML = `
+      <strong>${isError ? "Accion bloqueada" : "Etapa 5.1"}</strong>
+      <span>${message}</span>
+    `;
+  }
+}
+
+function syncCitizenStateToBuildWeek() {
+  citizenState.incidentId = BUILD_WEEK_STATE.incident.id;
+  citizenState.selectedFieldOperatorId = selectedFieldOperatorId;
+  BUILD_WEEK_STATE.demoPerspectiveSessions = citizenState.perspectiveSessions;
+  BUILD_WEEK_STATE.citizenClosureSummaries = citizenState.summaries;
+  BUILD_WEEK_STATE.citizenIncidentPackages = citizenState.packages;
+  BUILD_WEEK_STATE.citizenDocumentAccesses = citizenState.documentAccesses;
+  BUILD_WEEK_STATE.citizenServiceFeedback = citizenState.feedback;
+  BUILD_WEEK_STATE.citizenFormalObservations = citizenState.observations;
+  BUILD_WEEK_STATE.citizenFollowUpActions = citizenState.followUps;
+  BUILD_WEEK_STATE.citizenDeliveryReceipts = citizenState.receipts;
+  stateByModel.demoPerspectiveSession = citizenState.perspectiveSessions[citizenState.perspectiveSessions.length - 1];
+  stateByModel.citizenClosureSummary = citizenState.summaries[citizenState.summaries.length - 1];
+  stateByModel.citizenIncidentPackage = citizenState.packages[citizenState.packages.length - 1];
+  stateByModel.citizenDocumentAccess = citizenState.documentAccesses[citizenState.documentAccesses.length - 1];
+  stateByModel.citizenServiceFeedback = citizenState.feedback[citizenState.feedback.length - 1];
+  stateByModel.citizenFormalObservation = citizenState.observations[citizenState.observations.length - 1];
+  stateByModel.citizenFollowUpAction = citizenState.followUps[citizenState.followUps.length - 1];
+  stateByModel.citizenDeliveryReceipt = citizenState.receipts[citizenState.receipts.length - 1];
 }
 
 function selectedFieldOperator() {
@@ -1230,6 +1352,335 @@ function renderProcedureAct() {
   }
 }
 
+function ensureSelectOptions(select, options, selectedValue) {
+  if (!select) return;
+  const signature = options.map((option) => `${option.value}:${option.label}`).join("|");
+  if (select.dataset.signature !== signature) {
+    select.innerHTML = "";
+    options.forEach((option) => {
+      const item = document.createElement("option");
+      item.value = option.value;
+      item.textContent = option.label;
+      select.appendChild(item);
+    });
+    select.dataset.signature = signature;
+  }
+  if (selectedValue && options.some((option) => option.value === selectedValue)) {
+    select.value = selectedValue;
+  }
+}
+
+function renderPlainChipList(items) {
+  return (items && items.length)
+    ? items.map((item) => `<span>${item}</span>`).join("")
+    : "<span>Sin datos disponibles</span>";
+}
+
+function initializeCitizenControls() {
+  ensureSelectOptions(
+    els.perspectiveScenarioSelect,
+    Object.values(CITIZEN_SCENARIOS).map((scenario) => ({ value: scenario.id, label: scenario.label })),
+    citizenState.scenarioId,
+  );
+
+  const consoleOptions = [
+    { value: "CON-CITIZEN", label: "Vista ciudadana" },
+    ...BUILD_WEEK_STATE.operationalConsoles.map((consoleConfig) => ({
+      value: consoleConfig.id,
+      label: consoleConfig.name,
+    })),
+  ];
+  ensureSelectOptions(els.perspectiveConsoleSelect, consoleOptions, citizenState.selectedConsoleId);
+
+  ensureSelectOptions(
+    els.perspectiveFieldOperatorSelect,
+    fieldState.operators.map((operator) => ({
+      value: operator.operatorId,
+      label: `${operator.fictitiousName} / ${operator.organization}`,
+    })),
+    selectedFieldOperatorId,
+  );
+
+  [
+    els.feedbackRapidity,
+    els.feedbackClarity,
+    els.feedbackTreatment,
+    els.feedbackCoordination,
+    els.feedbackProtection,
+    els.feedbackNextSteps,
+    els.feedbackOverall,
+  ].forEach((select) => {
+    ensureSelectOptions(select, [5, 4, 3, 2, 1].map((value) => ({ value: String(value), label: String(value) })), "4");
+  });
+}
+
+function renderPerspectiveHeader(view) {
+  const detail = view.detail;
+  els.perspectiveHeader.innerHTML = `
+    <div class="perspective-icon" aria-hidden="true">${detail.icon}</div>
+    <div>
+      <p class="eyebrow">Perspectiva activa</p>
+      <h3>${detail.name}</h3>
+      <p>${detail.role}</p>
+      <p><strong>Incidente:</strong> ${view.incidentId}</p>
+    </div>
+    <div class="state-preserved">
+      <strong>Estado preservado</strong>
+      <span>Sesiones ${citizenState.perspectiveSessions.length}</span>
+      <span>Resumenes ${citizenState.summaries.length}</span>
+      <span>Paquetes ${citizenState.packages.length}</span>
+    </div>
+  `;
+}
+
+function renderPermissionCards(view) {
+  const detail = view.detail;
+  els.perspectivePermissionCards.innerHTML = `
+    <article>
+      <h3>Permisos</h3>
+      <div class="chip-grid">${renderPlainChipList(detail.permissions)}</div>
+    </article>
+    <article>
+      <h3>Informacion disponible</h3>
+      <div class="chip-grid">${renderPlainChipList(detail.availableInformation)}</div>
+    </article>
+    <article>
+      <h3>Funciones restringidas</h3>
+      <div class="chip-grid warning-chips">${renderPlainChipList(detail.restrictedFunctions)}</div>
+    </article>
+  `;
+}
+
+function workspaceArticle(title, body) {
+  const article = document.createElement("article");
+  article.innerHTML = `<h3>${title}</h3>${body}`;
+  return article;
+}
+
+function renderCitizenPerspectiveWorkspace(view) {
+  const safeView = view.citizenSafeView;
+  els.perspectiveWorkspace.appendChild(workspaceArticle(
+    "Entrega automatica",
+    `<ul class="compact-list">${safeView.deliverableAutomatically.map((item) => `<li><strong>${item.label}:</strong> ${item.value}</li>`).join("")}</ul>`,
+  ));
+  els.perspectiveWorkspace.appendChild(workspaceArticle(
+    "A pedido del ciudadano",
+    `<ul class="compact-list">${safeView.deliverableOnRequest.map((item) => `<li><strong>${item.label}</strong><br>${item.source}</li>`).join("")}</ul>`,
+  ));
+  els.perspectiveWorkspace.appendChild(workspaceArticle(
+    "No visible en esta vista",
+    `<ul class="compact-list">${safeView.restricted.slice(0, 6).map((item) => `<li><strong>${item.label}:</strong> ${item.genericReason}</li>`).join("")}</ul>`,
+  ));
+}
+
+function renderFieldPerspectiveWorkspace(view) {
+  const field = view.field;
+  els.perspectiveWorkspace.appendChild(workspaceArticle(
+    "Movil receptor",
+    `<div class="mini-record">
+      <p><strong>Operador:</strong> ${field.operator?.fictitiousName || "Sin operador"}</p>
+      <p><strong>Organismo:</strong> ${field.operator?.organization || "-"}</p>
+      <p><strong>Estado:</strong> ${field.assignment?.interventionStatus || "Sin asignacion"}</p>
+      <p><strong>Canal operativo:</strong> disponible durante toda la intervencion</p>
+    </div>`,
+  ));
+  els.perspectiveWorkspace.appendChild(workspaceArticle(
+    "Registros propios",
+    `<div class="mini-record">
+      <p><strong>Acontecimientos:</strong> ${field.ownEvents.length}</p>
+      <p><strong>Evidencia simulada:</strong> ${field.ownEvidence.length}</p>
+      <p><strong>Actas propias:</strong> ${field.ownActs.length}</p>
+    </div>`,
+  ));
+  els.perspectiveWorkspace.appendChild(workspaceArticle(
+    "Limites",
+    `<ul class="compact-list">${field.denied.map((item) => `<li>${item}</li>`).join("")}</ul>`,
+  ));
+}
+
+function renderFederatedPerspectiveWorkspace(view) {
+  const federated = view.federated;
+  els.perspectiveWorkspace.appendChild(workspaceArticle(
+    federated.consoleConfig?.name || "Consola sin asignar",
+    `<div class="mini-record">
+      <p><strong>Participacion:</strong> ${federated.participationStatus}</p>
+      <p><strong>Incidentes asignados:</strong> ${formatList(federated.assignedIncidents)}</p>
+      <p><strong>Operadores propios:</strong> ${federated.ownOperators.length}</p>
+      <p><strong>Documentos propios:</strong> ${federated.ownDocuments.length}</p>
+    </div>`,
+  ));
+  els.perspectiveWorkspace.appendChild(workspaceArticle(
+    "Acciones permitidas",
+    `<div class="chip-grid">${renderPlainChipList(federated.permittedInfo)}</div>`,
+  ));
+  els.perspectiveWorkspace.appendChild(workspaceArticle(
+    "Denegaciones por finalidad",
+    `<ul class="compact-list">${federated.accessDenied.map((item) => `<li>${item}</li>`).join("")}</ul>`,
+  ));
+}
+
+function renderMasterPerspectiveWorkspace(view) {
+  const master = view.master;
+  els.perspectiveWorkspace.appendChild(workspaceArticle(
+    "Mapa del incidente",
+    `<div class="mini-record">
+      <p><strong>ID:</strong> ${master.incidentMap.incidentId}</p>
+      <p><strong>Organismos:</strong> ${formatList(master.incidentMap.organizations)}</p>
+      <p><strong>Operadores:</strong> ${master.incidentMap.operators}</p>
+      <p><strong>Eventos en cronologia:</strong> ${master.incidentMap.chronologyEvents}</p>
+    </div>`,
+  ));
+  els.perspectiveWorkspace.appendChild(workspaceArticle(
+    "Actas y aclaraciones",
+    `<div class="mini-record">
+      <p><strong>Versiones de acta:</strong> ${master.actsReadOnly.length}</p>
+      <p><strong>Inconsistencias:</strong> ${master.inconsistencies.length}</p>
+      <p><strong>Aclaraciones:</strong> ${master.clarificationRequests.length}</p>
+      <p><strong>Cierre:</strong> ${master.closure?.status || master.closure?.result || "Pendiente"}</p>
+    </div>`,
+  ));
+  els.perspectiveWorkspace.appendChild(workspaceArticle(
+    "No permitido a la consola maestra",
+    `<ul class="compact-list">${master.prohibitedActions.map((item) => `<li>${item}</li>`).join("")}</ul>`,
+  ));
+}
+
+function renderPerspective() {
+  if (!els.perspectiveSelect) return;
+  initializeCitizenControls();
+  els.perspectiveSelect.value = citizenState.selectedPerspective;
+  els.perspectiveScenarioSelect.value = citizenState.scenarioId;
+  els.perspectiveConsoleSelect.value = citizenState.selectedConsoleId;
+  els.perspectiveFieldOperatorSelect.value = selectedFieldOperatorId;
+  const view = getPerspectiveView(citizenState, citizenContext());
+  renderPerspectiveHeader(view);
+  renderPermissionCards(view);
+  els.perspectiveWorkspace.innerHTML = "";
+  if (citizenState.selectedPerspective === PERSPECTIVES.CITIZEN) renderCitizenPerspectiveWorkspace(view);
+  if (citizenState.selectedPerspective === PERSPECTIVES.FIELD_OPERATOR) renderFieldPerspectiveWorkspace(view);
+  if (citizenState.selectedPerspective === PERSPECTIVES.FEDERATED_CONSOLE) renderFederatedPerspectiveWorkspace(view);
+  if (citizenState.selectedPerspective === PERSPECTIVES.MASTER_CONSOLE) renderMasterPerspectiveWorkspace(view);
+  document.querySelectorAll("[data-perspective-target]").forEach((button) => {
+    const targets = button.dataset.perspectiveTarget.split(" ");
+    button.hidden = !targets.includes(citizenState.selectedPerspective);
+  });
+  if (!els.perspectiveMessage.textContent) setCitizenMessage(citizenMessage);
+}
+
+function renderCitizenSafeDetail(summary) {
+  const safeView = summary?.safeView || buildCitizenSafeView(
+    procedureState.masterIncidentRecord || BUILD_WEEK_STATE.masterIncidentRecord,
+    { ...citizenContext(), state: citizenState, scenarioId: citizenState.scenarioId },
+  );
+  els.citizenSafeView.innerHTML = "";
+  const delivered = document.createElement("p");
+  delivered.innerHTML = `<strong>Entrega automatica:</strong> ${safeView.deliverableAutomatically.map((item) => item.label).join(", ")}`;
+  els.citizenSafeView.appendChild(delivered);
+  const requestable = document.createElement("p");
+  requestable.innerHTML = `<strong>A pedido:</strong> ${safeView.deliverableOnRequest.map((item) => item.label).join(", ") || "Sin documentos habilitados"}`;
+  els.citizenSafeView.appendChild(requestable);
+  const restricted = document.createElement("ol");
+  restricted.className = "compact-list";
+  safeView.restricted.slice(0, 8).forEach((item) => {
+    const line = document.createElement("li");
+    line.innerHTML = `<strong>${item.label}:</strong> ${item.genericReason}`;
+    restricted.appendChild(line);
+  });
+  els.citizenSafeView.appendChild(restricted);
+}
+
+function renderCitizenDocumentOptions(summary) {
+  const scenario = CITIZEN_SCENARIOS[citizenState.scenarioId] || CITIZEN_SCENARIOS.A_ACCIDENT;
+  const options = [
+    ...(summary?.enabledDocuments || scenario.documents).map((document) => ({
+      value: document.id,
+      label: `${document.label} / habilitado`,
+    })),
+    ...scenario.restrictedDocuments.map((document) => ({
+      value: document.id,
+      label: `${document.label} / restringido`,
+    })),
+  ];
+  ensureSelectOptions(els.citizenDocumentSelect, options, options[0]?.value);
+}
+
+function renderCitizenClosure() {
+  if (!els.citizenSummary) return;
+  const summary = citizenState.summaries[citizenState.summaries.length - 1];
+  const citizenPackage = citizenState.packages[citizenState.packages.length - 1];
+  const receipt = citizenState.receipts[citizenState.receipts.length - 1];
+  const feedback = citizenState.feedback[citizenState.feedback.length - 1];
+  const observation = citizenState.observations[citizenState.observations.length - 1];
+  renderMiniRecord(els.citizenSummary, summary ? [
+    ["Resumen", summary.id],
+    ["Estado", summary.status],
+    ["Estado final", summary.finalState],
+    ["Organismos", summary.participatingOrganizations.join(" / ")],
+    ["Aviso IA", summary.aiAssistedNotice],
+    ["Integridad", summary.integrityReference?.value],
+  ] : [], "Resumen ciudadano pendiente.");
+
+  renderCitizenSafeDetail(summary);
+
+  els.citizenNextSteps.innerHTML = "";
+  const followUps = summary?.nextSteps || citizenState.followUps;
+  followUps.forEach((step) => {
+    const item = document.createElement("li");
+    item.innerHTML = `<strong>${step.category}</strong><br>${step.label}<br>${step.responsibleOrganization || step.responsible}`;
+    els.citizenNextSteps.appendChild(item);
+  });
+  if (!followUps.length) {
+    const item = document.createElement("li");
+    item.textContent = "Proximos pasos pendientes de generar.";
+    els.citizenNextSteps.appendChild(item);
+  }
+
+  renderCitizenDocumentOptions(summary);
+  els.citizenDocs.innerHTML = "";
+  const accesses = citizenState.documentAccesses.length ? citizenState.documentAccesses : [{
+    label: "Sin solicitudes",
+    status: "Pendiente",
+    reason: "El ciudadano puede solicitar documentos habilitados cuando exista paquete.",
+  }];
+  accesses.slice(-5).forEach((access) => {
+    const item = document.createElement("li");
+    item.innerHTML = `<strong>${access.label}</strong> / ${access.status}<br>${access.reason}`;
+    els.citizenDocs.appendChild(item);
+  });
+
+  renderMiniRecord(els.citizenReceipt, receipt ? [
+    ["Recibo", receipt.id],
+    ["Entregado", receipt.deliveredAt],
+    ["Abierto", receipt.openedAt || "pendiente"],
+    ["Confirmado", receipt.acknowledgedAt || "pendiente"],
+    ["Metodo", receipt.deliveryMethod],
+    ["Version", receipt.documentVersion],
+    ["Integridad", receipt.integrityReference?.value],
+  ] : [], "Recibo pendiente.");
+
+  renderMiniRecord(els.citizenFeedback, feedback ? [
+    ["Opinion", feedback.id],
+    ["Estado", feedback.status],
+    ["Promedio", (Object.values(feedback.ratings).reduce((sum, value) => sum + value, 0) / Object.values(feedback.ratings).length).toFixed(1)],
+    ["Dato separado", feedback.qualityDataOnly ? "si" : "no"],
+    ["No modifica expediente", feedback.doesNotModifyProcedure ? "si" : "no"],
+  ] : [], "Opinion de servicio pendiente.");
+
+  renderMiniRecord(els.citizenObservation, observation ? [
+    ["Observacion", observation.observationId],
+    ["Estado", observation.status],
+    ["Categoria", observation.category],
+    ["Consola asignada", observation.assignedConsole || "pendiente"],
+    ["Respuesta", observation.response || "pendiente"],
+    ["Efecto", observation.effectNotice],
+  ] : [], "Observacion formal pendiente.");
+
+  els.citizenPrintView.textContent = citizenPackage?.printView || "Vista de impresion pendiente. El navegador podra guardar como PDF.";
+  els.citizenJsonExport.textContent = citizenPackage?.sanitizedJsonExport
+    ? JSON.stringify(citizenPackage.sanitizedJsonExport, null, 2)
+    : "Exportacion ciudadana depurada pendiente.";
+}
+
 function initializeFieldWorkflowControls() {
   if (!els.fieldOperatorSelect) return;
   els.fieldOperatorSelect.innerHTML = "";
@@ -1593,6 +2044,128 @@ function runProcedureAction(action) {
   if (action === "demo") runProcedureDemo();
 }
 
+function ensureProcedureReadyForCitizenClosure() {
+  ensureFieldDemoForProcedure();
+  if (!procedureState.procedureAct?.locked || !procedureState.closure?.closedAt) {
+    runProcedureDemo();
+  }
+  syncProcedureStateToBuildWeek();
+}
+
+function applyCitizenResult(result, successMessage) {
+  if (!result?.ok) {
+    setCitizenMessage(result?.error || "Accion ciudadana no permitida.", true);
+    renderPerspective();
+    renderCitizenClosure();
+    return false;
+  }
+  if (result.results) {
+    result.results.forEach(appendCitizenLedger);
+  } else {
+    appendCitizenLedger(result);
+  }
+  syncCitizenStateToBuildWeek();
+  setCitizenMessage(successMessage || citizenState.lastMessage || "Accion ciudadana registrada.");
+  render();
+  return true;
+}
+
+function citizenFeedbackInput() {
+  return {
+    rapidity: els.feedbackRapidity.value,
+    clarity: els.feedbackClarity.value,
+    treatment: els.feedbackTreatment.value,
+    coordination: els.feedbackCoordination.value,
+    protectionFeeling: els.feedbackProtection.value,
+    nextStepUnderstanding: els.feedbackNextSteps.value,
+    overallSatisfaction: els.feedbackOverall.value,
+    optionalComment: els.feedbackComment.value,
+  };
+}
+
+function runCitizenDemo() {
+  ensureProcedureReadyForCitizenClosure();
+  const demo = runCitizenClosureDemoSequence(citizenState, citizenContext());
+  applyCitizenResult(demo, demo.ok
+    ? "Demo Etapa 5.1 completada: perspectivas, resumen, paquete, recibo, opinion y observacion."
+    : "Demo Etapa 5.1 ejecuto pasos; revisar avisos pendientes.");
+}
+
+function runCitizenAction(action) {
+  if (action === "reset-demo") {
+    citizenState = createCitizenClosureState(BUILD_WEEK_STATE, fieldState, procedureState, getLedgerEvents());
+    citizenMessage = "Datos de Etapa 5.1 reiniciados en memoria de la demo.";
+    setCitizenMessage(citizenMessage);
+    syncCitizenStateToBuildWeek();
+    render();
+    return;
+  }
+
+  if (action === "toggle-ai") {
+    const result = setCitizenAiAvailability(citizenState, !citizenState.aiAvailable);
+    applyCitizenResult({ ok: result.ok }, citizenState.lastMessage);
+    return;
+  }
+
+  if (action === "demo-5-1") {
+    runCitizenDemo();
+    return;
+  }
+
+  if (["generate-summary", "review-summary", "package", "deliver"].includes(action)) {
+    ensureProcedureReadyForCitizenClosure();
+  }
+
+  if (action === "generate-summary") {
+    if (!citizenState.followUps.length) appendCitizenLedger(generateCitizenNextSteps(citizenState, citizenContext()));
+    applyCitizenResult(generateCitizenClosureSummary(citizenState, citizenContext()), "Resumen ciudadano generado con vista segura.");
+  }
+  if (action === "review-summary") applyCitizenResult(reviewCitizenClosureSummary(citizenState), "Resumen ciudadano revisado institucionalmente.");
+  if (action === "package") applyCitizenResult(createCitizenIncidentPackage(citizenState), "Paquete ciudadano preparado para impresion, PDF navegador y JSON depurado.");
+  if (action === "deliver") applyCitizenResult(deliverCitizenPackage(citizenState), "Entrega ciudadana registrada con recibo.");
+  if (action === "open") applyCitizenResult(openCitizenPackage(citizenState), "Apertura ciudadana registrada.");
+  if (action === "ack") applyCitizenResult(confirmCitizenReceipt(citizenState), "Confirmacion de recepcion registrada.");
+  if (action === "request-access") {
+    applyCitizenResult(
+      requestCitizenDocumentAccess(citizenState, els.citizenDocumentSelect.value),
+      "Solicitud de documento procesada con minimizacion.",
+    );
+  }
+  if (action === "download-doc") applyCitizenResult(downloadCitizenDocument(citizenState), "Descarga simulada registrada.");
+  if (action === "feedback") applyCitizenResult(submitCitizenServiceFeedback(citizenState, citizenFeedbackInput()), "Opinion de servicio guardada como dato de calidad separado.");
+  if (action === "observation") {
+    applyCitizenResult(createCitizenFormalObservation(citizenState, {
+      category: els.observationCategory.value,
+      description: els.observationDescription.value,
+      referencedActIds: procedureState.procedureAct ? [procedureState.procedureAct.actId] : [],
+      referencedEventIds: procedureState.chronology.slice(0, 2).map((event) => event.eventId),
+    }), "Observacion formal creada sin alterar registros previos.");
+  }
+  if (action === "assign-observation") {
+    const observation = citizenState.observations[citizenState.observations.length - 1];
+    applyCitizenResult(assignCitizenObservation(citizenState, observation?.observationId, citizenState.selectedConsoleId || "CON-MASTER"), "Observacion asignada a consola competente.");
+  }
+  if (action === "review-observation") {
+    const observation = citizenState.observations[citizenState.observations.length - 1];
+    applyCitizenResult(reviewCitizenObservation(citizenState, observation?.observationId), "Observacion bajo revision.");
+  }
+  if (action === "clarify-observation") {
+    const observation = citizenState.observations[citizenState.observations.length - 1];
+    applyCitizenResult(requestCitizenClarification(citizenState, observation?.observationId), "Aclaracion solicitada al ciudadano.");
+  }
+  if (action === "respond-observation") {
+    const observation = citizenState.observations[citizenState.observations.length - 1];
+    applyCitizenResult(respondCitizenObservation(citizenState, observation?.observationId), "Observacion respondida y expediente original preservado.");
+  }
+  if (action === "followup-required") {
+    applyCitizenResult(markCitizenFollowUpRequired(citizenState, NEXT_STEP_CATEGORIES.FOLLOW_UP_REQUIRED), "Seguimiento adicional requerido.");
+  }
+  if (action === "followup-complete") {
+    const followUp = citizenState.followUps[citizenState.followUps.length - 1];
+    applyCitizenResult(completeCitizenFollowUp(citizenState, followUp?.id), "Seguimiento ciudadano completado.");
+  }
+}
+
 function renderComparison() {
   const ai = BUILD_WEEK_STATE.aiSuggestion;
   const human = BUILD_WEEK_STATE.humanDecision;
@@ -1606,9 +2179,36 @@ function renderComparison() {
 }
 
 function renderSnapshot() {
+  const snapshot = getBuildWeekSnapshot();
+  const ledgerEvents = getLedgerEvents();
   els.snapshot.textContent = JSON.stringify({
-    ...getBuildWeekSnapshot(),
-    operationalLedger: getLedgerEvents(),
+    incident: snapshot.incident,
+    routing: snapshot.routing,
+    counts: {
+      events: snapshot.events.length,
+      ledgerEvents: ledgerEvents.length,
+      operationalConsoles: snapshot.operationalConsoles.length,
+      participants: snapshot.incidentParticipants.length,
+      individualActs: snapshot.individualInterventionActs.length,
+      procedureVersions: snapshot.procedureActWorkflow?.procedureActVersions?.length || 0,
+      citizenSummaries: snapshot.citizenClosureSummaries.length,
+      citizenPackages: snapshot.citizenIncidentPackages.length,
+      citizenObservations: snapshot.citizenFormalObservations.length,
+    },
+    latestProcedure: {
+      actId: snapshot.procedureActWorkflow?.procedureAct?.actId || null,
+      closure: snapshot.procedureActWorkflow?.closure || snapshot.closure,
+      masterRecordId: snapshot.procedureActWorkflow?.masterIncidentRecord?.id || snapshot.masterIncidentRecord?.id,
+    },
+    latestCitizenClosure: {
+      perspective: snapshot.demoPerspectiveSessions.slice(-1)[0],
+      summary: snapshot.citizenClosureSummaries.slice(-1)[0],
+      package: snapshot.citizenIncidentPackages.slice(-1)[0],
+      receipt: snapshot.citizenDeliveryReceipts.slice(-1)[0],
+      feedback: snapshot.citizenServiceFeedback.slice(-1)[0],
+      observation: snapshot.citizenFormalObservations.slice(-1)[0],
+    },
+    operationalLedgerTail: ledgerEvents.slice(-12),
   }, null, 2);
 }
 
@@ -1894,6 +2494,7 @@ function confirmHumanDecision() {
 function render() {
   syncFieldStateToBuildWeek();
   syncProcedureStateToBuildWeek();
+  syncCitizenStateToBuildWeek();
   renderScenario();
   renderConsoles();
   renderParticipants();
@@ -1908,13 +2509,20 @@ function render() {
   renderAssistant();
   renderFieldWorkflow();
   renderProcedureAct();
+  renderPerspective();
+  renderCitizenClosure();
   renderComparison();
   renderSnapshot();
 }
 
 document.addEventListener("click", (event) => {
-  const button = event.target.closest("[data-model], [data-action], [data-ledger], [data-assistant], [data-field-action], [data-procedure-action]");
+  const button = event.target.closest("[data-model], [data-action], [data-ledger], [data-assistant], [data-field-action], [data-procedure-action], [data-citizen-action]");
   if (!button) return;
+
+  if (button.dataset.citizenAction) {
+    runCitizenAction(button.dataset.citizenAction);
+    return;
+  }
 
   if (button.dataset.procedureAction) {
     runProcedureAction(button.dataset.procedureAction);
@@ -2116,8 +2724,43 @@ els.fieldOperatorSelect.addEventListener("change", (event) => {
   render();
 });
 
+els.perspectiveSelect.addEventListener("change", (event) => {
+  const result = changePerspective(citizenState, event.target.value, {
+    selectedConsoleId: citizenState.selectedConsoleId,
+    selectedFieldOperatorId,
+  });
+  applyCitizenResult(result, citizenState.lastMessage);
+});
+
+els.perspectiveScenarioSelect.addEventListener("change", (event) => {
+  citizenState.scenarioId = event.target.value;
+  setCitizenMessage(`Escenario ciudadano activo: ${CITIZEN_SCENARIOS[citizenState.scenarioId].label}.`);
+  render();
+});
+
+els.perspectiveConsoleSelect.addEventListener("change", (event) => {
+  citizenState.selectedConsoleId = event.target.value;
+  const result = changePerspective(citizenState, citizenState.selectedPerspective, {
+    selectedConsoleId: citizenState.selectedConsoleId,
+    selectedFieldOperatorId,
+  });
+  applyCitizenResult(result, `Consola de contexto actualizada: ${event.target.options[event.target.selectedIndex].textContent}.`);
+});
+
+els.perspectiveFieldOperatorSelect.addEventListener("change", (event) => {
+  selectedFieldOperatorId = event.target.value;
+  fieldState.selectedOperatorId = selectedFieldOperatorId;
+  citizenState.selectedFieldOperatorId = selectedFieldOperatorId;
+  const result = changePerspective(citizenState, citizenState.selectedPerspective, {
+    selectedConsoleId: citizenState.selectedConsoleId,
+    selectedFieldOperatorId,
+  });
+  applyCitizenResult(result, "Movil de campo actualizado para vista multiperspectiva.");
+});
+
 initializeAssistantScenarios();
 initializeFieldWorkflowControls();
+initializeCitizenControls();
 refreshBackendStatus();
 render();
 }());

@@ -1,5 +1,25 @@
 # Build Week Changelog
 
+## Etapa 5.1 - Simulacion multiperspectiva y cierre ciudadano
+
+- Agrega `citizen-closure.js` con selector de perspectiva: `CITIZEN`, `FIELD_OPERATOR`, `FEDERATED_CONSOLE` y `MASTER_CONSOLE`.
+- Permite cambiar de perspectiva sin reiniciar el incidente, conservando ID, estado, cronologia, operadores,
+  actas, evidencia simulada, solicitudes de apoyo, paquete ciudadano y cierre.
+- Agrega encabezado de perspectiva con rol, permisos, informacion disponible y funciones restringidas.
+- Agrega `CitizenClosureSummary` con lenguaje claro, revision institucional, documentos habilitados,
+  proximos pasos, canales de consulta y referencia de integridad.
+- Agrega `buildCitizenSafeView(masterRecord, accessContext)` para separar entrega automatica, entrega a pedido
+  e informacion restringida con motivo generico.
+- Agrega `CitizenIncidentPackage` con vista de impresion, PDF por navegador y exportacion JSON depurada.
+- Agrega `CitizenDeliveryReceipt` con entrega, apertura, confirmacion, metodo, version e integridad.
+- Agrega opinion de servicio separada del expediente y observacion formal ciudadana con estados propios.
+- Agrega escenarios A/B: accidente multidisciplinario y dispositivo sustraido con preservacion digital simulada.
+- Agrega eventos de bitacora para perspectiva, resumen, recibo, documentos, opinion, observacion y seguimiento.
+- Agrega modelos de datos ciudadanos a `data-models.js`.
+- Agrega `citizen-closure.test.js`.
+- Crea `MULTI_PERSPECTIVE_DEMO.md`, `CITIZEN_CLOSURE_WORKFLOW.md` y `CITIZEN_DATA_ACCESS_POLICY.md`.
+- Mantiene intactos `docs/index.html`, `docs/styles.css`, `docs/app.js` y la version publica v36.
+
 ## Etapa 5 - Acta Digital, expediente maestro y cierre trazable
 
 - Agrega `procedure-act.js` con modelos de Acta Digital de Procedimiento, expediente maestro y cierre.

@@ -766,6 +766,164 @@ const FEDERATED_MODEL_DEFINITIONS = [
 
 MODEL_DEFINITIONS.push(...FEDERATED_MODEL_DEFINITIONS);
 
+const CITIZEN_MODEL_COMMON_FIELDS = [
+  ["id", "Identificador del registro"],
+  ["incidentId", "Incidente asociado"],
+  ["createdAt", "Fecha de creacion"],
+  ["createdBy", "Actor que genera el registro"],
+  ["status", "Estado del registro"],
+  ["version", "Version del contrato de datos"],
+  ["classification", "Nivel de informacion"],
+  ["integrityReference", "Referencia de integridad de demostracion"],
+];
+
+const CITIZEN_MODEL_DEFINITIONS = [
+  {
+    key: "demoPerspectiveSession",
+    name: "DemoPerspectiveSession",
+    purpose: "Sesion de vista multiperspectiva que cambia rol sin reiniciar el incidente.",
+    required: ["id", "incidentId", "createdAt", "createdBy", "status", "version", "classification", "integrityReference", "perspective"],
+    fields: [
+      ...CITIZEN_MODEL_COMMON_FIELDS,
+      ["perspective", "CITIZEN, FIELD_OPERATOR, FEDERATED_CONSOLE o MASTER_CONSOLE"],
+      ["role", "Rol visible para la vista activa"],
+      ["selectedConsoleId", "Consola federada activa si corresponde"],
+      ["selectedFieldOperatorId", "Operador de campo activo si corresponde"],
+      ["permissions", "Funciones habilitadas para la perspectiva"],
+      ["availableInformation", "Informacion disponible para la perspectiva"],
+      ["restrictedFunctions", "Funciones o datos ocultos para la perspectiva"],
+      ["preservedStateMarkers", "Indicadores de que el estado no se reinicio al cambiar vista"],
+    ],
+  },
+  {
+    key: "citizenClosureSummary",
+    name: "CitizenClosureSummary",
+    purpose: "Resumen ciudadano en lenguaje claro, minimizado y separado del expediente maestro.",
+    required: ["id", "incidentId", "createdAt", "createdBy", "status", "version", "classification", "integrityReference", "generatedAt"],
+    fields: [
+      ...CITIZEN_MODEL_COMMON_FIELDS,
+      ["title", "Resumen ciudadano de actuacion y continuidad"],
+      ["generatedAt", "Fecha de generacion"],
+      ["reviewedAt", "Fecha de revision institucional"],
+      ["incidentDateStart", "Fecha inicial del incidente"],
+      ["incidentDateEnd", "Fecha de cierre o continuidad"],
+      ["initialDescription", "Descripcion inicial depurada"],
+      ["finalState", "Estado final informado al ciudadano"],
+      ["participatingOrganizations", "Organismos intervinientes visibles"],
+      ["relevantActions", "Acciones relevantes sin informacion interna"],
+      ["derivations", "Derivaciones informables"],
+      ["simulatedReferences", "Referencias de actas, constancias o denuncia simulada"],
+      ["enabledDocuments", "Documentos habilitados para entrega"],
+      ["pendingMeasures", "Medidas o consultas posteriores"],
+      ["responsibleOrganization", "Organismo responsable de continuidad"],
+      ["nextSteps", "Proximos pasos ciudadanos"],
+      ["careRecommendations", "Recomendaciones de cuidado"],
+      ["queryChannels", "Canales de consulta"],
+      ["aiAssistedNotice", "Aviso de resumen asistido y revisado"],
+    ],
+  },
+  {
+    key: "citizenIncidentPackage",
+    name: "CitizenIncidentPackage",
+    purpose: "Paquete de entrega ciudadana con resumen, documentos habilitados, recibo e integridad.",
+    required: ["id", "incidentId", "createdAt", "createdBy", "status", "version", "classification", "integrityReference", "summary"],
+    fields: [
+      ...CITIZEN_MODEL_COMMON_FIELDS,
+      ["summary", "Resumen ciudadano incluido"],
+      ["nextSteps", "Proximos pasos incluidos"],
+      ["enabledDocuments", "Documentos disponibles"],
+      ["referenceNumbers", "Numeros de referencia simulados"],
+      ["followUpChannel", "Canal de seguimiento"],
+      ["deliveredAt", "Fecha de entrega"],
+      ["receipt", "Recibo de entrega"],
+      ["browserPdfAvailable", "Indica que puede imprimirse como PDF desde el navegador"],
+      ["printView", "Vista de impresion"],
+      ["sanitizedJsonExport", "Exportacion JSON depurada"],
+    ],
+  },
+  {
+    key: "citizenDocumentAccess",
+    name: "CitizenDocumentAccess",
+    purpose: "Solicitud y descarga simulada de documentos habilitados para el ciudadano.",
+    required: ["id", "incidentId", "createdAt", "createdBy", "status", "version", "classification", "integrityReference", "documentId"],
+    fields: [
+      ...CITIZEN_MODEL_COMMON_FIELDS,
+      ["documentId", "Documento solicitado"],
+      ["label", "Nombre visible"],
+      ["source", "Organismo fuente"],
+      ["decision", "Habilitado o no habilitado"],
+      ["reason", "Motivo generico de entrega o restriccion"],
+      ["requestedAt", "Fecha de solicitud"],
+      ["downloadedAt", "Fecha de descarga simulada"],
+    ],
+  },
+  {
+    key: "citizenServiceFeedback",
+    name: "CitizenServiceFeedback",
+    purpose: "Opinion de calidad separada del expediente y sin modificar actas ni cierre.",
+    required: ["id", "incidentId", "createdAt", "createdBy", "status", "version", "classification", "integrityReference", "ratings"],
+    fields: [
+      ...CITIZEN_MODEL_COMMON_FIELDS,
+      ["ratings", "Calificaciones 1 a 5 sobre rapidez, claridad, trato, coordinacion y comprension"],
+      ["optionalComment", "Comentario opcional depurado"],
+      ["qualityDataOnly", "Indica que no modifica el expediente"],
+      ["doesNotModifyProcedure", "Indica que no altera actas ni sanciones"],
+      ["operatorEvaluatedPublicly", "Siempre false en la demo publica"],
+    ],
+  },
+  {
+    key: "citizenFormalObservation",
+    name: "CitizenFormalObservation",
+    purpose: "Observacion formal ciudadana separada de la opinion de servicio.",
+    required: ["id", "incidentId", "createdAt", "createdBy", "status", "version", "classification", "integrityReference", "observationId"],
+    fields: [
+      ...CITIZEN_MODEL_COMMON_FIELDS,
+      ["observationId", "Identificador de observacion"],
+      ["category", "Categoria de observacion"],
+      ["description", "Descripcion ciudadana"],
+      ["referencedActIds", "Actas referenciadas"],
+      ["referencedEventIds", "Eventos referenciados"],
+      ["attachedSimulatedFiles", "Adjuntos simulados"],
+      ["assignedConsole", "Consola asignada"],
+      ["response", "Respuesta o pedido de aclaracion"],
+      ["resolvedAt", "Fecha de respuesta o cierre"],
+      ["effectNotice", "Indica que no modifica registros previos por si misma"],
+    ],
+  },
+  {
+    key: "citizenFollowUpAction",
+    name: "CitizenFollowUpAction",
+    purpose: "Accion posterior indicada al ciudadano con categoria y responsable.",
+    required: ["id", "incidentId", "createdAt", "createdBy", "status", "version", "classification", "integrityReference", "category"],
+    fields: [
+      ...CITIZEN_MODEL_COMMON_FIELDS,
+      ["category", "Categoria normalizada de proximo paso"],
+      ["label", "Indicacion en lenguaje claro"],
+      ["responsibleOrganization", "Organismo o persona responsable"],
+      ["dueMode", "Modo de plazo segun organismo competente"],
+      ["disclaimer", "Aviso sobre variacion de gestiones posteriores"],
+      ["completedAt", "Fecha de cumplimiento si corresponde"],
+    ],
+  },
+  {
+    key: "citizenDeliveryReceipt",
+    name: "CitizenDeliveryReceipt",
+    purpose: "Recibo de entrega, apertura y confirmacion de recepcion ciudadana.",
+    required: ["id", "incidentId", "createdAt", "createdBy", "status", "version", "classification", "integrityReference", "deliveredAt"],
+    fields: [
+      ...CITIZEN_MODEL_COMMON_FIELDS,
+      ["packageId", "Paquete ciudadano entregado"],
+      ["deliveredAt", "Fecha de entrega"],
+      ["openedAt", "Fecha de apertura"],
+      ["acknowledgedAt", "Fecha de confirmacion ciudadana"],
+      ["deliveryMethod", "Metodo de entrega"],
+      ["documentVersion", "Version documental entregada"],
+    ],
+  },
+];
+
+MODEL_DEFINITIONS.push(...CITIZEN_MODEL_DEFINITIONS);
+
 MODEL_DEFINITIONS.push({
   key: "ledgerEvent",
   name: "LedgerEvent append-only",
@@ -1442,6 +1600,14 @@ Object.assign(BUILD_WEEK_STATE.digitalAct, {
 BUILD_WEEK_STATE.aiSuggestions = [BUILD_WEEK_STATE.aiSuggestion];
 BUILD_WEEK_STATE.humanDecisions = [BUILD_WEEK_STATE.humanDecision];
 BUILD_WEEK_STATE.assistantRuns = [];
+const demoPerspectiveSessions = [];
+const citizenClosureSummaries = [];
+const citizenIncidentPackages = [];
+const citizenDocumentAccesses = [];
+const citizenServiceFeedback = [];
+const citizenFormalObservations = [];
+const citizenFollowUpActions = [];
+const citizenDeliveryReceipts = [];
 
 Object.assign(BUILD_WEEK_STATE, {
   informationLevels: INFORMATION_LEVELS,
@@ -1459,6 +1625,14 @@ Object.assign(BUILD_WEEK_STATE, {
   deviceRecoveryProtocols,
   cybercrimeReports,
   policeStationReceptionRecords,
+  demoPerspectiveSessions,
+  citizenClosureSummaries,
+  citizenIncidentPackages,
+  citizenDocumentAccesses,
+  citizenServiceFeedback,
+  citizenFormalObservations,
+  citizenFollowUpActions,
+  citizenDeliveryReceipts,
   buildWeekScenarios,
 });
 

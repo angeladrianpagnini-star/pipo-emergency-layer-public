@@ -70,6 +70,23 @@ const LEDGER_EVENT_TYPES = [
   "device.tracking.stopped",
   "console.participation.closed",
   "incident.closed",
+  "demo.perspective.changed",
+  "citizen.closure.summary.generated",
+  "citizen.closure.summary.reviewed",
+  "citizen.closure.summary.delivered",
+  "citizen.closure.summary.opened",
+  "citizen.closure.receipt.confirmed",
+  "citizen.next_steps.generated",
+  "citizen.document.access.requested",
+  "citizen.document.downloaded",
+  "citizen.feedback.submitted",
+  "citizen.observation.created",
+  "citizen.observation.assigned",
+  "citizen.observation.reviewed",
+  "citizen.clarification.requested",
+  "citizen.clarification.responded",
+  "citizen.followup.required",
+  "citizen.followup.completed",
 ];
 
 const ledgerSeed = [
