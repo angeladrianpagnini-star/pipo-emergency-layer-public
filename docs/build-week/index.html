@@ -3,12 +3,12 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>PIPO Build Week - Etapa 1.1</title>
+    <title>PIPO Build Week - Etapa 2</title>
     <meta
       name="description"
-      content="Version separada de PIPO Emergency Layer para OpenAI Build Week. Etapa 1.1: arquitectura federada, ciberdelitos y multiintervencion."
+      content="Version separada de PIPO Emergency Layer para OpenAI Build Week. Etapa 2: arquitectura federada y bitacora operativa append-only."
     />
-    <link rel="stylesheet" href="styles.css?v=2" />
+    <link rel="stylesheet" href="styles.css?v=3" />
   </head>
   <body>
     <header class="hero">
@@ -30,8 +30,8 @@
     <main class="layout">
       <section class="panel stage-panel">
         <div class="section-title">
-          <h2>Etapa 0 + 1.1</h2>
-          <span>Preservacion federada</span>
+          <h2>Etapa 0 + 1.1 + 2</h2>
+          <span>Preservacion y bitacora</span>
         </div>
         <div class="checks">
           <article>
@@ -190,6 +190,29 @@
         <ol id="timeline" class="timeline"></ol>
       </section>
 
+      <section class="panel ledger-panel">
+        <div class="section-title">
+          <h2>Bitacora operativa append-only</h2>
+          <span>Etapa 2</span>
+        </div>
+        <p class="lead">
+          Cada accion crea un evento nuevo con operador, consola, sesion, clasificacion, referencia de
+          integridad de demo y enlace al evento anterior. Las correcciones no borran el evento original.
+        </p>
+        <div class="action-row">
+          <button type="button" data-ledger="support.requested">Solicitar apoyo</button>
+          <button type="button" data-ledger="support.accepted">Aceptar apoyo</button>
+          <button type="button" data-ledger="field.departed">Registrar salida</button>
+          <button type="button" data-ledger="field.arrived">Registrar arribo</button>
+          <button type="button" data-ledger="intervention.started">Iniciar intervencion</button>
+          <button type="button" data-ledger="act.finalized">Finalizar acta demo</button>
+          <button type="button" data-action="rectify-ledger">Rectificar evento</button>
+          <button type="button" data-action="try-delete-ledger">Intentar borrar evento</button>
+        </div>
+        <div id="ledgerValidation" class="access-result"></div>
+        <ol id="ledgerList" class="ledger-list"></ol>
+      </section>
+
       <section class="panel compare-panel">
         <div class="section-title">
           <h2>IA vs decision humana</h2>
@@ -219,7 +242,8 @@
       </section>
     </main>
 
-    <script src="data-models.js?v=2"></script>
-    <script src="app.js?v=2"></script>
+    <script src="data-models.js?v=3"></script>
+    <script src="ledger.js?v=3"></script>
+    <script src="app.js?v=3"></script>
   </body>
 </html>

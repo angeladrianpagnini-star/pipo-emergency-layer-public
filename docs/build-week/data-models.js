@@ -651,6 +651,38 @@ const FEDERATED_MODEL_DEFINITIONS = [
 
 MODEL_DEFINITIONS.push(...FEDERATED_MODEL_DEFINITIONS);
 
+MODEL_DEFINITIONS.push({
+  key: "ledgerEvent",
+  name: "LedgerEvent append-only",
+  purpose: "Evento operativo inalterable con referencia previa e integridad de demostracion.",
+  required: [
+    "eventId",
+    "incidentId",
+    "type",
+    "timestamp",
+    "operatorId",
+    "consoleId",
+    "sessionId",
+    "payload",
+    "classification",
+    "integrityReference",
+    "previousEventReference",
+  ],
+  fields: [
+    ["eventId", "Identificador unico del evento"],
+    ["incidentId", "Incidente asociado"],
+    ["type", "Tipo controlado de evento"],
+    ["timestamp", "Sello temporal"],
+    ["operatorId", "Operador responsable"],
+    ["consoleId", "Consola responsable"],
+    ["sessionId", "Sesion asociada"],
+    ["payload", "Datos especificos del evento"],
+    ["classification", "Nivel de sensibilidad"],
+    ["integrityReference", "Referencia de integridad de la demo"],
+    ["previousEventReference", "Referencia al evento anterior"],
+  ],
+});
+
 const governanceFields = [
   ["classification", "Nivel PUBLIC, OPERATIONAL, SENSITIVE o RESTRICTED_JUDICIAL"],
   ["ownerConsole", "Consola titular del recurso"],

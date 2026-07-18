@@ -144,7 +144,8 @@ pre {
 
 .federated-panel,
 .master-record-panel,
-.cyber-panel {
+.cyber-panel,
+.ledger-panel {
   grid-column: 1 / -1;
 }
 
@@ -435,13 +436,43 @@ li {
 }
 
 .timeline strong,
-.timeline span {
+.timeline span,
+.ledger-list strong,
+.ledger-list span {
   display: block;
 }
 
 .timeline span {
   margin-top: 4px;
   color: var(--muted);
+}
+
+.ledger-list {
+  margin-top: 14px;
+  padding-left: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+
+.ledger-list li {
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--blue);
+  border-radius: 10px;
+  background: #fbf6eb;
+  padding: 12px;
+}
+
+.ledger-list span {
+  margin-top: 4px;
+  color: var(--muted);
+}
+
+.ledger-list code {
+  display: inline-block;
+  margin-top: 5px;
+  color: var(--teal-dark);
+  font-size: 0.76rem;
 }
 
 .compare-grid {

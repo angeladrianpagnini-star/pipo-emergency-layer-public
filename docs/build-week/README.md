@@ -56,6 +56,29 @@ eliminar, fusionar alterando texto original ni firmar actas individuales de otro
 Tambien se agrega `canAccessResource(operator, resource, purpose)`, que evalua rol, organismo, incidente,
 finalidad, nivel de sensibilidad y autorizacion temporal.
 
+## Etapa 2 - Bitacora operativa append-only
+
+Se agrega `ledger.js` con una bitacora operativa de demostracion:
+
+- tipos de evento controlados;
+- `eventId`;
+- `incidentId`;
+- `type`;
+- `timestamp`;
+- `operatorId`;
+- `consoleId`;
+- `sessionId`;
+- `payload`;
+- `classification`;
+- `integrityReference`;
+- `previousEventReference`.
+
+La bitacora no expone funciones de edicion o borrado. Las rectificaciones se agregan como eventos nuevos
+mediante `appendCorrection()`, conservando el evento original.
+
+La funcion `deleteLedgerEvent()` devuelve una denegacion explicita para demostrar que los eventos no se
+eliminan silenciosamente.
+
 ## Principios de seguridad
 
 - Datos simulados.

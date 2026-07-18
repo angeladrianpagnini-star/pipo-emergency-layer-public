@@ -9,6 +9,14 @@ const {
   getBuildWeekSnapshot,
 } = window.PIPOBuildWeekModels;
 
+const {
+  appendLedgerEvent,
+  appendCorrection,
+  deleteLedgerEvent,
+  getLedgerEvents,
+  validateLedgerChain,
+} = window.PIPOBuildWeekLedger;
+
 const stateByModel = {
   incident: BUILD_WEEK_STATE.incident,
   event: BUILD_WEEK_STATE.events[0],
@@ -34,6 +42,7 @@ const stateByModel = {
   deviceRecoveryProtocol: BUILD_WEEK_STATE.deviceRecoveryProtocols[0],
   cybercrimeReport: BUILD_WEEK_STATE.cybercrimeReports[0],
   policeStationReceptionRecord: BUILD_WEEK_STATE.policeStationReceptionRecords[0],
+  ledgerEvent: getLedgerEvents()[0],
 };
 
 const els = {
@@ -46,6 +55,8 @@ const els = {
   accessResult: document.querySelector("#accessResult"),
   cyberReport: document.querySelector("#cyberReport"),
   deviceProtocol: document.querySelector("#deviceProtocol"),
+  ledgerList: document.querySelector("#ledgerList"),
+  ledgerValidation: document.querySelector("#ledgerValidation"),
   modelList: document.querySelector("#modelList"),
   detailTitle: document.querySelector("#detailTitle"),
   detailBadge: document.querySelector("#detailBadge"),
@@ -100,6 +111,18 @@ function addLocalEvent(summary) {
     permittedRoles: ["coordinador", "operador", "supervisor"],
     sharingPurpose: "demostracion funcional",
     retentionRule: "append-only demo",
+  });
+}
+
+function addLedger(type, payload = {}, operatorId = "OP-MASTER-01") {
+  const operator = getOperatorById(operatorId);
+  return appendLedgerEvent({
+    type,
+    operatorId: operator.id,
+    consoleId: operator.consoleId,
+    sessionId: operator.sessionId,
+    payload,
+    classification: payload.classification || "OPERATIONAL",
   });
 }
 
@@ -254,6 +277,29 @@ function renderTimeline() {
   });
 }
 
+function renderLedger() {
+  const events = getLedgerEvents();
+  const validation = validateLedgerChain();
+  stateByModel.ledgerEvent = events[0] || {};
+  els.ledgerValidation.className = `access-result ${validation.valid ? "allowed" : "denied"}`;
+  els.ledgerValidation.innerHTML = `
+    <strong>${validation.valid ? "Cadena consistente" : "Cadena observada"}</strong>
+    <span>${validation.count} eventos append-only registrados.</span>
+    <span>${validation.errors.length ? validation.errors.join(" / ") : "Sin errores de referencia previa."}</span>
+  `;
+  els.ledgerList.innerHTML = "";
+  events.slice().reverse().forEach((event) => {
+    const item = document.createElement("li");
+    item.innerHTML = `
+      <strong>${event.eventId} / ${event.type}</strong>
+      <span>${event.timestamp} / ${event.consoleId} / ${event.operatorId}</span>
+      <span>${event.classification}: ${event.payload.summary || event.payload.role || event.payload.actId || event.payload.evidenceId || "evento registrado"}</span>
+      <code>${event.integrityReference} / prev: ${event.previousEventReference || "inicio"}</code>
+    `;
+    els.ledgerList.appendChild(item);
+  });
+}
+
 function renderComparison() {
   const ai = BUILD_WEEK_STATE.aiSuggestion;
   const human = BUILD_WEEK_STATE.humanDecision;
@@ -265,7 +311,10 @@ function renderComparison() {
 }
 
 function renderSnapshot() {
-  els.snapshot.textContent = JSON.stringify(getBuildWeekSnapshot(), null, 2);
+  els.snapshot.textContent = JSON.stringify({
+    ...getBuildWeekSnapshot(),
+    operationalLedger: getLedgerEvents(),
+  }, null, 2);
 }
 
 function render() {
@@ -279,16 +328,26 @@ function render() {
   renderModelList();
   renderDetail();
   renderTimeline();
+  renderLedger();
   renderComparison();
   renderSnapshot();
 }
 
 document.addEventListener("click", (event) => {
-  const button = event.target.closest("[data-model], [data-action]");
+  const button = event.target.closest("[data-model], [data-action], [data-ledger]");
   if (!button) return;
 
   if (button.dataset.model) {
     selectedModel = button.dataset.model;
+    render();
+    return;
+  }
+
+  if (button.dataset.ledger) {
+    addLedger(button.dataset.ledger, {
+      summary: `Evento ${button.dataset.ledger} agregado desde la demo.`,
+      source: "boton de bitacora",
+    }, button.dataset.ledger.startsWith("field.") ? "OP-FIELD-01" : "OP-MASTER-01");
     render();
     return;
   }
@@ -308,6 +367,7 @@ document.addEventListener("click", (event) => {
       });
     }
     addLocalEvent("Comisaria incorporada al incidente como consola participante.");
+    addLedger("console.joined", { summary: "Comisaria incorporada al incidente.", consoleId: "CON-COMISARIA" }, "OP-COM-01");
   }
 
   if (action === "join-operator") {
@@ -337,6 +397,7 @@ document.addEventListener("click", (event) => {
       });
     }
     addLocalEvent("Segundo operador de campo incorporado sin modificar actas ajenas.");
+    addLedger("operator.joined", { summary: "Segundo operador de campo incorporado.", deviceId: "DEV-FIELD-02" }, "OP-FIELD-02");
   }
 
   if (action === "clarification") {
@@ -356,10 +417,27 @@ document.addEventListener("click", (event) => {
     });
     BUILD_WEEK_STATE.masterIncidentRecord.clarificationRequests.push(requestId);
     addLocalEvent(`Solicitud de aclaracion ${requestId} registrada.`);
+    addLedger("clarification.requested", { summary: `Solicitud de aclaracion ${requestId} registrada.`, requestId }, "OP-MASTER-01");
   }
 
   if (action === "share-evidence") {
     addLocalEvent("Evidencia compartida bajo permiso temporal y finalidad declarada.");
+    addLedger("evidence.shared", { summary: "Evidencia compartida con permiso temporal.", grantId: "GRANT-001" }, "OP-CIBER-01");
+  }
+
+  if (action === "rectify-ledger") {
+    const firstEvent = getLedgerEvents()[0];
+    appendCorrection(firstEvent.eventId, "aclaracion", "Se agrega aclaracion sin borrar el evento original.");
+  }
+
+  if (action === "try-delete-ledger") {
+    const result = deleteLedgerEvent();
+    els.ledgerValidation.className = "access-result denied";
+    els.ledgerValidation.innerHTML = `
+      <strong>Borrado bloqueado</strong>
+      <span>${result.reason}</span>
+    `;
+    return;
   }
 
   if (action === "test-allowed") {
