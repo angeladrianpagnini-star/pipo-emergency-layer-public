@@ -129,6 +129,27 @@ Texto visible:
 
 `Documento individual del funcionario interviniente. No sustituye las actas de otros operadores.`
 
+## Integracion con Etapa 5
+
+Las actas individuales son fuentes del Acta Digital de Procedimiento PIPO.
+
+La consola maestra puede:
+
+- referenciar actas;
+- construir cronologia integrada;
+- pedir aclaraciones;
+- senalar contradicciones;
+- armar expediente maestro;
+- proponer cierre.
+
+La consola maestra no puede:
+
+- reescribir el relato de campo;
+- firmar por el operador;
+- fusionar actas eliminando diferencias;
+- borrar acontecimientos;
+- sustituir una version finalizada.
+
 ## IA opcional
 
 La IA puede ayudar a ordenar datos o detectar faltantes, pero no inventa acontecimientos, no transforma

@@ -65,6 +65,36 @@ const {
   compareInterventions,
 } = window.PIPOFieldWorkflow;
 
+const {
+  PROCEDURE_ACT_VERSION,
+  PROCEDURE_ACT_STATUSES,
+  SUPERVISION_STATUSES,
+  CLOSURE_STATUSES,
+  FINDING_TYPES,
+  AI_DRAFT_NOTICE,
+  INTEGRITY_NOTICE,
+  createProcedureActState,
+  createProcedureAct,
+  generateAiDraft,
+  updateCompleteness,
+  checkConsistency,
+  completeOperatorReview,
+  submitProcedureAct,
+  requestSupervisorReview,
+  validateSupervisor,
+  registerDemoTimeInconsistency,
+  requestClarification,
+  respondClarification,
+  finalizeProcedureAct,
+  amendProcedureAct,
+  rectifyProcedureAct,
+  buildMasterIncidentRecord,
+  proposeClosure,
+  finalizeClosure,
+  exportProcedureJson,
+  runProcedureDemoSequence,
+} = window.PIPOProcedureAct;
+
 const stateByModel = {
   incident: BUILD_WEEK_STATE.incident,
   event: BUILD_WEEK_STATE.events[0],
@@ -179,6 +209,18 @@ const els = {
   fieldActMeta: document.querySelector("#fieldActMeta"),
   fieldActPreview: document.querySelector("#fieldActPreview"),
   fieldComparison: document.querySelector("#fieldComparison"),
+  procedureMessage: document.querySelector("#procedureMessage"),
+  procedureActSummary: document.querySelector("#procedureActSummary"),
+  procedureCompleteness: document.querySelector("#procedureCompleteness"),
+  procedureFindings: document.querySelector("#procedureFindings"),
+  procedureAiDraft: document.querySelector("#procedureAiDraft"),
+  procedureChronology: document.querySelector("#procedureChronology"),
+  procedureVersions: document.querySelector("#procedureVersions"),
+  procedureMasterRecordDetail: document.querySelector("#procedureMasterRecordDetail"),
+  procedureSupervision: document.querySelector("#procedureSupervision"),
+  procedureClosure: document.querySelector("#procedureClosure"),
+  procedureExport: document.querySelector("#procedureExport"),
+  procedurePrintView: document.querySelector("#procedurePrintView"),
 };
 
 let selectedModel = MODEL_DEFINITIONS[0].key;
@@ -187,6 +229,8 @@ let selectedAssistantMode = AI_MODES.SIMULATED_DEMO;
 const fieldState = createFieldWorkflowState();
 let selectedFieldOperatorId = fieldState.selectedOperatorId;
 let fieldMessage = "Esperando accion del operador.";
+const procedureState = createProcedureActState(BUILD_WEEK_STATE, fieldState, getLedgerEvents());
+let procedureMessage = "Acta Digital de Procedimiento pendiente de generar.";
 let assistantState = {
   suggestion: BUILD_WEEK_STATE.aiSuggestion,
   humanDraft: createHumanDecisionDraft(BUILD_WEEK_STATE.aiSuggestion, getOperatorById("OP-MASTER-01")),
@@ -494,6 +538,116 @@ function syncFieldStateToBuildWeek() {
     actVersions: fieldState.actVersions,
     clarificationRequests: fieldState.clarificationRequests,
   };
+}
+
+function procedureContext() {
+  return {
+    buildWeekState: BUILD_WEEK_STATE,
+    fieldState,
+    ledgerEvents: getLedgerEvents(),
+  };
+}
+
+function appendProcedureLedger(result) {
+  if (!result?.ok || !result.ledger) return null;
+  return addLedger(result.ledger.type, result.ledger.payload, result.ledger.operatorId);
+}
+
+function setProcedureMessage(message, isError = false) {
+  procedureMessage = message;
+  if (els.procedureMessage) {
+    els.procedureMessage.className = `access-result ${isError ? "denied" : "allowed"}`;
+    els.procedureMessage.innerHTML = `
+      <strong>${isError ? "Accion bloqueada" : "Etapa 5"}</strong>
+      <span>${message}</span>
+    `;
+  }
+}
+
+function syncProcedureStateToBuildWeek() {
+  BUILD_WEEK_STATE.procedureActWorkflow = {
+    version: PROCEDURE_ACT_VERSION,
+    procedureAct: procedureState.procedureAct,
+    aiDraft: procedureState.aiDraft,
+    chronology: procedureState.chronology,
+    completeness: procedureState.completeness,
+    findings: procedureState.findings,
+    supervision: procedureState.supervision,
+    procedureActVersions: procedureState.procedureActVersions,
+    clarificationRequests: procedureState.clarificationRequests,
+    masterIncidentRecord: procedureState.masterIncidentRecord,
+    closure: procedureState.closure,
+    exports: procedureState.exports,
+    integrityNotice: INTEGRITY_NOTICE,
+  };
+
+  if (procedureState.procedureAct) {
+    BUILD_WEEK_STATE.digitalAct = {
+      ...BUILD_WEEK_STATE.digitalAct,
+      id: procedureState.procedureAct.actId,
+      incidentId: procedureState.procedureAct.incidentId,
+      threadId: BUILD_WEEK_STATE.incident.threadId,
+      agency: procedureState.procedureAct.organization,
+      author: procedureState.procedureAct.operatorId,
+      role: procedureState.procedureAct.rankOrRole,
+      device: procedureState.procedureAct.deviceId,
+      jurisdiction: procedureState.procedureAct.jurisdiction,
+      location: procedureState.procedureAct.simulatedLocation,
+      version: procedureState.procedureAct.version,
+      status: procedureState.procedureAct.status,
+      startedAt: procedureState.procedureAct.startedAt,
+      finishedAt: procedureState.procedureAct.completedAt,
+      sections: procedureState.procedureAct.content,
+      completion: procedureState.completeness,
+      integrityReference: procedureState.procedureAct.integrityReference,
+    };
+    stateByModel.digitalAct = BUILD_WEEK_STATE.digitalAct;
+  }
+
+  if (procedureState.procedureActVersions.length) {
+    BUILD_WEEK_STATE.actVersions = [
+      ...BUILD_WEEK_STATE.actVersions.filter((item) => !String(item.id || item.versionId || "").startsWith("PACT-V-")),
+      ...procedureState.procedureActVersions.map((version) => ({
+        id: version.versionId,
+        actId: version.actId,
+        version: version.version,
+        author: version.authorId,
+        createdAt: version.timestamp,
+        changeReason: version.reason,
+        previousHash: version.previousVersionId,
+        contentHash: version.integrityReference?.value,
+        status: version.status,
+      })),
+    ];
+    stateByModel.actVersion = BUILD_WEEK_STATE.actVersions[BUILD_WEEK_STATE.actVersions.length - 1];
+  }
+
+  if (procedureState.masterIncidentRecord) {
+    BUILD_WEEK_STATE.masterIncidentRecord = {
+      ...BUILD_WEEK_STATE.masterIncidentRecord,
+      ...procedureState.masterIncidentRecord,
+      individualActs: procedureState.masterIncidentRecord.individualActs,
+      evidenceIndex: procedureState.masterIncidentRecord.evidence.map((item) => item.evidenceId),
+      integratedTimeline: procedureState.masterIncidentRecord.chronology.map((item) => item.eventId),
+      clarificationRequests: procedureState.masterIncidentRecord.clarifications.map((item) => item.id),
+      closureStatus: procedureState.masterIncidentRecord.closureStatus,
+    };
+    stateByModel.masterIncidentRecord = BUILD_WEEK_STATE.masterIncidentRecord;
+  }
+
+  if (procedureState.closure) {
+    BUILD_WEEK_STATE.closure = {
+      id: procedureState.closure.id,
+      incidentId: procedureState.closure.incidentId,
+      result: procedureState.closure.status,
+      responsible: procedureState.closure.responsible,
+      summary: procedureState.closure.summary,
+      followUp: procedureState.closure.followUp,
+      associatedAct: procedureState.closure.associatedAct,
+      closedAt: procedureState.closure.closedAt,
+    };
+    stateByModel.closure = BUILD_WEEK_STATE.closure;
+  }
 }
 
 function selectedFieldOperator() {
@@ -945,6 +1099,137 @@ function renderFieldComparison() {
   });
 }
 
+function renderMiniRecord(element, rows, fallback = "Pendiente") {
+  if (!element) return;
+  element.innerHTML = "";
+  if (!rows.length) {
+    const paragraph = document.createElement("p");
+    paragraph.textContent = fallback;
+    element.appendChild(paragraph);
+    return;
+  }
+  rows.forEach(([label, value]) => {
+    const paragraph = document.createElement("p");
+    paragraph.innerHTML = `<strong>${label}:</strong> ${value || "-"}`;
+    element.appendChild(paragraph);
+  });
+}
+
+function findingBadgeClass(type) {
+  if (type === FINDING_TYPES.BLOCKING_ERROR) return "finding-badge blocking";
+  if (type === FINDING_TYPES.WARNING || type === FINDING_TYPES.PENDING_INFORMATION) return "finding-badge warning";
+  return "finding-badge";
+}
+
+function renderProcedureAct() {
+  if (!els.procedureActSummary) return;
+  const act = procedureState.procedureAct;
+  if (!els.procedureMessage.textContent) {
+    setProcedureMessage(procedureMessage);
+  }
+
+  renderMiniRecord(els.procedureActSummary, act ? [
+    ["Acta", act.actId],
+    ["Incidente", act.incidentId],
+    ["Estado", act.status],
+    ["Version", act.version],
+    ["Operador", act.operatorId],
+    ["Actas fuente", act.individualActIds.join(", ")],
+    ["Integridad", act.integrityReference?.value || "pendiente"],
+  ] : [], "Acta Digital de Procedimiento no generada.");
+
+  const completeness = procedureState.completeness;
+  els.procedureCompleteness.innerHTML = `
+    <p><strong>Acta ${completeness.percent}% completa</strong></p>
+    <div class="meter" aria-label="Completitud del acta"><span style="width: ${completeness.percent}%"></span></div>
+    <p><strong>Completos:</strong> ${formatList(completeness.completed)}</p>
+    <p><strong>Pendientes:</strong> ${formatList(completeness.pending)}</p>
+    <p><strong>Bloqueantes:</strong> ${formatList(completeness.blockingErrors)}</p>
+  `;
+
+  els.procedureFindings.innerHTML = "";
+  const findings = procedureState.findings.length ? procedureState.findings : [{
+    type: "INFO",
+    code: "no_check",
+    message: "Control de consistencia pendiente.",
+  }];
+  findings.slice(0, 8).forEach((finding) => {
+    const item = document.createElement("li");
+    item.innerHTML = `<span class="${findingBadgeClass(finding.type)}">${finding.type}</span>${finding.message}`;
+    els.procedureFindings.appendChild(item);
+  });
+
+  const aiDraft = procedureState.aiDraft;
+  renderMiniRecord(els.procedureAiDraft, aiDraft ? [
+    ["Aviso", aiDraft.notice],
+    ["Politica fuente", aiDraft.sourcePolicy],
+    ["Hechos", aiDraft.sections.hechosObservados.slice(0, 2).join(" / ")],
+    ["Resultado", aiDraft.sections.resultado.slice(0, 2).join(" / ")],
+    ["Limites", aiDraft.limitations.slice(0, 3).join(" / ")],
+  ] : [], "Borrador asistido pendiente. El sistema puede continuar sin IA.");
+
+  els.procedureChronology.innerHTML = "";
+  procedureState.chronology.slice(0, 12).forEach((event) => {
+    const item = document.createElement("li");
+    item.innerHTML = `<strong>${event.eventId}</strong> ${event.timestamp} / ${event.operatorId || "sistema"} / ${event.consoleId || "sin consola"}<br>${event.summary}`;
+    els.procedureChronology.appendChild(item);
+  });
+  if (!procedureState.chronology.length) {
+    const item = document.createElement("li");
+    item.textContent = "Cronologia automatica pendiente.";
+    els.procedureChronology.appendChild(item);
+  }
+
+  els.procedureVersions.innerHTML = "";
+  procedureState.procedureActVersions.forEach((version) => {
+    const item = document.createElement("li");
+    item.innerHTML = `<strong>${version.version}</strong> ${version.status} / ${version.versionId}<br>${version.reason}<br><code>${version.integrityReference?.value}</code>`;
+    els.procedureVersions.appendChild(item);
+  });
+  if (!procedureState.procedureActVersions.length) {
+    const item = document.createElement("li");
+    item.textContent = "Sin versiones documentales.";
+    els.procedureVersions.appendChild(item);
+  }
+
+  const master = procedureState.masterIncidentRecord;
+  renderMiniRecord(els.procedureMasterRecordDetail, master ? [
+    ["Expediente", master.id],
+    ["Organismos", master.organizations.join(", ")],
+    ["Operadores", master.operators.length],
+    ["Actas", master.individualActs.join(", ")],
+    ["Divergencias", master.divergenceNotice],
+    ["Cierre", master.closureStatus],
+  ] : [], "Expediente maestro pendiente.");
+
+  renderMiniRecord(els.procedureSupervision, [
+    ["Requiere", procedureState.supervision.required ? "si" : "no"],
+    ["Estado", procedureState.supervision.status],
+    ["Disparadores", formatList(procedureState.supervision.triggers)],
+    ["Observaciones", procedureState.supervision.observations.length],
+  ]);
+
+  renderMiniRecord(els.procedureClosure, procedureState.closure ? [
+    ["Cierre", procedureState.closure.status],
+    ["Propuesto", procedureState.closure.proposedStatus || "-"],
+    ["Responsable", procedureState.closure.responsible],
+    ["Acta asociada", procedureState.closure.associatedAct || "-"],
+    ["Errores", formatList(procedureState.closure.blockingErrors || [])],
+  ] : [], "Cierre pendiente. Toda alerta requiere cierre trazable.");
+
+  const lastExport = procedureState.exports[procedureState.exports.length - 1];
+  renderMiniRecord(els.procedureExport, [
+    ["Exportaciones", procedureState.exports.length],
+    ["Ultimo JSON", lastExport?.exportId || "pendiente"],
+    ["Hash export", lastExport?.integrityReference?.value || "pendiente"],
+    ["Vista impresion", procedureState.printViewHtml ? "disponible" : "pendiente"],
+  ]);
+
+  if (els.procedurePrintView) {
+    els.procedurePrintView.textContent = procedureState.printViewHtml || "Vista de impresion pendiente.";
+  }
+}
+
 function initializeFieldWorkflowControls() {
   if (!els.fieldOperatorSelect) return;
   els.fieldOperatorSelect.innerHTML = "";
@@ -1207,6 +1492,105 @@ function handleFieldAction(action) {
   if (action === "amend-act") amendSelectedFieldAct();
   if (action === "clarify-act") requestFieldClarificationBetweenOperators();
   if (action === "demo") runFieldDemoSequence();
+}
+
+function ensureFieldDemoForProcedure() {
+  const finalizedActs = fieldState.acts.filter((act) => act.status === "FINALIZED").length;
+  if (finalizedActs < 4) {
+    runFieldDemoSequence();
+  }
+}
+
+function applyProcedureResult(result, successMessage) {
+  if (!result?.ok) {
+    setProcedureMessage(result?.error || "Accion documental no permitida.", true);
+    renderProcedureAct();
+    return false;
+  }
+  appendProcedureLedger(result);
+  syncProcedureStateToBuildWeek();
+  setProcedureMessage(successMessage || procedureState.lastMessage || "Accion documental registrada.");
+  render();
+  return true;
+}
+
+function runProcedureCreate() {
+  ensureFieldDemoForProcedure();
+  return applyProcedureResult(
+    createProcedureAct(procedureState, procedureContext()),
+    "Acta Digital de Procedimiento creada desde actas individuales y bitacora.",
+  );
+}
+
+function runProcedureDemo() {
+  ensureFieldDemoForProcedure();
+  if (procedureState.procedureAct?.locked && procedureState.closure?.closedAt) {
+    setProcedureMessage("La demo Etapa 5 ya fue ejecutada.");
+    renderProcedureAct();
+    return;
+  }
+  const demo = runProcedureDemoSequence(procedureState, procedureContext());
+  demo.results.forEach(appendProcedureLedger);
+  syncProcedureStateToBuildWeek();
+  setProcedureMessage(demo.ok
+    ? "Demo Etapa 5 completada: acta, consistencia, hash, expediente y cierre trazable."
+    : "Demo Etapa 5 ejecuto pasos, revisar avisos pendientes.", !demo.ok);
+  render();
+}
+
+function runProcedureAction(action) {
+  if (action === "create") {
+    runProcedureCreate();
+    return;
+  }
+  if (!procedureState.procedureAct && action !== "demo") {
+    setProcedureMessage("Primero debe generarse el Acta Digital de Procedimiento.", true);
+    renderProcedureAct();
+    return;
+  }
+
+  if (action === "ai-draft") applyProcedureResult(generateAiDraft(procedureState), "Borrador asistido generado con fuentes trazables.");
+  if (action === "review") applyProcedureResult(completeOperatorReview(procedureState), "Revision humana del operador registrada.");
+  if (action === "clarify") {
+    registerDemoTimeInconsistency(procedureState);
+    applyProcedureResult(requestClarification(procedureState, {
+      sourceActId: "ACT-FIELD-107-A",
+      recipientOperatorId: "OP-FIELD-107-A",
+      reason: "Aclarar horario de triage por diferencia simulada.",
+    }), "Solicitud de aclaracion agregada sin modificar la fuente.");
+  }
+  if (action === "answer-clarification") {
+    const pending = procedureState.clarificationRequests.find((request) => request.status !== "RESPONDED");
+    applyProcedureResult(pending
+      ? respondClarification(procedureState, pending.id, "Respuesta por anexo: se conserva el registro original y se aclara el horario.")
+      : { ok: false, error: "No hay aclaraciones pendientes." }, "Aclaracion respondida por anexo.");
+  }
+  if (action === "supervisor") {
+    const requested = requestSupervisorReview(procedureState);
+    if (requested.ok) appendProcedureLedger(requested);
+    const validated = validateSupervisor(procedureState);
+    applyProcedureResult(validated, "Supervisor valido recepcion documental sin modificar relato.");
+  }
+  if (action === "submit") applyProcedureResult(submitProcedureAct(procedureState), "Acta presentada para control final.");
+  if (action === "finalize") applyProcedureResult(finalizeProcedureAct(procedureState), "Acta finalizada y bloqueada con referencia de integridad.");
+  if (action === "amend") applyProcedureResult(amendProcedureAct(procedureState), "Ampliacion versionada sin sobrescribir el final.");
+  if (action === "rectify") applyProcedureResult(rectifyProcedureAct(procedureState), "Rectificacion versionada sin borrar el documento original.");
+  if (action === "master-record") applyProcedureResult(buildMasterIncidentRecord(procedureState), "Expediente maestro generado como indice y sintesis.");
+  if (action === "propose-closure") {
+    const result = proposeClosure(procedureState, CLOSURE_STATUSES.CLOSED_WITH_PROCEDURE_ACT);
+    const isBlocked = result.ok && result.closure?.status === "BLOCKED";
+    applyProcedureResult(result, isBlocked ? "Cierre bloqueado por requisitos pendientes." : "Cierre propuesto por operador.");
+  }
+  if (action === "close") applyProcedureResult(finalizeClosure(procedureState), "Incidente cerrado con trazabilidad documental.");
+  if (action === "export") applyProcedureResult(exportProcedureJson(procedureState), "Exportacion JSON generada con referencia de integridad.");
+  if (action === "print") {
+    procedureState.printViewHtml = procedureState.procedureAct
+      ? window.PIPOProcedureAct.buildPrintView(procedureState.procedureAct, procedureState)
+      : "";
+    setProcedureMessage("Vista de impresion actualizada. El navegador permite guardar como PDF.");
+    renderProcedureAct();
+  }
+  if (action === "demo") runProcedureDemo();
 }
 
 function renderComparison() {
@@ -1509,6 +1893,7 @@ function confirmHumanDecision() {
 
 function render() {
   syncFieldStateToBuildWeek();
+  syncProcedureStateToBuildWeek();
   renderScenario();
   renderConsoles();
   renderParticipants();
@@ -1522,13 +1907,19 @@ function render() {
   renderLedger();
   renderAssistant();
   renderFieldWorkflow();
+  renderProcedureAct();
   renderComparison();
   renderSnapshot();
 }
 
 document.addEventListener("click", (event) => {
-  const button = event.target.closest("[data-model], [data-action], [data-ledger], [data-assistant], [data-field-action]");
+  const button = event.target.closest("[data-model], [data-action], [data-ledger], [data-assistant], [data-field-action], [data-procedure-action]");
   if (!button) return;
+
+  if (button.dataset.procedureAction) {
+    runProcedureAction(button.dataset.procedureAction);
+    return;
+  }
 
   if (button.dataset.fieldAction) {
     handleFieldAction(button.dataset.fieldAction);

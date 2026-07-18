@@ -247,3 +247,77 @@ La vista muestra:
 
 La IA puede ordenar datos y detectar faltantes, pero no inventa acontecimientos, no transforma
 manifestaciones en hechos, no finaliza actas y no sustituye al operador.
+
+## Etapa 5 - Cierre documental
+
+`procedure-act.js` agrega la capa documental final del incidente.
+
+Componentes:
+
+- `ProcedureActState`;
+- `Acta Digital de Procedimiento PIPO`;
+- cronologia automatica;
+- borrador asistido por IA;
+- completitud;
+- motor de consistencia;
+- supervision;
+- aclaraciones;
+- versiones;
+- referencia de integridad;
+- `Master Incident Record`;
+- cierre trazable.
+
+Principio:
+
+> Las actuaciones individuales se integran, pero nunca se sustituyen ni se reescriben.
+
+### Flujo
+
+1. La consola maestra crea el Acta Digital desde bitacora y actas individuales.
+2. El sistema arma cronologia por referencia a eventos, operadores, consolas, evidencia y actas fuente.
+3. La IA puede generar un borrador neutral y trazable.
+4. El operador revisa y completa confirmacion.
+5. El motor calcula completitud.
+6. El motor de consistencia detecta errores, advertencias y datos pendientes.
+7. Si corresponde, supervisor valida recepcion sin modificar relato.
+8. El acta se finaliza y queda bloqueada.
+9. Ampliaciones o rectificaciones crean versiones nuevas.
+10. El expediente maestro se genera como indice y sintesis.
+11. La consola maestra propone y ejecuta cierre si no hay bloqueantes.
+
+### Estados del Acta Digital
+
+- `DRAFT`;
+- `IN_REVIEW`;
+- `PENDING_SUPERVISOR`;
+- `RETURNED_FOR_CLARIFICATION`;
+- `FINALIZED`;
+- `AMENDED`;
+- `RECTIFIED`;
+- `ANNULLED_WITH_REASON`.
+
+Una version finalizada no se sobrescribe. Toda ampliacion, rectificacion o anulacion conserva el documento
+original y agrega una version con motivo, autor, fecha, referencia previa e integridad de demostracion.
+
+### Consistencia
+
+Los hallazgos se clasifican como:
+
+- `BLOCKING_ERROR`;
+- `WARNING`;
+- `RECOMMENDATION`;
+- `PENDING_INFORMATION`.
+
+Los errores bloqueantes impiden finalizar el acta o cerrar el incidente.
+
+### Integridad
+
+La demo usa una referencia de integridad rotulada como:
+
+`Referencia de integridad de la demostracion`
+
+El modulo incluye una funcion async que usa Web Crypto API para SHA-256 cuando esta disponible y fallback
+deterministico cuando no lo esta.
+
+No afirma firma digital certificada, cadena de custodia judicial completa, inmutabilidad absoluta,
+certificacion estatal ni prueba judicial automatica.

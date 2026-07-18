@@ -109,6 +109,44 @@ La evidencia de campo es ficticia:
 - no hay imagen, audio o video real;
 - no se cargan datos personales reales.
 
+## Acta Digital de Procedimiento
+
+En Etapa 5 la IA puede generar un borrador documental solo con fuentes existentes:
+
+- bitacora;
+- acontecimientos individuales;
+- decisiones humanas;
+- actuaciones;
+- evidencia referenciada;
+- respuestas del operador.
+
+Aviso obligatorio:
+
+`Borrador generado con asistencia de IA. Requiere revision y aprobacion del funcionario actuante.`
+
+El borrador debe:
+
+- usar lenguaje neutral;
+- separar hechos observados de manifestaciones de terceros;
+- citar eventos fuente;
+- marcar `Dato no disponible`;
+- senalar contradicciones;
+- identificar informacion sin respaldo.
+
+La IA no puede:
+
+- finalizar;
+- firmar;
+- bloquear;
+- eliminar;
+- modificar la bitacora;
+- reemplazar el criterio humano;
+- emitir conclusiones juridicas;
+- atribuir culpabilidad.
+
+El sistema permite continuar sin IA. La completitud, la consistencia, la supervision y el cierre son
+controles documentales y humanos, no decisiones autonomas del modelo.
+
 ## Backend experimental
 
 Configuracion:

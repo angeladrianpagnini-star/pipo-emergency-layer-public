@@ -233,6 +233,31 @@ Reglas:
 - el acta finalizada queda bloqueada;
 - una ampliacion crea nueva version documental.
 
+## Etapa 5 - Acta Digital, expediente maestro y cierre trazable
+
+Se agrega `procedure-act.js` para completar el ciclo documental:
+
+- Acta Digital de Procedimiento PIPO;
+- cronologia automatica desde bitacora y campo;
+- borrador asistido por IA con revision humana obligatoria;
+- indicador real de completitud;
+- motor de consistencia con errores, advertencias y pendientes;
+- supervision sin manipulacion del relato;
+- solicitudes y respuestas de aclaracion;
+- versionado v1, v2, v3, v3.1 y v3.2;
+- referencia de integridad de demostracion;
+- exportacion JSON;
+- vista de impresion para guardar como PDF desde el navegador;
+- expediente maestro como indice y sintesis;
+- cierre obligatorio y trazable.
+
+Principio obligatorio:
+
+> Las actuaciones individuales se integran, pero nunca se sustituyen ni se reescriben.
+
+La IA solo genera un borrador trazable. No finaliza, no firma, no bloquea, no borra y no reemplaza el
+criterio humano. El sistema tambien funciona sin IA.
+
 ## Principios de seguridad
 
 - Datos simulados.
@@ -243,11 +268,12 @@ Reglas:
 - La IA aparece solo como asistencia simulada.
 - Toda decision requiere validacion humana.
 - La IA no despacha recursos, no cierra incidentes, no firma actas, no activa sensores y no modifica evidencia.
+- El Acta Digital no afirma firma digital certificada, inmutabilidad absoluta ni valor judicial automatico.
 - Las capacidades de ubicacion, audio y video permanecen deshabilitadas hasta cumplir requisitos simulados de denuncia, autorizacion, alcance, finalidad, operadores autorizados y vencimiento.
 
 ## Archivos
 
-- `index.html`: visor de Etapas 0, 1, 1.1, 2 y 3.
+- `index.html`: visor de Etapas 0, 1, 1.1, 2, 3, 4A, 4B y 5.
 - `styles.css`: estilos independientes de la ruta Build Week.
 - `data-models.js`: definiciones y estado simulado inicial.
 - `ledger.js`: bitacora operativa append-only.
@@ -257,12 +283,18 @@ Reglas:
 - `incident-assistant.test.js`: pruebas del asistente, escenarios, bitacora, permisos y modo sin IA.
 - `field-workflow.js`: flujo multioperador de campo, evidencia simulada, apoyo y actas individuales.
 - `field-workflow.test.js`: pruebas de estados, eventos, evidencia, apoyo, bloqueo de actas y aclaraciones.
-- `app.js`: render de modelos, asistente, comparacion IA/humano y snapshot JSON.
+- `procedure-act.js`: Acta Digital de Procedimiento, completitud, consistencia, expediente, integridad y cierre.
+- `procedure-act.test.js`: pruebas de Etapa 5.
+- `app.js`: render de modelos, asistente, campo, acta, expediente, cierre y snapshot JSON.
 - `server/`: backend seguro experimental, validadores, cliente proveedor, auditoria y pruebas.
 - `FIELD_OPERATOR_WORKFLOW.md`: documentacion del flujo de campo.
+- `PROCEDURE_ACT_WORKFLOW.md`: documentacion del Acta Digital de Procedimiento.
+- `MASTER_INCIDENT_RECORD.md`: documentacion del expediente maestro.
+- `DEMO_SCRIPT.md`: recorrido publico de menos de tres minutos.
+- `TEST_PLAN.md`: plan de pruebas de Build Week.
 - `GUARDIAN_DIGITAL_DEPLOYMENT_PLAN.md`: hoja de ruta futura, sin implementacion ni despliegue.
 
 ## Siguiente etapa
 
-Etapa 5 recomendada: Acta Digital de Procedimiento completa, con versiones, revisiones, exportacion
-controlada y cierre documental.
+Etapa 6 recomendada: preparacion de evaluacion externa, matriz legal-operativa y paquete de presentacion
+institucional sin publicar sobre v36.

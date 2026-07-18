@@ -1,5 +1,24 @@
 # Build Week Changelog
 
+## Etapa 5 - Acta Digital, expediente maestro y cierre trazable
+
+- Agrega `procedure-act.js` con modelos de Acta Digital de Procedimiento, expediente maestro y cierre.
+- Agrega `procedure-act.test.js` con pruebas de acta, cronologia, completitud, consistencia, supervisor, versionado, hash, exportacion y cierre.
+- Agrega navegacion interna: Incident Assistant, Master Console, Field Operators, Individual Acts, Procedure Act, Master Incident Record, Audit y Closure.
+- Agrega panel `Acta Digital de Procedimiento PIPO`.
+- Agrega panel `Expediente y cierre trazable`.
+- Genera cronologia automatica desde bitacora append-only, eventos de campo, evidencia, actas individuales y aclaraciones.
+- Genera borrador asistido por IA con aviso obligatorio de revision humana.
+- Calcula `Acta XX % completa` y muestra campos completos, pendientes, advertencias y errores bloqueantes.
+- Bloquea finalizacion cuando faltan confirmacion, supervision o requisitos de cierre.
+- Detecta una inconsistencia horaria simulada y conserva su respuesta como anexo.
+- Agrega versionado documental `v1`, `v2`, `v3`, `v3.1` y `v3.2`.
+- Calcula referencia de integridad de demostracion y mantiene vista de impresion.
+- Exporta JSON del acta, expediente, hallazgos, completitud, cronologia y cierre.
+- Agrega eventos de bitacora de Etapa 5.
+- Crea `PROCEDURE_ACT_WORKFLOW.md`, `MASTER_INCIDENT_RECORD.md`, `DEMO_SCRIPT.md` y `TEST_PLAN.md`.
+- Mantiene intactos `docs/index.html`, `docs/styles.css`, `docs/app.js` y la version publica v36.
+
 ## Etapa 4B - Movil de campo multioperador y actas individuales
 
 - Agrega `field-workflow.js` con estados de intervencion, operadores ficticios, evidencia simulada, apoyo y actas.

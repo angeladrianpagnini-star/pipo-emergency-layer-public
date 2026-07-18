@@ -3,12 +3,12 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>PIPO Build Week - Etapa 4A</title>
+    <title>PIPO Build Week - Etapa 5</title>
     <meta
       name="description"
-      content="Version separada de PIPO Emergency Layer para OpenAI Build Week. Etapa 4A: backend seguro experimental con fallback simulado y validacion humana obligatoria."
+      content="Version separada de PIPO Emergency Layer para OpenAI Build Week. Etapa 5: acta digital de procedimiento, expediente maestro y cierre trazable."
     />
-    <link rel="stylesheet" href="styles.css?v=7" />
+    <link rel="stylesheet" href="styles.css?v=8" />
   </head>
   <body>
     <header class="hero">
@@ -26,6 +26,17 @@
         <span>Datos simulados. Sin API keys. Sin conexion con emergencias reales.</span>
       </aside>
     </header>
+
+    <nav class="section-nav" aria-label="Navegacion Build Week">
+      <a href="#incident-assistant">Incident Assistant</a>
+      <a href="#master-console">Master Console</a>
+      <a href="#field-operators">Field Operators</a>
+      <a href="#individual-acts">Individual Acts</a>
+      <a href="#procedure-act">Procedure Act</a>
+      <a href="#master-incident-record">Master Incident Record</a>
+      <a href="#audit">Audit</a>
+      <a href="#closure">Closure</a>
+    </nav>
 
     <main class="layout">
       <section class="panel stage-panel">
@@ -75,7 +86,7 @@
         </div>
       </section>
 
-      <section class="panel assistant-panel">
+      <section id="incident-assistant" class="panel assistant-panel">
         <div class="section-title">
           <h2>PIPO AI Incident Assistant</h2>
           <span>Etapa 4A experimental</span>
@@ -319,7 +330,7 @@
         </div>
       </section>
 
-      <section class="panel field-panel">
+      <section id="field-operators" class="panel field-panel">
         <div class="section-title">
           <h2>Field Operator Mobile</h2>
           <span>Etapa 4B</span>
@@ -491,7 +502,104 @@
         </div>
       </section>
 
-      <section class="panel federated-panel">
+      <section id="procedure-act" class="panel procedure-panel">
+        <div class="section-title">
+          <h2>Acta Digital de Procedimiento PIPO</h2>
+          <span>Etapa 5</span>
+        </div>
+        <p class="lead">
+          La consola maestra integra actas individuales, bitacora, evidencia simulada y decisiones humanas.
+          Las fuentes originales se referencian y permanecen preservadas.
+        </p>
+        <div class="assistant-flow compact-flow" aria-label="Flujo documental de Etapa 5">
+          <span>1. Acta</span>
+          <span>2. Borrador IA</span>
+          <span>3. Consistencia</span>
+          <span>4. Supervisor</span>
+          <span>5. Cierre</span>
+        </div>
+        <div class="action-row">
+          <button type="button" data-procedure-action="create">Generar acta</button>
+          <button type="button" data-procedure-action="ai-draft">Borrador IA</button>
+          <button type="button" data-procedure-action="review">Revision operador</button>
+          <button type="button" data-procedure-action="clarify">Solicitar aclaracion</button>
+          <button type="button" data-procedure-action="answer-clarification">Responder aclaracion</button>
+          <button type="button" data-procedure-action="supervisor">Supervisor</button>
+          <button type="button" data-procedure-action="submit">Presentar</button>
+          <button type="button" data-procedure-action="finalize">Finalizar acta</button>
+          <button type="button" data-procedure-action="demo">Demo Etapa 5</button>
+        </div>
+        <div id="procedureMessage" class="access-result"></div>
+        <div class="procedure-grid">
+          <article>
+            <h3>Acta</h3>
+            <div id="procedureActSummary" class="mini-record"></div>
+          </article>
+          <article>
+            <h3>Completitud</h3>
+            <div id="procedureCompleteness" class="mini-record"></div>
+          </article>
+          <article>
+            <h3>Consistencia</h3>
+            <ol id="procedureFindings" class="compact-list"></ol>
+          </article>
+          <article>
+            <h3>Borrador asistido</h3>
+            <div id="procedureAiDraft" class="mini-record"></div>
+          </article>
+        </div>
+        <div class="procedure-grid two-col">
+          <article>
+            <h3>Cronologia automatica</h3>
+            <ol id="procedureChronology" class="compact-list"></ol>
+          </article>
+          <article>
+            <h3>Versionado documental</h3>
+            <ol id="procedureVersions" class="compact-list"></ol>
+          </article>
+        </div>
+      </section>
+
+      <section id="closure" class="panel procedure-panel">
+        <div class="section-title">
+          <h2>Expediente y cierre trazable</h2>
+          <span>Master Incident Record</span>
+        </div>
+        <p class="lead">
+          El expediente maestro funciona como indice y sintesis. No crea una narrativa unica que elimine
+          diferencias entre actas, eventos o aclaraciones.
+        </p>
+        <div class="action-row">
+          <button type="button" data-procedure-action="amend">Ampliar version</button>
+          <button type="button" data-procedure-action="rectify">Rectificar</button>
+          <button type="button" data-procedure-action="master-record">Generar expediente</button>
+          <button type="button" data-procedure-action="propose-closure">Proponer cierre</button>
+          <button type="button" data-procedure-action="close">Cerrar incidente</button>
+          <button type="button" data-procedure-action="export">Exportar JSON</button>
+          <button type="button" data-procedure-action="print">Vista impresion</button>
+        </div>
+        <div class="procedure-grid">
+          <article id="master-incident-record">
+            <h3>Expediente Digital del Incidente</h3>
+            <div id="procedureMasterRecordDetail" class="mini-record"></div>
+          </article>
+          <article>
+            <h3>Supervision</h3>
+            <div id="procedureSupervision" class="mini-record"></div>
+          </article>
+          <article>
+            <h3>Cierre obligatorio</h3>
+            <div id="procedureClosure" class="mini-record"></div>
+          </article>
+          <article>
+            <h3>Exportacion e impresion</h3>
+            <div id="procedureExport" class="mini-record"></div>
+          </article>
+        </div>
+        <pre id="procedurePrintView" class="print-preview"></pre>
+      </section>
+
+      <section id="master-console" class="panel federated-panel">
         <div class="section-title">
           <h2>FederatedOperationalConsole</h2>
           <span>Componente configurable</span>
@@ -503,7 +611,7 @@
         <div id="consoleGrid" class="console-grid" aria-label="Consolas federadas"></div>
       </section>
 
-      <section class="panel participants-panel">
+      <section id="individual-acts" class="panel participants-panel">
         <div class="section-title">
           <h2>Multiintervencion</h2>
           <span>Operadores y actas propias</span>
@@ -606,7 +714,7 @@
         <ol id="timeline" class="timeline"></ol>
       </section>
 
-      <section class="panel ledger-panel">
+      <section id="audit" class="panel ledger-panel">
         <div class="section-title">
           <h2>Bitacora operativa append-only</h2>
           <span>Etapa 2</span>
@@ -659,11 +767,12 @@
     </main>
 
     <script src="data-models.js?v=5"></script>
-    <script src="ledger.js?v=5"></script>
+    <script src="ledger.js?v=6"></script>
     <script src="incident-scenarios.js?v=5"></script>
     <script src="ai-service.js?v=6"></script>
     <script src="incident-assistant.js?v=5"></script>
     <script src="field-workflow.js?v=1"></script>
-    <script src="app.js?v=7"></script>
+    <script src="procedure-act.js?v=1"></script>
+    <script src="app.js?v=8"></script>
   </body>
 </html>
