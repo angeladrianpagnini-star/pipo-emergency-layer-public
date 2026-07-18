@@ -87,6 +87,28 @@ Diferencias materiales:
 
 La comparacion `AI vs. Human Decision` es trazabilidad documental y no se usa para puntuar al operador.
 
+## Movil de campo y actas
+
+La vista `Field Operator Mobile` mantiene control humano completo:
+
+- la IA no acepta derivaciones;
+- la IA no registra salida, arribo ni intervencion;
+- la IA no crea evidencia;
+- la IA no solicita apoyo;
+- la IA no finaliza actas;
+- la IA no corrige registros;
+- la IA no firma por un operador.
+
+Cada operador conserva autoria documental. Una aclaracion, rectificacion o ampliacion se agrega como
+nuevo registro o nueva version; nunca borra ni reemplaza silenciosamente el original.
+
+La evidencia de campo es ficticia:
+
+- no hay captura de sensores reales;
+- no hay ubicacion real;
+- no hay imagen, audio o video real;
+- no se cargan datos personales reales.
+
 ## Backend experimental
 
 Configuracion:

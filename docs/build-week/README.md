@@ -184,6 +184,55 @@ Si el backend no esta disponible, la UI:
 
 El frontend no contiene credenciales del proveedor.
 
+## Etapa 4B - Movil de campo multioperador y actas individuales
+
+Se agrega `Field Operator Mobile`, una vista responsive para representar la intervencion territorial de
+varios operadores en un mismo incidente.
+
+El nuevo modulo `field-workflow.js` permite:
+
+- seleccionar operadores ficticios de 911, 107, Transito, Bomberos, Policia Cientifica y Ciberdelitos;
+- mostrar autenticacion simulada, MFA, biometria local y dispositivo enrolado;
+- aceptar o rechazar una derivacion con fundamento;
+- registrar salida, arribo, inicio, actividad, apoyo y finalizacion;
+- cargar acontecimientos propios;
+- incorporar evidencia simulada sin sensores reales;
+- solicitar apoyo interinstitucional;
+- aceptar apoyo desde la consola destinataria;
+- crear, revisar, finalizar y ampliar actas individuales;
+- solicitar aclaraciones sin alterar el acta fuente;
+- comparar intervenciones por operador sin fusionar autoria.
+
+Principio obligatorio:
+
+> Cada intervencion conserva autoria, responsabilidad y trazabilidad propias.
+
+La consola maestra integra referencias, pero no reescribe ni firma por otros operadores.
+
+Estados controlados:
+
+- `ASSIGNED`;
+- `ACCEPTED`;
+- `DEPARTED`;
+- `ARRIVED`;
+- `INTERVENTION_STARTED`;
+- `INTERVENTION_ACTIVE`;
+- `WAITING_SUPPORT`;
+- `TRANSFERRED`;
+- `COMPLETED`;
+- `CANCELLED_WITH_REASON`.
+
+Reglas:
+
+- no hay arribo antes de aceptacion y salida;
+- no hay intervencion antes del arribo;
+- no hay finalizacion sin acontecimientos propios;
+- no hay cancelacion o rechazo sin fundamento;
+- no se puede modificar un acontecimiento ajeno;
+- una aclaracion crea un registro nuevo;
+- el acta finalizada queda bloqueada;
+- una ampliacion crea nueva version documental.
+
 ## Principios de seguridad
 
 - Datos simulados.
@@ -206,10 +255,14 @@ El frontend no contiene credenciales del proveedor.
 - `ai-service.js`: servicio desacoplado con modo `SIMULATED_DEMO` y puente `OPENAI_SECURE_BACKEND`.
 - `incident-assistant.js`: validacion humana, comparacion IA/humano y reglas de diferencias materiales.
 - `incident-assistant.test.js`: pruebas del asistente, escenarios, bitacora, permisos y modo sin IA.
+- `field-workflow.js`: flujo multioperador de campo, evidencia simulada, apoyo y actas individuales.
+- `field-workflow.test.js`: pruebas de estados, eventos, evidencia, apoyo, bloqueo de actas y aclaraciones.
 - `app.js`: render de modelos, asistente, comparacion IA/humano y snapshot JSON.
 - `server/`: backend seguro experimental, validadores, cliente proveedor, auditoria y pruebas.
+- `FIELD_OPERATOR_WORKFLOW.md`: documentacion del flujo de campo.
+- `GUARDIAN_DIGITAL_DEPLOYMENT_PLAN.md`: hoja de ruta futura, sin implementacion ni despliegue.
 
 ## Siguiente etapa
 
-Etapa 4B recomendada: vista del operador de campo y flujo operativo de derivacion, manteniendo la
-separacion documental por consola y la validacion humana.
+Etapa 5 recomendada: Acta Digital de Procedimiento completa, con versiones, revisiones, exportacion
+controlada y cierre documental.

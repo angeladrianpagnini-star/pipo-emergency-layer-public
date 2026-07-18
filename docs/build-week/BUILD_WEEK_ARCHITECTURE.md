@@ -153,3 +153,97 @@ Los eventos de IA y decision humana se agregan a la cadena append-only:
 - `followup.answer.recorded`.
 
 La bitacora reconstruye entrada original, sugerencia, revision, decision final, diferencias y derivacion preparada.
+
+## Etapa 4B - Campo multioperador
+
+`field-workflow.js` agrega una capa operativa de campo separada de la consola maestra.
+
+Componentes:
+
+- operadores ficticios;
+- asignaciones;
+- estados de intervencion;
+- acontecimientos individuales;
+- evidencia simulada;
+- solicitudes de apoyo;
+- actas individuales;
+- versiones documentales;
+- aclaraciones.
+
+Principio:
+
+> Cada intervencion conserva autoria, responsabilidad y trazabilidad propias.
+
+La consola maestra puede ver referencias y solicitar aclaraciones, pero no puede modificar el registro de
+otro operador. Cada funcionario conserva:
+
+- `operatorId`;
+- `consoleId`;
+- `role`;
+- `rankOrRole`;
+- `specialty`;
+- `enrolledDeviceId`;
+- `sessionId`;
+- `joinedAt`;
+- `interventionStatus`;
+- `individualActId`.
+
+### Estados de intervencion
+
+La maquina de estados impide:
+
+- arribo antes de aceptacion;
+- intervencion antes de arribo;
+- cierre sin acontecimientos propios;
+- cancelacion o rechazo sin fundamento.
+
+Los estados son:
+
+- `ASSIGNED`;
+- `ACCEPTED`;
+- `DEPARTED`;
+- `ARRIVED`;
+- `INTERVENTION_STARTED`;
+- `INTERVENTION_ACTIVE`;
+- `WAITING_SUPPORT`;
+- `TRANSFERRED`;
+- `COMPLETED`;
+- `CANCELLED_WITH_REASON`.
+
+### Acontecimientos
+
+Cada acontecimiento es append-only y contiene:
+
+- `eventId`;
+- `incidentId`;
+- `operatorId`;
+- `consoleId`;
+- `timestamp`;
+- `category`;
+- `description`;
+- `classification`;
+- `locationSimulated`;
+- `linkedEvidenceIds`;
+- `integrityReference`.
+
+Un operador no edita acontecimientos de otro. Toda aclaracion o rectificacion genera un nuevo evento con
+referencia al original.
+
+### Evidencia simulada
+
+No se capturan sensores reales ni ubicacion real. La evidencia contiene autor, operador, organismo,
+fecha, hora, tipo, clasificacion, origen, descripcion, referencia de integridad, permisos y consolas con acceso.
+
+### Actas individuales
+
+Cada operador genera su propia `Individual Intervention Act`. El acta finalizada queda bloqueada. Toda
+ampliacion posterior crea una version nueva sin alterar la version original.
+
+La vista muestra:
+
+`Documento individual del funcionario interviniente. No sustituye las actas de otros operadores.`
+
+### Relacion con IA
+
+La IA puede ordenar datos y detectar faltantes, pero no inventa acontecimientos, no transforma
+manifestaciones en hechos, no finaliza actas y no sustituye al operador.

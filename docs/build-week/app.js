@@ -40,6 +40,31 @@ const {
   normalizePriority,
 } = window.PIPOIncidentAssistant;
 
+const {
+  FIELD_WORKFLOW_VERSION,
+  INTERVENTION_STATES,
+  EVENT_CATEGORIES,
+  EVIDENCE_TYPES,
+  SUPPORT_TARGETS,
+  createFieldWorkflowState,
+  getFieldOperator,
+  getAssignment,
+  transitionFieldOperator,
+  createIndividualEvent,
+  createEventCorrection,
+  createSimulatedEvidence,
+  createSupportRequest,
+  acceptSupportRequest,
+  buildActPreview,
+  createIndividualAct,
+  reviewIndividualAct,
+  finalizeIndividualAct,
+  amendIndividualAct,
+  createClarificationRequest,
+  getEditableDraftStatus,
+  compareInterventions,
+} = window.PIPOFieldWorkflow;
+
 const stateByModel = {
   incident: BUILD_WEEK_STATE.incident,
   event: BUILD_WEEK_STATE.events[0],
@@ -129,11 +154,39 @@ const els = {
   humanFollowUpAnswers: document.querySelector("#humanFollowUpAnswers"),
   humanReasonInput: document.querySelector("#humanReasonInput"),
   assistantComparison: document.querySelector("#assistantComparison"),
+  fieldMobileTime: document.querySelector("#fieldMobileTime"),
+  fieldOperatorSelect: document.querySelector("#fieldOperatorSelect"),
+  fieldOperatorMeta: document.querySelector("#fieldOperatorMeta"),
+  fieldStatus: document.querySelector("#fieldStatus"),
+  fieldIncidentSummary: document.querySelector("#fieldIncidentSummary"),
+  fieldAssignment: document.querySelector("#fieldAssignment"),
+  fieldStatusFlow: document.querySelector("#fieldStatusFlow"),
+  fieldActionReason: document.querySelector("#fieldActionReason"),
+  fieldActionMessage: document.querySelector("#fieldActionMessage"),
+  fieldEventCategory: document.querySelector("#fieldEventCategory"),
+  fieldEventClassification: document.querySelector("#fieldEventClassification"),
+  fieldEventLocation: document.querySelector("#fieldEventLocation"),
+  fieldEventDescription: document.querySelector("#fieldEventDescription"),
+  fieldEvidenceType: document.querySelector("#fieldEvidenceType"),
+  fieldEvidenceClassification: document.querySelector("#fieldEvidenceClassification"),
+  fieldEvidenceDescription: document.querySelector("#fieldEvidenceDescription"),
+  fieldSupportConsole: document.querySelector("#fieldSupportConsole"),
+  fieldSupportUrgency: document.querySelector("#fieldSupportUrgency"),
+  fieldSupportReason: document.querySelector("#fieldSupportReason"),
+  fieldEventList: document.querySelector("#fieldEventList"),
+  fieldEvidenceList: document.querySelector("#fieldEvidenceList"),
+  fieldSupportList: document.querySelector("#fieldSupportList"),
+  fieldActMeta: document.querySelector("#fieldActMeta"),
+  fieldActPreview: document.querySelector("#fieldActPreview"),
+  fieldComparison: document.querySelector("#fieldComparison"),
 };
 
 let selectedModel = MODEL_DEFINITIONS[0].key;
 let selectedScenario = "general";
 let selectedAssistantMode = AI_MODES.SIMULATED_DEMO;
+const fieldState = createFieldWorkflowState();
+let selectedFieldOperatorId = fieldState.selectedOperatorId;
+let fieldMessage = "Esperando accion del operador.";
 let assistantState = {
   suggestion: BUILD_WEEK_STATE.aiSuggestion,
   humanDraft: createHumanDecisionDraft(BUILD_WEEK_STATE.aiSuggestion, getOperatorById("OP-MASTER-01")),
@@ -305,15 +358,146 @@ function addLocalEvent(summary) {
 }
 
 function addLedger(type, payload = {}, operatorId = "OP-MASTER-01") {
-  const operator = getOperatorById(operatorId);
+  const operator = getOperatorById(operatorId) || getFieldOperator(fieldState, operatorId) || getOperatorById("OP-MASTER-01");
   return appendLedgerEvent({
     type,
-    operatorId: operator.id,
+    operatorId: operator.id || operator.operatorId,
     consoleId: operator.consoleId,
     sessionId: operator.sessionId,
     payload,
     classification: payload.classification || "OPERATIONAL",
   });
+}
+
+function appendFieldLedger(result) {
+  if (!result?.ok || !result.ledger) return null;
+  return addLedger(result.ledger.type, result.ledger.payload, result.ledger.operatorId);
+}
+
+function setFieldMessage(message, isError = false) {
+  fieldMessage = message;
+  if (els.fieldActionMessage) {
+    els.fieldActionMessage.className = `field-message ${isError ? "field-error" : ""}`;
+    els.fieldActionMessage.textContent = message;
+  }
+}
+
+function ensureUnique(list, value) {
+  if (value && !list.includes(value)) list.push(value);
+}
+
+function ensureFieldOperatorInBuildWeek(operator) {
+  if (!operator) return;
+  if (!BUILD_WEEK_STATE.operatorIdentities.some((item) => item.id === operator.operatorId)) {
+    BUILD_WEEK_STATE.operatorIdentities.push({
+      id: operator.operatorId,
+      fictitiousName: operator.fictitiousName,
+      organization: operator.organization,
+      rankOrRole: operator.rankOrRole,
+      specialty: operator.specialty,
+      consoleId: operator.consoleId,
+      enrolledDeviceId: operator.enrolledDeviceId,
+      mfaVerified: operator.mfaVerified,
+      localBiometricVerified: operator.localBiometricVerified,
+      sessionId: operator.sessionId,
+      sessionStartedAt: operator.joinedAt,
+    });
+  }
+
+  if (!BUILD_WEEK_STATE.incidentParticipants.some((item) => item.operatorId === operator.operatorId)) {
+    BUILD_WEEK_STATE.incidentParticipants.push({
+      incidentId: fieldState.incident.id,
+      operatorId: operator.operatorId,
+      consoleId: operator.consoleId,
+      role: operator.role,
+      joinedAt: operator.joinedAt,
+      leftAt: null,
+      permissions: ["registrar salida", "registrar arribo", "registrar acontecimiento", "adjuntar evidencia", "acta individual"],
+      status: "Activo",
+      interventionStatus: operator.interventionStatus,
+      individualActId: operator.individualActId,
+    });
+  } else {
+    const participant = BUILD_WEEK_STATE.incidentParticipants.find((item) => item.operatorId === operator.operatorId);
+    participant.interventionStatus = operator.interventionStatus;
+    participant.status = operator.interventionStatus === INTERVENTION_STATES.COMPLETED ? "Cerrado" : "Activo";
+  }
+}
+
+function syncFieldStateToBuildWeek() {
+  fieldState.operators.forEach(ensureFieldOperatorInBuildWeek);
+
+  fieldState.evidences.forEach((evidence) => {
+    if (!BUILD_WEEK_STATE.evidence.some((item) => item.id === evidence.evidenceId)) {
+      BUILD_WEEK_STATE.evidence.push({
+        id: evidence.evidenceId,
+        incidentId: evidence.incidentId,
+        type: evidence.type,
+        origin: evidence.origin,
+        createdAt: evidence.timestamp,
+        responsibleUser: evidence.operatorId,
+        status: "Preservada simulada",
+        integrityRef: evidence.integrityReference,
+        viewPermissions: evidence.permissions,
+        classification: evidence.classification,
+        ownerConsole: evidence.consoleId,
+        permittedRoles: ["operador autor", "consola titular", "coordinador"],
+        sharingPurpose: "coordinacion operativa",
+        retentionRule: "retencion de evidencia simulada",
+      });
+    }
+    ensureUnique(BUILD_WEEK_STATE.masterIncidentRecord.evidenceIndex, evidence.evidenceId);
+  });
+
+  fieldState.acts.forEach((act) => {
+    const actView = {
+      id: act.id,
+      incidentId: act.incidentId,
+      consoleId: act.ownerConsoleId,
+      operatorId: act.ownerOperatorId,
+      specialty: act.specialty,
+      chronology: act.chronology,
+      observations: act.observations,
+      actions: act.actions,
+      evidenceReferences: act.evidenceReferences,
+      status: act.status,
+      version: act.version,
+      integrityReference: act.integrityReference,
+      classification: "SENSITIVE",
+      ownerConsole: act.ownerConsoleId,
+      permittedRoles: ["operador autor", "supervisor", "coordinador"],
+      sharingPurpose: "integracion documental",
+      retentionRule: "acta individual con autoria propia",
+    };
+    const existingAct = BUILD_WEEK_STATE.individualInterventionActs.find((item) => item.id === act.id);
+    if (existingAct) {
+      Object.assign(existingAct, actView);
+    } else {
+      BUILD_WEEK_STATE.individualInterventionActs.push(actView);
+    }
+    ensureUnique(BUILD_WEEK_STATE.masterIncidentRecord.individualActs, act.id);
+    ensureUnique(BUILD_WEEK_STATE.masterIncidentRecord.participatingConsoles, act.ownerConsoleId);
+  });
+
+  fieldState.individualEvents.forEach((event) => {
+    ensureUnique(BUILD_WEEK_STATE.masterIncidentRecord.integratedTimeline, event.eventId);
+  });
+
+  BUILD_WEEK_STATE.fieldWorkflow = {
+    version: fieldState.version,
+    incident: fieldState.incident,
+    assignments: fieldState.assignments,
+    individualEvents: fieldState.individualEvents,
+    evidences: fieldState.evidences,
+    supportRequests: fieldState.supportRequests,
+    acts: fieldState.acts,
+    actVersions: fieldState.actVersions,
+    clarificationRequests: fieldState.clarificationRequests,
+  };
+}
+
+function selectedFieldOperator() {
+  return getFieldOperator(fieldState, selectedFieldOperatorId);
 }
 
 function renderScenario() {
@@ -605,6 +789,424 @@ function renderAssistant() {
   els.humanReasonInput.value = draft.reason || "";
   renderHumanConsoleOptions();
   renderAssistantComparisonBox();
+}
+
+function renderFieldMetaItem(label, value) {
+  const item = document.createElement("span");
+  item.textContent = `${label}: ${value || "-"}`;
+  return item;
+}
+
+function renderFieldWorkflow() {
+  if (!els.fieldOperatorSelect) return;
+  const operator = selectedFieldOperator();
+  const assignment = getAssignment(fieldState, selectedFieldOperatorId);
+  const act = fieldState.acts.find((item) => item.id === operator?.individualActId);
+  const preview = buildActPreview(fieldState, selectedFieldOperatorId);
+  const statusOrder = [
+    INTERVENTION_STATES.ASSIGNED,
+    INTERVENTION_STATES.ACCEPTED,
+    INTERVENTION_STATES.DEPARTED,
+    INTERVENTION_STATES.ARRIVED,
+    INTERVENTION_STATES.INTERVENTION_STARTED,
+    INTERVENTION_STATES.INTERVENTION_ACTIVE,
+    INTERVENTION_STATES.WAITING_SUPPORT,
+    INTERVENTION_STATES.TRANSFERRED,
+    INTERVENTION_STATES.COMPLETED,
+  ];
+  const currentIndex = statusOrder.indexOf(assignment?.interventionStatus);
+
+  setText(els.fieldMobileTime, new Date().toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" }));
+  setText(els.fieldStatus, assignment?.interventionStatus);
+  setText(els.fieldIncidentSummary, `${fieldState.incident.id} / ${fieldState.incident.summary} / ${fieldState.incident.locationSimulated}`);
+  setFieldMessage(fieldMessage);
+
+  els.fieldOperatorMeta.innerHTML = "";
+  [
+    ["Operador", operator?.fictitiousName],
+    ["Organismo", operator?.organization],
+    ["Funcion", operator?.rankOrRole],
+    ["Especialidad", operator?.specialty],
+    ["Consola", operator?.consoleId],
+    ["Dispositivo", operator?.enrolledDeviceId],
+    ["MFA", operator?.mfaVerified ? "verificado" : "pendiente"],
+    ["Biometria", operator?.localBiometricVerified ? "local verificada" : "pendiente"],
+  ].forEach(([label, value]) => els.fieldOperatorMeta.appendChild(renderFieldMetaItem(label, value)));
+
+  els.fieldAssignment.innerHTML = "";
+  [
+    ["Incidente", assignment?.incidentId],
+    ["Estado", assignment?.interventionStatus],
+    ["Sesion", assignment?.sessionId],
+    ["Acta", assignment?.individualActId],
+    ["Asignacion", assignment?.assignedAt],
+    ["Salida", assignment?.departedAt || "pendiente"],
+    ["Arribo", assignment?.arrivedAt || "pendiente"],
+    ["Inicio", assignment?.startedAt || "pendiente"],
+  ].forEach(([label, value]) => els.fieldAssignment.appendChild(renderFieldMetaItem(label, value)));
+
+  els.fieldStatusFlow.innerHTML = "";
+  statusOrder.forEach((status, index) => {
+    const item = document.createElement("span");
+    item.textContent = status.replace(/_/g, " ");
+    item.className = index < currentIndex ? "done" : index === currentIndex ? "current" : "";
+    els.fieldStatusFlow.appendChild(item);
+  });
+
+  renderFieldEvents(operator);
+  renderFieldEvidence(operator);
+  renderFieldSupport();
+  renderFieldAct(act, preview);
+  renderFieldComparison();
+  syncFieldStateToBuildWeek();
+}
+
+function renderFieldEvents(operator) {
+  els.fieldEventList.innerHTML = "";
+  const events = fieldState.individualEvents.filter((event) => event.operatorId === operator?.operatorId);
+  const safeEvents = events.length ? events.slice().reverse() : [{
+    eventId: "sin-eventos",
+    category: "pendiente",
+    description: "Sin acontecimientos propios registrados.",
+    timestamp: "-",
+    integrityReference: "-",
+  }];
+  safeEvents.forEach((event) => {
+    const item = document.createElement("li");
+    item.innerHTML = `<strong>${event.eventId} / ${event.category}</strong><br>${event.timestamp}<br>${event.description}<br><code>${event.integrityReference}</code>`;
+    els.fieldEventList.appendChild(item);
+  });
+}
+
+function renderFieldEvidence(operator) {
+  els.fieldEvidenceList.innerHTML = "";
+  const evidences = fieldState.evidences.filter((evidence) => evidence.operatorId === operator?.operatorId);
+  const safeEvidence = evidences.length ? evidences.slice().reverse() : [{
+    evidenceId: "sin-evidencia",
+    type: "pendiente",
+    description: "Sin evidencia simulada incorporada.",
+    timestamp: "-",
+    integrityReference: "-",
+  }];
+  safeEvidence.forEach((evidence) => {
+    const item = document.createElement("li");
+    item.innerHTML = `<strong>${evidence.evidenceId} / ${evidence.type}</strong><br>${evidence.timestamp}<br>${evidence.description}<br><code>${evidence.integrityReference}</code>`;
+    els.fieldEvidenceList.appendChild(item);
+  });
+}
+
+function renderFieldSupport() {
+  els.fieldSupportList.innerHTML = "";
+  const safeRequests = fieldState.supportRequests.length ? fieldState.supportRequests.slice().reverse() : [{
+    requestId: "sin-apoyo",
+    targetConsoleId: "-",
+    urgency: "-",
+    status: "Sin solicitudes",
+    reason: "No hay solicitudes de apoyo registradas.",
+  }];
+  safeRequests.forEach((request) => {
+    const item = document.createElement("li");
+    item.innerHTML = `<strong>${request.requestId} / ${request.targetConsoleId} / ${request.urgency}</strong><br>${request.status}<br>${request.reason}`;
+    els.fieldSupportList.appendChild(item);
+  });
+}
+
+function renderFieldAct(act, preview) {
+  setText(els.fieldActMeta, act ? `${act.status} / ${act.version}` : "Sin acta");
+  els.fieldActPreview.innerHTML = "";
+  if (!preview) {
+    els.fieldActPreview.textContent = "Sin operador seleccionado.";
+    return;
+  }
+
+  [
+    ["Acta", preview.id],
+    ["Operador", `${preview.operatorName} / ${preview.organization}`],
+    ["Especialidad", `${preview.rankOrRole} / ${preview.specialty}`],
+    ["Cronologia", preview.chronology.length ? preview.chronology.join(" | ") : "pendiente"],
+    ["Acontecimientos", preview.eventIds.length ? preview.eventIds.join(", ") : "sin acontecimientos"],
+    ["Evidencia", preview.evidenceReferences.length ? preview.evidenceReferences.join(", ") : "sin evidencia"],
+    ["Resultado", preview.result],
+    ["Seguimiento", preview.followUpRequired],
+    ["Aviso", preview.disclaimer],
+  ].forEach(([label, value]) => {
+    const paragraph = document.createElement("p");
+    paragraph.innerHTML = `<strong>${label}:</strong> ${value}`;
+    els.fieldActPreview.appendChild(paragraph);
+  });
+}
+
+function renderFieldComparison() {
+  els.fieldComparison.innerHTML = "";
+  compareInterventions(fieldState).forEach((item) => {
+    const card = document.createElement("span");
+    card.textContent = `${item.name} / ${item.organization} / ${item.status} / eventos ${item.eventCount} / evidencia ${item.evidenceCount} / acta ${item.actStatus}`;
+    els.fieldComparison.appendChild(card);
+  });
+}
+
+function initializeFieldWorkflowControls() {
+  if (!els.fieldOperatorSelect) return;
+  els.fieldOperatorSelect.innerHTML = "";
+  fieldState.operators.forEach((operator) => {
+    const option = document.createElement("option");
+    option.value = operator.operatorId;
+    option.textContent = `${operator.fictitiousName} / ${operator.organization}`;
+    els.fieldOperatorSelect.appendChild(option);
+  });
+  els.fieldOperatorSelect.value = selectedFieldOperatorId;
+
+  els.fieldEventCategory.innerHTML = "";
+  EVENT_CATEGORIES.forEach((category) => {
+    const option = document.createElement("option");
+    option.value = category;
+    option.textContent = category;
+    els.fieldEventCategory.appendChild(option);
+  });
+
+  els.fieldEvidenceType.innerHTML = "";
+  EVIDENCE_TYPES.forEach((type) => {
+    const option = document.createElement("option");
+    option.value = type;
+    option.textContent = type;
+    els.fieldEvidenceType.appendChild(option);
+  });
+
+  els.fieldSupportConsole.innerHTML = "";
+  SUPPORT_TARGETS.forEach((target) => {
+    const option = document.createElement("option");
+    option.value = target.consoleId;
+    option.textContent = target.label;
+    els.fieldSupportConsole.appendChild(option);
+  });
+
+  els.fieldEventLocation.value = fieldState.incident.locationSimulated;
+  els.fieldEventDescription.value = "Se observa situacion simulada vinculada al accidente vial multidisciplinario.";
+  els.fieldEvidenceDescription.value = "Elemento ficticio incorporado para documentar la intervencion.";
+  els.fieldSupportReason.value = "Se requiere apoyo por lesion, derrame y ordenamiento del corredor vial.";
+}
+
+function applyFieldResult(result, successMessage) {
+  if (!result?.ok) {
+    setFieldMessage(result?.error || "Accion de campo no permitida.", true);
+    renderFieldWorkflow();
+    return false;
+  }
+  appendFieldLedger(result);
+  setFieldMessage(successMessage || "Accion registrada en bitacora.");
+  render();
+  return true;
+}
+
+function transitionSelectedFieldOperator(nextStatus) {
+  const result = transitionFieldOperator(fieldState, selectedFieldOperatorId, nextStatus, els.fieldActionReason.value);
+  return applyFieldResult(result, `Estado actualizado a ${nextStatus}.`);
+}
+
+function registerSelectedFieldEvent() {
+  const result = createIndividualEvent(fieldState, selectedFieldOperatorId, {
+    category: els.fieldEventCategory.value,
+    description: els.fieldEventDescription.value,
+    classification: els.fieldEventClassification.value,
+    locationSimulated: els.fieldEventLocation.value,
+  });
+  if (applyFieldResult(result, "Acontecimiento propio registrado.")) {
+    els.fieldEventDescription.value = "";
+  }
+}
+
+function correctLastSelectedFieldEvent() {
+  const ownEvents = fieldState.individualEvents.filter((event) => event.operatorId === selectedFieldOperatorId);
+  const lastOwnEvent = ownEvents[ownEvents.length - 1];
+  const result = lastOwnEvent
+    ? createEventCorrection(fieldState, selectedFieldOperatorId, lastOwnEvent.eventId, "aclaracion", els.fieldActionReason.value || "Aclaracion de demo sobre el ultimo acontecimiento propio.")
+    : { ok: false, error: "No hay acontecimiento propio para aclarar." };
+  applyFieldResult(result, "Aclaracion agregada sin alterar el acontecimiento original.");
+}
+
+function addSelectedFieldEvidence() {
+  const result = createSimulatedEvidence(fieldState, selectedFieldOperatorId, {
+    type: els.fieldEvidenceType.value,
+    description: els.fieldEvidenceDescription.value,
+    classification: els.fieldEvidenceClassification.value,
+  });
+  if (applyFieldResult(result, "Evidencia simulada incorporada.")) {
+    els.fieldEvidenceDescription.value = "";
+  }
+}
+
+function requestSelectedFieldSupport() {
+  const result = createSupportRequest(fieldState, selectedFieldOperatorId, {
+    targetConsoleId: els.fieldSupportConsole.value,
+    urgency: els.fieldSupportUrgency.value,
+    reason: els.fieldSupportReason.value,
+    classification: els.fieldSupportUrgency.value === "RED" ? "SENSITIVE" : "OPERATIONAL",
+  });
+  applyFieldResult(result, "Solicitud de apoyo registrada.");
+}
+
+function acceptPendingFieldSupport() {
+  const operator = selectedFieldOperator();
+  const pending = fieldState.supportRequests.find((request) => request.status === "PENDING" && request.targetConsoleId === operator?.consoleId);
+  const result = pending
+    ? acceptSupportRequest(fieldState, pending.requestId, selectedFieldOperatorId)
+    : { ok: false, error: "No hay solicitud pendiente para la consola del operador seleccionado." };
+  applyFieldResult(result, "Apoyo aceptado por consola destinataria.");
+}
+
+function createSelectedFieldAct() {
+  applyFieldResult(createIndividualAct(fieldState, selectedFieldOperatorId), "Acta individual creada o recuperada.");
+}
+
+function reviewSelectedFieldAct() {
+  applyFieldResult(reviewIndividualAct(fieldState, selectedFieldOperatorId), "Borrador de acta revisado por el operador autor.");
+}
+
+function finalizeSelectedFieldAct() {
+  applyFieldResult(finalizeIndividualAct(fieldState, selectedFieldOperatorId), "Acta individual finalizada y bloqueada.");
+}
+
+function amendSelectedFieldAct() {
+  const operator = selectedFieldOperator();
+  const actId = operator?.individualActId;
+  const result = actId
+    ? amendIndividualAct(fieldState, selectedFieldOperatorId, actId, els.fieldActionReason.value || "Ampliacion documental posterior.", els.fieldEventDescription.value)
+    : { ok: false, error: "No hay acta asociada al operador." };
+  applyFieldResult(result, "Version documental agregada sin alterar el acta original.");
+}
+
+function requestFieldClarificationBetweenOperators() {
+  const finalizedActs = fieldState.acts.filter((act) => act.locked);
+  const sourceAct = finalizedActs.find((act) => act.ownerOperatorId !== selectedFieldOperatorId) || finalizedActs[0];
+  const result = sourceAct
+    ? createClarificationRequest(fieldState, selectedFieldOperatorId, sourceAct.id, sourceAct.ownerOperatorId, els.fieldActionReason.value || "Solicitar ampliacion sin modificar el acta fuente.")
+    : { ok: false, error: "No hay acta finalizada para solicitar aclaracion." };
+  applyFieldResult(result, "Solicitud de aclaracion registrada sin alterar acta fuente.");
+}
+
+function runFieldDemoSequence() {
+  if (fieldState.demoCompleted) {
+    setFieldMessage("La demo multidisciplinaria ya fue ejecutada.");
+    render();
+    return;
+  }
+
+  const steps = [];
+  function runStep(result) {
+    if (result?.ok) {
+      appendFieldLedger(result);
+      steps.push(result);
+    }
+    return result;
+  }
+
+  function progressOperator(operatorId, eventDescription, evidenceType, evidenceDescription) {
+    selectedFieldOperatorId = operatorId;
+    [
+      INTERVENTION_STATES.ACCEPTED,
+      INTERVENTION_STATES.DEPARTED,
+      INTERVENTION_STATES.ARRIVED,
+      INTERVENTION_STATES.INTERVENTION_STARTED,
+    ].forEach((status) => runStep(transitionFieldOperator(fieldState, operatorId, status, "Recorrido demo multidisciplinario.")));
+    runStep(createIndividualEvent(fieldState, operatorId, {
+      category: "hecho observado",
+      description: eventDescription,
+      classification: "SENSITIVE",
+      locationSimulated: fieldState.incident.locationSimulated,
+    }));
+    runStep(createSimulatedEvidence(fieldState, operatorId, {
+      type: evidenceType,
+      description: evidenceDescription,
+      classification: "SENSITIVE",
+    }));
+  }
+
+  progressOperator("OP-FIELD-911-A", "Se observa siniestro vial con persona lesionada y derrame sobre calzada.", "fotografia", "Foto simulada panoramica del punto de intervencion.");
+  runStep(createSupportRequest(fieldState, "OP-FIELD-911-A", {
+    targetConsoleId: "CON-107",
+    urgency: "RED",
+    reason: "Persona lesionada requiere triage y eventual traslado.",
+    classification: "SENSITIVE",
+  }));
+  runStep(createSupportRequest(fieldState, "OP-FIELD-911-A", {
+    targetConsoleId: "CON-TRANSITO",
+    urgency: "YELLOW",
+    reason: "Se requiere corte preventivo y corredor sanitario.",
+    classification: "OPERATIONAL",
+  }));
+  runStep(createSupportRequest(fieldState, "OP-FIELD-911-A", {
+    targetConsoleId: "CON-BOMBEROS",
+    urgency: "YELLOW",
+    reason: "Derrame con posible riesgo de incendio.",
+    classification: "OPERATIONAL",
+  }));
+
+  progressOperator("OP-FIELD-107-A", "Equipo sanitario realiza triage inicial y reporta persona consciente.", "constancia", "Constancia sanitaria ficticia de triage inicial.");
+  progressOperator("OP-FIELD-TRAFFIC-A", "Transito dispone corte y ordena corredor preventivo.", "ubicacion", "Ubicacion simulada del corte preventivo.");
+  progressOperator("OP-FIELD-FIRE-A", "Bomberos verifica derrame y ausencia de llama visible en la escena.", "informe externo", "Informe tecnico ficticio de derrame.");
+
+  fieldState.supportRequests.filter((request) => request.status === "PENDING").forEach((request) => {
+    const acceptingOperator = fieldState.operators.find((operator) => operator.consoleId === request.targetConsoleId);
+    if (acceptingOperator) runStep(acceptSupportRequest(fieldState, request.requestId, acceptingOperator.operatorId));
+  });
+
+  ["OP-FIELD-911-A", "OP-FIELD-107-A", "OP-FIELD-TRAFFIC-A", "OP-FIELD-FIRE-A"].forEach((operatorId) => {
+    const assignment = getAssignment(fieldState, operatorId);
+    if (assignment.interventionStatus === INTERVENTION_STATES.WAITING_SUPPORT) {
+      runStep(transitionFieldOperator(fieldState, operatorId, INTERVENTION_STATES.INTERVENTION_ACTIVE, "Apoyo aceptado; intervencion continua."));
+    }
+    if (assignment.interventionStatus === INTERVENTION_STATES.INTERVENTION_STARTED) {
+      runStep(transitionFieldOperator(fieldState, operatorId, INTERVENTION_STATES.INTERVENTION_ACTIVE, "Intervencion activa en demo."));
+    }
+    runStep(createIndividualEvent(fieldState, operatorId, {
+      category: "actuacion realizada",
+      description: "Se deja cierre operativo individual de la participacion simulada.",
+      classification: "SENSITIVE",
+      locationSimulated: fieldState.incident.locationSimulated,
+    }));
+    runStep(transitionFieldOperator(fieldState, operatorId, INTERVENTION_STATES.COMPLETED, "Intervencion completada en demo."));
+    runStep(createIndividualAct(fieldState, operatorId));
+    runStep(reviewIndividualAct(fieldState, operatorId));
+    runStep(finalizeIndividualAct(fieldState, operatorId));
+  });
+
+  const healthAct = fieldState.acts.find((act) => act.ownerOperatorId === "OP-FIELD-107-A");
+  if (healthAct) {
+    runStep(createClarificationRequest(
+      fieldState,
+      "OP-FIELD-911-A",
+      healthAct.id,
+      "OP-FIELD-107-A",
+      "Aclarar horario de triage sin modificar el acta sanitaria original.",
+    ));
+  }
+
+  selectedFieldOperatorId = "OP-FIELD-911-A";
+  els.fieldOperatorSelect.value = selectedFieldOperatorId;
+  fieldState.demoCompleted = true;
+  setFieldMessage(`Demo multidisciplinaria ejecutada: ${steps.length} eventos operativos agregados.`);
+  render();
+}
+
+function handleFieldAction(action) {
+  if (action === "accept") transitionSelectedFieldOperator(INTERVENTION_STATES.ACCEPTED);
+  if (action === "reject") transitionSelectedFieldOperator(INTERVENTION_STATES.CANCELLED_WITH_REASON);
+  if (action === "depart") transitionSelectedFieldOperator(INTERVENTION_STATES.DEPARTED);
+  if (action === "arrive") transitionSelectedFieldOperator(INTERVENTION_STATES.ARRIVED);
+  if (action === "start") transitionSelectedFieldOperator(INTERVENTION_STATES.INTERVENTION_STARTED);
+  if (action === "active") transitionSelectedFieldOperator(INTERVENTION_STATES.INTERVENTION_ACTIVE);
+  if (action === "complete") transitionSelectedFieldOperator(INTERVENTION_STATES.COMPLETED);
+  if (action === "add-event") registerSelectedFieldEvent();
+  if (action === "correct-event") correctLastSelectedFieldEvent();
+  if (action === "add-evidence") addSelectedFieldEvidence();
+  if (action === "request-support") requestSelectedFieldSupport();
+  if (action === "accept-support") acceptPendingFieldSupport();
+  if (action === "create-act") createSelectedFieldAct();
+  if (action === "review-act") reviewSelectedFieldAct();
+  if (action === "finalize-act") finalizeSelectedFieldAct();
+  if (action === "amend-act") amendSelectedFieldAct();
+  if (action === "clarify-act") requestFieldClarificationBetweenOperators();
+  if (action === "demo") runFieldDemoSequence();
 }
 
 function renderComparison() {
@@ -906,6 +1508,7 @@ function confirmHumanDecision() {
 }
 
 function render() {
+  syncFieldStateToBuildWeek();
   renderScenario();
   renderConsoles();
   renderParticipants();
@@ -918,13 +1521,19 @@ function render() {
   renderTimeline();
   renderLedger();
   renderAssistant();
+  renderFieldWorkflow();
   renderComparison();
   renderSnapshot();
 }
 
 document.addEventListener("click", (event) => {
-  const button = event.target.closest("[data-model], [data-action], [data-ledger], [data-assistant]");
+  const button = event.target.closest("[data-model], [data-action], [data-ledger], [data-assistant], [data-field-action]");
   if (!button) return;
+
+  if (button.dataset.fieldAction) {
+    handleFieldAction(button.dataset.fieldAction);
+    return;
+  }
 
   if (button.dataset.assistant) {
     const assistantAction = button.dataset.assistant;
@@ -1109,7 +1718,15 @@ els.assistantModeSelect.addEventListener("change", (event) => {
   render();
 });
 
+els.fieldOperatorSelect.addEventListener("change", (event) => {
+  selectedFieldOperatorId = event.target.value;
+  fieldState.selectedOperatorId = selectedFieldOperatorId;
+  setFieldMessage("Operador seleccionado. La autonomia documental se mantiene por autor.");
+  render();
+});
+
 initializeAssistantScenarios();
+initializeFieldWorkflowControls();
 refreshBackendStatus();
 render();
 }());

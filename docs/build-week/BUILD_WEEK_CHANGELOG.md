@@ -1,5 +1,24 @@
 # Build Week Changelog
 
+## Etapa 4B - Movil de campo multioperador y actas individuales
+
+- Agrega `field-workflow.js` con estados de intervencion, operadores ficticios, evidencia simulada, apoyo y actas.
+- Agrega vista `Field Operator Mobile` en `docs/build-week/index.html`.
+- Permite seleccionar operador ficticio de 911, 107, Transito, Bomberos, Policia Cientifica o Ciberdelitos.
+- Muestra operador, organismo, funcion, especialidad, consola, dispositivo enrolado, MFA, biometria local, estado e incidente.
+- Agrega recorrido de aceptacion, salida, arribo, inicio, actividad y finalizacion.
+- Bloquea transiciones invalidas: arribo antes de aceptacion, intervencion antes del arribo y cierre sin acontecimientos.
+- Permite acontecimientos propios con categorias operativas.
+- Permite evidencia simulada con referencia de integridad, permisos y consolas con acceso.
+- Permite solicitud y aceptacion de apoyo interinstitucional.
+- Permite crear, revisar, finalizar, ampliar y solicitar aclaracion sobre actas individuales.
+- Bloquea edicion de actas ajenas y actas finalizadas.
+- Agrega eventos 4B a `ledger.js`.
+- Agrega `field-workflow.test.js`.
+- Agrega `FIELD_OPERATOR_WORKFLOW.md`.
+- Agrega `GUARDIAN_DIGITAL_DEPLOYMENT_PLAN.md` como hoja de ruta futura, sin despliegue.
+- Mantiene intactos `docs/index.html`, `docs/styles.css`, `docs/app.js` y la version publica v36.
+
 ## Etapa 4A - Backend seguro experimental
 
 - Agrega `server/` con endpoint conceptual `POST /api/analyze-incident`.

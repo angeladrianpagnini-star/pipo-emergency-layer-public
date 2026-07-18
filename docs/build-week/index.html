@@ -319,6 +319,178 @@
         </div>
       </section>
 
+      <section class="panel field-panel">
+        <div class="section-title">
+          <h2>Field Operator Mobile</h2>
+          <span>Etapa 4B</span>
+        </div>
+        <p class="lead strong-warning">
+          Cada intervencion conserva autoria, responsabilidad y trazabilidad propias.
+        </p>
+        <p class="lead">
+          Vista responsive para multiples funcionarios y organismos sobre un mismo incidente. Cada operador
+          registra acontecimientos y evidencia simulada, genera su acta individual y conserva autonomia documental.
+        </p>
+
+        <div class="field-workbench">
+          <section class="field-phone" aria-label="Vista movil del operador de campo">
+            <div class="phone-topbar">
+              <span>PIPO Field</span>
+              <strong id="fieldMobileTime">--:--</strong>
+            </div>
+
+            <div class="field-card primary">
+              <label for="fieldOperatorSelect">Operador ficticio</label>
+              <select id="fieldOperatorSelect"></select>
+              <div id="fieldOperatorMeta" class="field-meta-grid"></div>
+            </div>
+
+            <div class="field-card">
+              <div class="section-title compact-title">
+                <h3>Derivacion</h3>
+                <span id="fieldStatus">ASSIGNED</span>
+              </div>
+              <p id="fieldIncidentSummary"></p>
+              <div id="fieldAssignment" class="field-assignment"></div>
+            </div>
+
+            <div id="fieldStatusFlow" class="status-flow" aria-label="Estados de intervencion"></div>
+
+            <div class="field-card">
+              <label for="fieldActionReason">Motivo u observacion operativa</label>
+              <textarea id="fieldActionReason" rows="3" placeholder="Fundamento para rechazo, cancelacion, cierre o aclaracion"></textarea>
+              <div class="field-action-grid">
+                <button type="button" data-field-action="accept">Aceptar</button>
+                <button type="button" data-field-action="reject">Rechazar</button>
+                <button type="button" data-field-action="depart">Salida</button>
+                <button type="button" data-field-action="arrive">Arribo</button>
+                <button type="button" data-field-action="start">Iniciar</button>
+                <button type="button" data-field-action="active">Activo</button>
+                <button type="button" data-field-action="complete">Completar</button>
+                <button type="button" data-field-action="demo">Demo 4 organismos</button>
+              </div>
+              <p id="fieldActionMessage" class="field-message">Esperando accion del operador.</p>
+            </div>
+          </section>
+
+          <section class="field-console" aria-label="Consola de trabajo de campo">
+            <div class="field-grid">
+              <article class="field-card">
+                <h3>Acontecimientos propios</h3>
+                <div class="field-form-grid">
+                  <div class="form-row">
+                    <label for="fieldEventCategory">Categoria</label>
+                    <select id="fieldEventCategory"></select>
+                  </div>
+                  <div class="form-row">
+                    <label for="fieldEventClassification">Clasificacion</label>
+                    <select id="fieldEventClassification">
+                      <option>OPERATIONAL</option>
+                      <option>SENSITIVE</option>
+                      <option>RESTRICTED_JUDICIAL</option>
+                    </select>
+                  </div>
+                  <div class="form-row form-row-wide">
+                    <label for="fieldEventLocation">Ubicacion simulada</label>
+                    <input id="fieldEventLocation" type="text" />
+                  </div>
+                  <div class="form-row form-row-wide">
+                    <label for="fieldEventDescription">Descripcion</label>
+                    <textarea id="fieldEventDescription" rows="3" placeholder="Registrar hecho observado, manifestacion, actuacion o comunicacion"></textarea>
+                  </div>
+                </div>
+                <div class="action-row">
+                  <button type="button" data-field-action="add-event">Registrar acontecimiento</button>
+                  <button type="button" data-field-action="correct-event">Aclarar ultimo propio</button>
+                </div>
+                <ol id="fieldEventList" class="compact-list"></ol>
+              </article>
+
+              <article class="field-card">
+                <h3>Evidencia simulada</h3>
+                <div class="field-form-grid">
+                  <div class="form-row">
+                    <label for="fieldEvidenceType">Tipo</label>
+                    <select id="fieldEvidenceType"></select>
+                  </div>
+                  <div class="form-row">
+                    <label for="fieldEvidenceClassification">Clasificacion</label>
+                    <select id="fieldEvidenceClassification">
+                      <option>SENSITIVE</option>
+                      <option>OPERATIONAL</option>
+                      <option>RESTRICTED_JUDICIAL</option>
+                    </select>
+                  </div>
+                  <div class="form-row form-row-wide">
+                    <label for="fieldEvidenceDescription">Descripcion</label>
+                    <textarea id="fieldEvidenceDescription" rows="3" placeholder="Solo evidencia ficticia. No sensores reales ni datos personales"></textarea>
+                  </div>
+                </div>
+                <div class="action-row">
+                  <button type="button" data-field-action="add-evidence">Agregar evidencia</button>
+                </div>
+                <ol id="fieldEvidenceList" class="compact-list"></ol>
+              </article>
+            </div>
+
+            <div class="field-grid">
+              <article class="field-card">
+                <h3>Solicitud de apoyo</h3>
+                <div class="field-form-grid">
+                  <div class="form-row">
+                    <label for="fieldSupportConsole">Consola destino</label>
+                    <select id="fieldSupportConsole"></select>
+                  </div>
+                  <div class="form-row">
+                    <label for="fieldSupportUrgency">Urgencia</label>
+                    <select id="fieldSupportUrgency">
+                      <option>YELLOW</option>
+                      <option>RED</option>
+                      <option>GREEN</option>
+                    </select>
+                  </div>
+                  <div class="form-row form-row-wide">
+                    <label for="fieldSupportReason">Motivo</label>
+                    <textarea id="fieldSupportReason" rows="3" placeholder="Motivo, informacion minima y necesidad operativa"></textarea>
+                  </div>
+                </div>
+                <div class="action-row">
+                  <button type="button" data-field-action="request-support">Solicitar apoyo</button>
+                  <button type="button" data-field-action="accept-support">Aceptar apoyo pendiente</button>
+                </div>
+                <ol id="fieldSupportList" class="compact-list"></ol>
+              </article>
+
+              <article class="field-card">
+                <div class="section-title compact-title">
+                  <h3>Acta individual</h3>
+                  <span id="fieldActMeta">Sin acta</span>
+                </div>
+                <p class="warning-copy">
+                  Documento individual del funcionario interviniente. No sustituye las actas de otros operadores.
+                </p>
+                <div class="action-row">
+                  <button type="button" data-field-action="create-act">Crear acta</button>
+                  <button type="button" data-field-action="review-act">Revisar</button>
+                  <button type="button" data-field-action="finalize-act">Finalizar</button>
+                  <button type="button" data-field-action="amend-act">Ampliar version</button>
+                  <button type="button" data-field-action="clarify-act">Solicitar aclaracion</button>
+                </div>
+                <div id="fieldActPreview" class="act-preview"></div>
+              </article>
+            </div>
+
+            <article class="field-card">
+              <div class="section-title compact-title">
+                <h3>Comparacion multioperador</h3>
+                <span>Autonomia documental</span>
+              </div>
+              <div id="fieldComparison" class="field-comparison"></div>
+            </article>
+          </section>
+        </div>
+      </section>
+
       <section class="panel federated-panel">
         <div class="section-title">
           <h2>FederatedOperationalConsole</h2>
@@ -491,6 +663,7 @@
     <script src="incident-scenarios.js?v=5"></script>
     <script src="ai-service.js?v=6"></script>
     <script src="incident-assistant.js?v=5"></script>
-    <script src="app.js?v=6"></script>
+    <script src="field-workflow.js?v=1"></script>
+    <script src="app.js?v=7"></script>
   </body>
 </html>
