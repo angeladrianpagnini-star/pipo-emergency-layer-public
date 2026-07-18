@@ -79,6 +79,26 @@ mediante `appendCorrection()`, conservando el evento original.
 La funcion `deleteLedgerEvent()` devuelve una denegacion explicita para demostrar que los eventos no se
 eliminan silenciosamente.
 
+## Etapa 3 - PIPO AI Incident Assistant
+
+Se agrega un asistente de incidentes con control humano obligatorio.
+
+El modulo:
+
+- recibe descripcion libre y datos estructurados del incidente;
+- opera en modo `SIMULATED_DEMO`;
+- genera resumen neutral;
+- sugiere tipo, prioridad, riesgos, datos faltantes y preguntas;
+- sugiere consolas federadas con finalidad, minimo a compartir y clasificacion;
+- permite aceptar, modificar, rechazar o continuar sin IA;
+- registra la comparacion `AI vs. Human Decision`;
+- agrega eventos de analisis, revision y decision a la bitacora append-only.
+
+PIPO remains operational without AI. AI suggestions are advisory and always subject to human validation.
+
+El modo futuro `OPENAI_SECURE_BACKEND` queda documentado como contrato de integracion del lado servidor.
+No hay endpoint falso, clave en frontend ni conexion activa con proveedores externos.
+
 ## Principios de seguridad
 
 - Datos simulados.
@@ -88,14 +108,22 @@ eliminan silenciosamente.
 - Sin conexion con sistemas oficiales.
 - La IA aparece solo como asistencia simulada.
 - Toda decision requiere validacion humana.
+- La IA no despacha recursos, no cierra incidentes, no firma actas, no activa sensores y no modifica evidencia.
+- Las capacidades de ubicacion, audio y video permanecen deshabilitadas hasta cumplir requisitos simulados de denuncia, autorizacion, alcance, finalidad, operadores autorizados y vencimiento.
 
 ## Archivos
 
-- `index.html`: visor de Etapa 0 y Etapa 1.
+- `index.html`: visor de Etapas 0, 1, 1.1, 2 y 3.
 - `styles.css`: estilos independientes de la ruta Build Week.
 - `data-models.js`: definiciones y estado simulado inicial.
-- `app.js`: render de modelos, comparacion IA/humano y snapshot JSON.
+- `ledger.js`: bitacora operativa append-only.
+- `incident-scenarios.js`: escenarios ficticios para pruebas de Etapa 3.
+- `ai-service.js`: servicio desacoplado con modo `SIMULATED_DEMO` y contrato futuro `OPENAI_SECURE_BACKEND`.
+- `incident-assistant.js`: validacion humana, comparacion IA/humano y reglas de diferencias materiales.
+- `incident-assistant.test.js`: pruebas del asistente, escenarios, bitacora, permisos y modo sin IA.
+- `app.js`: render de modelos, asistente, comparacion IA/humano y snapshot JSON.
 
 ## Siguiente etapa
 
-Etapa 2: bitacora operativa inalterable con eventos automaticos, rectificaciones y historial visible.
+Etapa 4 recomendada: backend seguro experimental, sin claves en frontend, con control de entorno,
+auditoria server-side y pruebas de integracion separadas de la demo publica.

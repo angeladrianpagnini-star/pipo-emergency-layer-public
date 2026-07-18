@@ -3,12 +3,12 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>PIPO Build Week - Etapa 2</title>
+    <title>PIPO Build Week - Etapa 3</title>
     <meta
       name="description"
-      content="Version separada de PIPO Emergency Layer para OpenAI Build Week. Etapa 2: arquitectura federada y bitacora operativa append-only."
+      content="Version separada de PIPO Emergency Layer para OpenAI Build Week. Etapa 3: asistente de incidentes con validacion humana obligatoria."
     />
-    <link rel="stylesheet" href="styles.css?v=3" />
+    <link rel="stylesheet" href="styles.css?v=6" />
   </head>
   <body>
     <header class="hero">
@@ -72,6 +72,217 @@
             <option value="multidisciplinary">Incidente multidisciplinario</option>
           </select>
           <p id="scenarioSummary"></p>
+        </div>
+      </section>
+
+      <section class="panel assistant-panel">
+        <div class="section-title">
+          <h2>PIPO AI Incident Assistant</h2>
+          <span>SIMULATED AI DEMO</span>
+        </div>
+        <p class="lead strong-warning">
+          AI-assisted analysis - human validation required. Analisis asistido por IA - requiere validacion humana.
+        </p>
+        <p class="lead">
+          El asistente ordena informacion, detecta faltantes y sugiere prioridad o consolas. No despacha
+          recursos, no activa camara, microfono ni ubicacion, no cierra incidentes y no sustituye al operador.
+        </p>
+
+        <div class="assistant-flow" aria-label="Flujo del asistente">
+          <span>1. Relato</span>
+          <span>2. Analisis</span>
+          <span>3. Revision humana</span>
+          <span>4. Bitacora</span>
+          <span>5. Derivacion preparada</span>
+        </div>
+
+        <div class="assistant-grid">
+          <form id="assistantForm" class="assistant-form">
+            <div class="form-row form-row-wide">
+              <label for="assistantScenarioSelect">Escenario ficticio</label>
+              <select id="assistantScenarioSelect"></select>
+            </div>
+            <div class="form-row form-row-wide">
+              <label for="assistantDescription">Descripcion libre del incidente</label>
+              <textarea id="assistantDescription" rows="6" placeholder="Escribir relato libre o cargar un escenario ficticio"></textarea>
+            </div>
+            <div class="form-row">
+              <label for="assistantChannel">Canal de ingreso</label>
+              <select id="assistantChannel">
+                <option>PIPO Layer</option>
+                <option>Activacion silenciosa</option>
+                <option>Llamada derivada</option>
+                <option>Formulario PIPO</option>
+                <option>Mesa de ayuda PIPO</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="assistantLocation">Ubicacion estimada o declarada</label>
+              <input id="assistantLocation" type="text" placeholder="No informado" />
+            </div>
+            <div class="form-row">
+              <label for="assistantCanSpeak">Puede hablar</label>
+              <select id="assistantCanSpeak">
+                <option value="UNKNOWN">No informado</option>
+                <option value="YES">Si</option>
+                <option value="NO">No</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="assistantCurrentRisk">Riesgo actual</label>
+              <select id="assistantCurrentRisk">
+                <option value="UNKNOWN">No informado</option>
+                <option value="YES">Si</option>
+                <option value="NO">No</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="assistantInjured">Personas lesionadas</label>
+              <select id="assistantInjured">
+                <option value="UNKNOWN">No informado</option>
+                <option value="YES">Si</option>
+                <option value="NO">No</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="assistantMinors">Menores presentes</label>
+              <select id="assistantMinors">
+                <option value="UNKNOWN">No informado</option>
+                <option value="YES">Si</option>
+                <option value="NO">No</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="assistantWeapons">Armas presentes</label>
+              <select id="assistantWeapons">
+                <option value="UNKNOWN">No informado</option>
+                <option value="YES">Si</option>
+                <option value="NO">No</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="assistantDigital">Posible incidente digital</label>
+              <select id="assistantDigital">
+                <option value="UNKNOWN">No informado</option>
+                <option value="YES">Si</option>
+                <option value="NO">No</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="assistantStolenDevice">Dispositivo robado o perdido</label>
+              <select id="assistantStolenDevice">
+                <option value="UNKNOWN">No informado</option>
+                <option value="YES">Si</option>
+                <option value="NO">No</option>
+              </select>
+            </div>
+            <div class="form-row form-row-wide">
+              <label for="assistantAdditional">Informacion adicional opcional</label>
+              <textarea id="assistantAdditional" rows="3" placeholder="Datos complementarios, todos ficticios"></textarea>
+            </div>
+            <div class="action-row form-row-wide">
+              <button type="button" data-assistant="analyze">Analizar incidente</button>
+              <button type="button" data-assistant="continue-without-ai">Continue without AI</button>
+            </div>
+          </form>
+
+          <div class="assistant-output">
+            <div id="assistantStatus" class="access-result"></div>
+            <div class="assistant-result-grid">
+              <article>
+                <span>Tipo sugerido</span>
+                <strong id="assistantType">-</strong>
+              </article>
+              <article>
+                <span>Prioridad sugerida</span>
+                <strong id="assistantPriority">-</strong>
+              </article>
+              <article>
+                <span>Confianza</span>
+                <strong id="assistantConfidence">-</strong>
+              </article>
+            </div>
+            <article class="assistant-block">
+              <h3>Resumen neutral</h3>
+              <p id="assistantSummary">Cargar o escribir un incidente para generar analisis simulado.</p>
+            </article>
+            <div class="split-grid">
+              <article>
+                <h3>Riesgos detectados</h3>
+                <ul id="assistantRisks"></ul>
+              </article>
+              <article>
+                <h3>Datos faltantes</h3>
+                <ul id="assistantMissing"></ul>
+              </article>
+            </div>
+            <div class="split-grid">
+              <article>
+                <h3>Preguntas de seguimiento</h3>
+                <ul id="assistantQuestions"></ul>
+              </article>
+              <article>
+                <h3>Consolas sugeridas</h3>
+                <ul id="assistantConsoles"></ul>
+              </article>
+            </div>
+            <article class="assistant-block">
+              <h3>Fundamento y limites</h3>
+              <p id="assistantReasoning">Sin analisis generado.</p>
+              <ul id="assistantWarnings"></ul>
+              <ul id="assistantUnsupported"></ul>
+            </article>
+          </div>
+        </div>
+
+        <div class="human-review-grid">
+          <article class="human-review">
+            <h3>Decision del operador</h3>
+            <div class="review-actions">
+              <button type="button" data-assistant="accept">Aceptar todo</button>
+              <button type="button" data-assistant="modify">Aceptar parcialmente</button>
+              <button type="button" data-assistant="reject">Rechazar sugerencia</button>
+            </div>
+            <div class="assistant-form compact">
+              <div class="form-row">
+                <label for="humanTypeSelect">Tipo final</label>
+                <input id="humanTypeSelect" type="text" placeholder="Pendiente" />
+              </div>
+              <div class="form-row">
+                <label for="humanPrioritySelect">Prioridad final</label>
+                <select id="humanPrioritySelect">
+                  <option value="UNDETERMINED">UNDETERMINED</option>
+                  <option value="GREEN">GREEN</option>
+                  <option value="YELLOW">YELLOW</option>
+                  <option value="RED">RED</option>
+                </select>
+              </div>
+              <div class="form-row form-row-wide">
+                <label>Consolas finales</label>
+                <div id="humanConsoleOptions" class="console-checkboxes"></div>
+              </div>
+              <div class="form-row form-row-wide">
+                <label for="humanFollowUpAnswers">Respuestas o datos agregados</label>
+                <textarea id="humanFollowUpAnswers" rows="3" placeholder="Permite no se o no puedo responder"></textarea>
+              </div>
+              <div class="form-row form-row-wide">
+                <label for="humanReasonInput">Fundamento humano</label>
+                <textarea id="humanReasonInput" rows="3" placeholder="Obligatorio si modifica o rechaza una sugerencia material"></textarea>
+              </div>
+              <div class="action-row form-row-wide">
+                <button type="button" data-assistant="confirm">Confirmar decision humana</button>
+              </div>
+            </div>
+          </article>
+          <article class="human-review">
+            <div class="section-title">
+              <h3>AI vs. Human Decision</h3>
+              <span>No puntua al operador</span>
+            </div>
+            <div id="assistantComparison" class="comparison-box">
+              <p>La comparacion se genera al confirmar la decision humana.</p>
+            </div>
+          </article>
         </div>
       </section>
 
@@ -242,8 +453,11 @@
       </section>
     </main>
 
-    <script src="data-models.js?v=3"></script>
-    <script src="ledger.js?v=3"></script>
-    <script src="app.js?v=3"></script>
+    <script src="data-models.js?v=5"></script>
+    <script src="ledger.js?v=5"></script>
+    <script src="incident-scenarios.js?v=5"></script>
+    <script src="ai-service.js?v=5"></script>
+    <script src="incident-assistant.js?v=5"></script>
+    <script src="app.js?v=5"></script>
   </body>
 </html>

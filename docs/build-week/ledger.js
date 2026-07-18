@@ -1,7 +1,21 @@
+(function () {
 const LEDGER_EVENT_TYPES = [
   "incident.created",
+  "ai.analysis.requested",
+  "ai.analysis.completed",
+  "ai.analysis.failed",
+  "ai.suggestion.presented",
+  "human.review.started",
+  "human.suggestion.accepted",
+  "human.suggestion.modified",
+  "human.suggestion.rejected",
+  "human.decision.confirmed",
+  "incident.classification.updated",
+  "console.suggested",
   "console.assigned",
   "console.joined",
+  "followup.question.created",
+  "followup.answer.recorded",
   "operator.authenticated",
   "operator.joined",
   "support.requested",
@@ -214,3 +228,4 @@ window.PIPOBuildWeekLedger = {
   getLedgerEvents,
   validateLedgerChain,
 };
+}());

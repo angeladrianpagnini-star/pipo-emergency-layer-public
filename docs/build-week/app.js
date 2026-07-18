@@ -1,3 +1,4 @@
+(function () {
 const {
   MODEL_DEFINITIONS,
   BUILD_WEEK_STATE,
@@ -16,6 +17,26 @@ const {
   getLedgerEvents,
   validateLedgerChain,
 } = window.PIPOBuildWeekLedger;
+
+const {
+  createIncidentAnalysisService,
+  AI_MODES,
+} = window.PIPOAIService;
+
+const {
+  INCIDENT_SCENARIOS,
+  getScenarioById,
+} = window.PIPOIncidentScenarios;
+
+const {
+  HUMAN_DECISION_STATUS,
+  createHumanDecisionDraft,
+  createManualFallbackSuggestion,
+  finalizeHumanDecision,
+  compareSuggestionWithHumanDecision,
+  normalizeConsoleList,
+  normalizePriority,
+} = window.PIPOIncidentAssistant;
 
 const stateByModel = {
   incident: BUILD_WEEK_STATE.incident,
@@ -70,13 +91,146 @@ const els = {
   humanRouting: document.querySelector("#humanRouting"),
   humanReason: document.querySelector("#humanReason"),
   snapshot: document.querySelector("#snapshot"),
+  assistantScenarioSelect: document.querySelector("#assistantScenarioSelect"),
+  assistantForm: document.querySelector("#assistantForm"),
+  assistantDescription: document.querySelector("#assistantDescription"),
+  assistantChannel: document.querySelector("#assistantChannel"),
+  assistantLocation: document.querySelector("#assistantLocation"),
+  assistantCanSpeak: document.querySelector("#assistantCanSpeak"),
+  assistantCurrentRisk: document.querySelector("#assistantCurrentRisk"),
+  assistantInjured: document.querySelector("#assistantInjured"),
+  assistantMinors: document.querySelector("#assistantMinors"),
+  assistantWeapons: document.querySelector("#assistantWeapons"),
+  assistantDigital: document.querySelector("#assistantDigital"),
+  assistantStolenDevice: document.querySelector("#assistantStolenDevice"),
+  assistantAdditional: document.querySelector("#assistantAdditional"),
+  assistantStatus: document.querySelector("#assistantStatus"),
+  assistantType: document.querySelector("#assistantType"),
+  assistantPriority: document.querySelector("#assistantPriority"),
+  assistantConfidence: document.querySelector("#assistantConfidence"),
+  assistantSummary: document.querySelector("#assistantSummary"),
+  assistantRisks: document.querySelector("#assistantRisks"),
+  assistantMissing: document.querySelector("#assistantMissing"),
+  assistantQuestions: document.querySelector("#assistantQuestions"),
+  assistantConsoles: document.querySelector("#assistantConsoles"),
+  assistantReasoning: document.querySelector("#assistantReasoning"),
+  assistantWarnings: document.querySelector("#assistantWarnings"),
+  assistantUnsupported: document.querySelector("#assistantUnsupported"),
+  humanTypeSelect: document.querySelector("#humanTypeSelect"),
+  humanPrioritySelect: document.querySelector("#humanPrioritySelect"),
+  humanConsoleOptions: document.querySelector("#humanConsoleOptions"),
+  humanFollowUpAnswers: document.querySelector("#humanFollowUpAnswers"),
+  humanReasonInput: document.querySelector("#humanReasonInput"),
+  assistantComparison: document.querySelector("#assistantComparison"),
 };
 
 let selectedModel = MODEL_DEFINITIONS[0].key;
 let selectedScenario = "general";
+const assistantService = createIncidentAnalysisService({ mode: AI_MODES.SIMULATED_DEMO });
+let assistantState = {
+  suggestion: BUILD_WEEK_STATE.aiSuggestion,
+  humanDraft: createHumanDecisionDraft(BUILD_WEEK_STATE.aiSuggestion, getOperatorById("OP-MASTER-01")),
+  comparison: compareSuggestionWithHumanDecision(BUILD_WEEK_STATE.aiSuggestion, BUILD_WEEK_STATE.humanDecision),
+  validationErrors: [],
+  status: "idle",
+};
 
 function formatList(items, fallback = "Sin datos") {
   return (items && items.length) ? items.join(", ") : fallback;
+}
+
+function setText(element, value) {
+  if (element) element.textContent = value || "-";
+}
+
+function renderPlainList(element, items, fallback = "Sin datos") {
+  if (!element) return;
+  element.innerHTML = "";
+  const safeItems = (items && items.length) ? items : [fallback];
+  safeItems.forEach((line) => {
+    const item = document.createElement("li");
+    item.textContent = typeof line === "string" ? line : JSON.stringify(line);
+    element.appendChild(item);
+  });
+}
+
+function getSelectedConsoleTypes() {
+  return Array.from(els.humanConsoleOptions.querySelectorAll("input[type='checkbox']:checked"))
+    .map((input) => input.value);
+}
+
+function getConsoleSuggestionByType(type) {
+  const fromSuggestion = normalizeConsoleList(assistantState.suggestion?.suggestedConsoles)
+    .find((item) => item.consoleType === type);
+  if (fromSuggestion) return fromSuggestion;
+  const config = BUILD_WEEK_STATE.operationalConsoles.find((item) => item.type === type);
+  return {
+    consoleType: type,
+    consoleId: config?.id || type,
+    consoleName: config?.name || type,
+  };
+}
+
+function getAssistantInput() {
+  return {
+    incidentId: BUILD_WEEK_STATE.incident.id,
+    description: els.assistantDescription.value,
+    channel: els.assistantChannel.value,
+    location: els.assistantLocation.value,
+    canSpeak: els.assistantCanSpeak.value,
+    currentRisk: els.assistantCurrentRisk.value,
+    injuredPersons: els.assistantInjured.value,
+    minorsPresent: els.assistantMinors.value,
+    weaponsPresent: els.assistantWeapons.value,
+    possibleDigitalIncident: els.assistantDigital.value,
+    stolenOrLostDevice: els.assistantStolenDevice.value,
+    additionalInfo: els.assistantAdditional.value,
+    reportedBy: "usuario u operador demo",
+  };
+}
+
+function syncHumanDraftFromControls(status = assistantState.humanDraft?.decisionStatus || HUMAN_DECISION_STATUS.ACCEPTED) {
+  const finalConsoles = getSelectedConsoleTypes().map(getConsoleSuggestionByType);
+  assistantState.humanDraft = {
+    ...assistantState.humanDraft,
+    decisionStatus: status,
+    finalIncidentType: els.humanTypeSelect.value,
+    finalPriority: normalizePriority(els.humanPrioritySelect.value),
+    finalConsoles,
+    finalRouting: finalConsoles.map((item) => item.consoleName).join(" / "),
+    reason: els.humanReasonInput.value,
+    addedInformation: els.humanFollowUpAnswers.value,
+    followUpAnswers: els.humanFollowUpAnswers.value
+      ? els.humanFollowUpAnswers.value.split("\n").map((line) => line.trim()).filter(Boolean)
+      : [],
+  };
+  return assistantState.humanDraft;
+}
+
+function loadAssistantScenario(id) {
+  const scenario = getScenarioById(id);
+  els.assistantDescription.value = scenario.description;
+  els.assistantChannel.value = scenario.channel;
+  els.assistantLocation.value = scenario.location;
+  els.assistantCanSpeak.value = scenario.canSpeak;
+  els.assistantCurrentRisk.value = scenario.currentRisk;
+  els.assistantInjured.value = scenario.injuredPersons;
+  els.assistantMinors.value = scenario.minorsPresent;
+  els.assistantWeapons.value = scenario.weaponsPresent;
+  els.assistantDigital.value = scenario.possibleDigitalIncident;
+  els.assistantStolenDevice.value = scenario.stolenOrLostDevice;
+  els.assistantAdditional.value = scenario.additionalInfo;
+}
+
+function initializeAssistantScenarios() {
+  els.assistantScenarioSelect.innerHTML = "";
+  INCIDENT_SCENARIOS.forEach((scenario) => {
+    const option = document.createElement("option");
+    option.value = scenario.id;
+    option.textContent = scenario.label;
+    els.assistantScenarioSelect.appendChild(option);
+  });
+  loadAssistantScenario(INCIDENT_SCENARIOS[0].id);
 }
 
 function FederatedOperationalConsole(consoleConfig, priorityIds) {
@@ -300,13 +454,129 @@ function renderLedger() {
   });
 }
 
+function renderAssistantConsoles() {
+  const consoles = assistantState.suggestion?.suggestedConsoles || [];
+  els.assistantConsoles.innerHTML = "";
+  if (!consoles.length) {
+    const item = document.createElement("li");
+    item.textContent = "Sin consolas sugeridas. Requiere clasificacion humana.";
+    els.assistantConsoles.appendChild(item);
+    return;
+  }
+
+  consoles.forEach((consoleSuggestion) => {
+    const item = document.createElement("li");
+    const auth = consoleSuggestion.additionalAuthorizationRequired ? "requiere autorizacion adicional" : "sin autorizacion adicional";
+    item.textContent = `${consoleSuggestion.consoleName} (${consoleSuggestion.consoleType}) - ${consoleSuggestion.purpose}. Prioridad: ${consoleSuggestion.incorporationPriority}. Minimo a compartir: ${formatList(consoleSuggestion.minimumInfoToShare)}. Clasificacion: ${consoleSuggestion.classification}. ${auth}.`;
+    els.assistantConsoles.appendChild(item);
+  });
+}
+
+function renderHumanConsoleOptions() {
+  const selectedTypes = new Set(uniqueConsoleTypesForDraft());
+  els.humanConsoleOptions.innerHTML = "";
+  BUILD_WEEK_STATE.operationalConsoles.forEach((consoleConfig) => {
+    const label = document.createElement("label");
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.value = consoleConfig.type;
+    checkbox.checked = selectedTypes.has(consoleConfig.type);
+    const text = document.createElement("span");
+    text.textContent = consoleConfig.name;
+    label.appendChild(checkbox);
+    label.appendChild(text);
+    els.humanConsoleOptions.appendChild(label);
+  });
+}
+
+function uniqueConsoleTypesForDraft() {
+  const draftConsoles = normalizeConsoleList(assistantState.humanDraft?.finalConsoles);
+  return Array.from(new Set(draftConsoles.map((item) => item.consoleType || item.consoleId)));
+}
+
+function renderAssistantComparisonBox(comparison) {
+  els.assistantComparison.innerHTML = "";
+  const data = comparison || assistantState.comparison;
+  if (!data) {
+    const item = document.createElement("p");
+    item.textContent = "La comparacion se genera al confirmar la decision humana.";
+    els.assistantComparison.appendChild(item);
+    return;
+  }
+
+  [
+    `Prioridad sugerida: ${data.suggestedPriority}`,
+    `Prioridad final: ${data.finalPriority}`,
+    `Tipo sugerido: ${data.suggestedType}`,
+    `Tipo final: ${data.finalType}`,
+    `Consolas sugeridas: ${formatList(data.suggestedConsoles)}`,
+    `Consolas finales: ${formatList(data.finalConsoles)}`,
+    `Aceptado: ${formatList(data.accepted)}`,
+    `Modificado: ${formatList(data.modified)}`,
+    `Rechazado: ${formatList(data.rejected)}`,
+    `Motivo humano: ${data.reason || "no informado"}`,
+    `Operador: ${data.operator}`,
+    `Sesion: ${data.sessionId}`,
+    `Fecha: ${data.decidedAt}`,
+  ].forEach((line) => {
+    const paragraph = document.createElement("p");
+    paragraph.textContent = line;
+    els.assistantComparison.appendChild(paragraph);
+  });
+}
+
+function renderAssistant() {
+  const suggestion = assistantState.suggestion;
+  const draft = assistantState.humanDraft || createHumanDecisionDraft(suggestion, getOperatorById("OP-MASTER-01"));
+  const statusCopy = {
+    idle: "Listo para analisis simulado. No transmite datos y no usa claves.",
+    analyzed: "Analisis simulado generado. Requiere decision humana.",
+    manual: "IA omitida. El operador continua con carga manual.",
+    confirmed: "Decision humana confirmada y registrada en bitacora.",
+    error: "El analisis fallo. Puede reintentar o continuar sin IA.",
+  };
+  const statusClass = assistantState.status === "error" ? "denied" : "allowed";
+
+  els.assistantStatus.className = `access-result ${statusClass}`;
+  els.assistantStatus.innerHTML = `
+    <strong>${assistantState.status === "confirmed" ? "Validacion confirmada" : "Control humano obligatorio"}</strong>
+    <span>${statusCopy[assistantState.status] || statusCopy.idle}</span>
+    <span>${assistantState.validationErrors.length ? assistantState.validationErrors.join(" / ") : "SIMULATED AI DEMO. Sin conexion con emergencias reales."}</span>
+  `;
+
+  setText(els.assistantType, suggestion?.suggestedIncidentType || suggestion?.suggestedType);
+  setText(els.assistantPriority, suggestion?.suggestedPriority);
+  setText(els.assistantConfidence, suggestion?.confidenceLevel || suggestion?.confidence);
+  setText(els.assistantSummary, suggestion?.neutralSummary || suggestion?.summary);
+  setText(els.assistantReasoning, suggestion?.reasoningSummary || suggestion?.explanation);
+
+  renderPlainList(els.assistantRisks, suggestion?.detectedRiskFactors || suggestion?.riskFactors);
+  renderPlainList(els.assistantMissing, suggestion?.missingCriticalInformation || suggestion?.missingInfo);
+  renderPlainList(els.assistantQuestions, suggestion?.followUpQuestions || suggestion?.suggestedQuestions);
+  renderAssistantConsoles();
+  renderPlainList(els.assistantWarnings, [
+    ...(suggestion?.safetyWarnings || []),
+    ...(suggestion?.legalOrAuthorizationRequirements || []),
+  ]);
+  renderPlainList(els.assistantUnsupported, suggestion?.unsupportedClaims, "Sin afirmaciones no respaldadas detectadas.");
+
+  els.humanTypeSelect.value = draft.finalIncidentType || suggestion?.suggestedIncidentType || "";
+  els.humanPrioritySelect.value = normalizePriority(draft.finalPriority || suggestion?.suggestedPriority);
+  els.humanFollowUpAnswers.value = draft.addedInformation || "";
+  els.humanReasonInput.value = draft.reason || "";
+  renderHumanConsoleOptions();
+  renderAssistantComparisonBox();
+}
+
 function renderComparison() {
   const ai = BUILD_WEEK_STATE.aiSuggestion;
   const human = BUILD_WEEK_STATE.humanDecision;
+  const aiConsoles = ai.suggestedConsoles?.map((item) => item.consoleName) || ai.competentAgencies || [];
+  const humanConsoles = normalizeConsoleList(human.finalConsoles).map((item) => item.consoleName);
   els.aiPriority.textContent = ai.suggestedPriority;
-  els.aiRouting.textContent = ai.competentAgencies.join(", ");
+  els.aiRouting.textContent = formatList(aiConsoles);
   els.humanPriority.textContent = human.finalPriority;
-  els.humanRouting.textContent = human.finalRouting;
+  els.humanRouting.textContent = human.finalRouting || formatList(humanConsoles);
   els.humanReason.textContent = `Motivo humano: ${human.reason}`;
 }
 
@@ -315,6 +585,227 @@ function renderSnapshot() {
     ...getBuildWeekSnapshot(),
     operationalLedger: getLedgerEvents(),
   }, null, 2);
+}
+
+function normalizeSuggestionAliases(suggestion) {
+  return {
+    ...suggestion,
+    id: suggestion.id || suggestion.suggestionId,
+    summary: suggestion.summary || suggestion.neutralSummary,
+    suggestedType: suggestion.suggestedType || suggestion.suggestedIncidentType,
+    riskFactors: suggestion.riskFactors || suggestion.detectedRiskFactors,
+    availableInfo: suggestion.availableInfo || suggestion.availableInformation,
+    missingInfo: suggestion.missingInfo || suggestion.missingCriticalInformation,
+    suggestedQuestions: suggestion.suggestedQuestions || suggestion.followUpQuestions,
+    competentAgencies: suggestion.competentAgencies || (suggestion.suggestedConsoles || []).map((item) => item.consoleName),
+    confidence: suggestion.confidence || suggestion.confidenceLevel,
+    explanation: suggestion.explanation || suggestion.reasoningSummary,
+  };
+}
+
+function storeAssistantSuggestion(suggestion) {
+  const normalized = normalizeSuggestionAliases(suggestion);
+  BUILD_WEEK_STATE.aiSuggestion = normalized;
+  BUILD_WEEK_STATE.aiSuggestions.push(normalized);
+  stateByModel.aiSuggestion = normalized;
+  assistantState.suggestion = normalized;
+  assistantState.humanDraft = createHumanDecisionDraft(normalized, getOperatorById("OP-MASTER-01"));
+  assistantState.comparison = compareSuggestionWithHumanDecision(normalized, assistantState.humanDraft);
+  BUILD_WEEK_STATE.assistantRuns.push({
+    suggestionId: normalized.suggestionId,
+    mode: normalized.mode,
+    generatedAt: normalized.generatedAt,
+    status: "suggestion_presented",
+  });
+  return normalized;
+}
+
+function recordAssistantSuggestionEvents(suggestion, input) {
+  addLedger("ai.analysis.completed", {
+    summary: "Analisis simulado completado.",
+    suggestionId: suggestion.suggestionId,
+    suggestedIncidentType: suggestion.suggestedIncidentType,
+    suggestedPriority: suggestion.suggestedPriority,
+    missingCount: suggestion.missingCriticalInformation.length,
+    classification: "OPERATIONAL",
+  });
+  addLedger("ai.suggestion.presented", {
+    summary: "Sugerencia presentada para revision humana.",
+    suggestionId: suggestion.suggestionId,
+    requiresHumanValidation: suggestion.requiresHumanValidation,
+    classification: "OPERATIONAL",
+  });
+  suggestion.suggestedConsoles.forEach((consoleSuggestion) => {
+    addLedger("console.suggested", {
+      summary: `${consoleSuggestion.consoleName} sugerida por asistente simulado.`,
+      suggestionId: suggestion.suggestionId,
+      consoleType: consoleSuggestion.consoleType,
+      consoleId: consoleSuggestion.consoleId,
+      purpose: consoleSuggestion.purpose,
+      minimumInfoToShare: consoleSuggestion.minimumInfoToShare,
+      classification: consoleSuggestion.classification,
+    });
+  });
+  suggestion.followUpQuestions.forEach((question) => {
+    addLedger("followup.question.created", {
+      summary: "Pregunta de seguimiento creada por asistente simulado.",
+      suggestionId: suggestion.suggestionId,
+      question,
+      classification: "OPERATIONAL",
+    });
+  });
+  addLocalEvent(`PIPO AI Incident Assistant genero sugerencia ${suggestion.suggestionId} para ${input.channel}.`);
+}
+
+function runAssistantAnalysis() {
+  const input = getAssistantInput();
+  assistantState.validationErrors = [];
+  try {
+    addLedger("ai.analysis.requested", {
+      summary: "Analisis simulado solicitado por operador.",
+      inputChannel: input.channel,
+      hasLocation: Boolean(input.location),
+      classification: "OPERATIONAL",
+    });
+    const suggestion = assistantService.analyzeIncident(input, BUILD_WEEK_STATE, { mode: AI_MODES.SIMULATED_DEMO });
+    const normalized = storeAssistantSuggestion(suggestion);
+    recordAssistantSuggestionEvents(normalized, input);
+    addLedger("human.review.started", {
+      summary: "Revision humana iniciada sobre sugerencia IA.",
+      suggestionId: normalized.suggestionId,
+      classification: "OPERATIONAL",
+    });
+    assistantState.status = "analyzed";
+  } catch (error) {
+    assistantState.status = "error";
+    assistantState.validationErrors = [error.message];
+    addLedger("ai.analysis.failed", {
+      summary: "Analisis simulado fallido. El sistema permite continuar sin IA.",
+      errorMessage: error.message,
+      classification: "OPERATIONAL",
+    });
+  }
+  render();
+}
+
+function continueWithoutAI() {
+  const input = getAssistantInput();
+  const suggestion = createManualFallbackSuggestion(input, BUILD_WEEK_STATE);
+  const normalized = storeAssistantSuggestion(suggestion);
+  assistantState.humanDraft.decisionStatus = HUMAN_DECISION_STATUS.MANUAL_WITHOUT_AI;
+  assistantState.status = "manual";
+  assistantState.validationErrors = [];
+  addLedger("human.review.started", {
+    summary: "Operacion continua sin IA por decision humana.",
+    suggestionId: normalized.suggestionId,
+    mode: HUMAN_DECISION_STATUS.MANUAL_WITHOUT_AI,
+    classification: "OPERATIONAL",
+  });
+  addLocalEvent("Operador continua sin IA; el incidente permanece operativo.");
+  render();
+}
+
+function setHumanReviewMode(mode) {
+  if (!assistantState.suggestion) {
+    continueWithoutAI();
+    return;
+  }
+  assistantState.validationErrors = [];
+  const operator = getOperatorById("OP-MASTER-01");
+  const nextDraft = createHumanDecisionDraft(assistantState.suggestion, operator);
+  nextDraft.decisionStatus = mode;
+  if (mode === HUMAN_DECISION_STATUS.REJECTED) {
+    nextDraft.finalIncidentType = "Revision manual";
+    nextDraft.finalPriority = "UNDETERMINED";
+    nextDraft.finalConsoles = [];
+    nextDraft.finalRouting = "";
+  }
+  if (mode === HUMAN_DECISION_STATUS.MODIFIED) {
+    nextDraft.reason = "Operador revisa y ajusta la sugerencia antes de confirmar.";
+  }
+  assistantState.humanDraft = nextDraft;
+  assistantState.comparison = compareSuggestionWithHumanDecision(assistantState.suggestion, nextDraft);
+  render();
+}
+
+function confirmHumanDecision() {
+  const operator = getOperatorById("OP-MASTER-01");
+  const draft = syncHumanDraftFromControls(assistantState.humanDraft?.decisionStatus);
+  const result = finalizeHumanDecision(assistantState.suggestion, draft, operator);
+  assistantState.validationErrors = result.errors;
+  assistantState.comparison = result.comparison;
+
+  if (!result.ok) {
+    assistantState.status = "error";
+    render();
+    return;
+  }
+
+  const decision = result.decision;
+  BUILD_WEEK_STATE.humanDecision = decision;
+  BUILD_WEEK_STATE.humanDecisions.push(decision);
+  stateByModel.humanDecision = decision;
+  assistantState.humanDraft = decision;
+  assistantState.status = "confirmed";
+
+  const decisionEventType = decision.decisionStatus === HUMAN_DECISION_STATUS.REJECTED
+    ? "human.suggestion.rejected"
+    : decision.decisionStatus === HUMAN_DECISION_STATUS.MODIFIED
+      ? "human.suggestion.modified"
+      : "human.suggestion.accepted";
+
+  addLedger(decisionEventType, {
+    summary: `Decision humana ${decision.decisionStatus.toLowerCase()} sobre sugerencia IA.`,
+    suggestionId: assistantState.suggestion.suggestionId,
+    reason: decision.reason || "sin diferencia material",
+    materialDifferences: decision.materialDifferences,
+    classification: "OPERATIONAL",
+  }, operator.id);
+
+  addLedger("human.decision.confirmed", {
+    summary: "Decision humana confirmada.",
+    decisionId: decision.id,
+    finalIncidentType: decision.finalIncidentType,
+    finalPriority: decision.finalPriority,
+    finalConsoles: decision.finalConsoles.map((item) => item.consoleType),
+    classification: "OPERATIONAL",
+  }, operator.id);
+
+  addLedger("incident.classification.updated", {
+    summary: "Clasificacion del incidente actualizada por decision humana.",
+    decisionId: decision.id,
+    finalIncidentType: decision.finalIncidentType,
+    finalPriority: decision.finalPriority,
+    classification: "OPERATIONAL",
+  }, operator.id);
+
+  decision.finalConsoles.forEach((consoleSuggestion) => {
+    addLedger("console.assigned", {
+      summary: `${consoleSuggestion.consoleName} preparada para derivacion validada.`,
+      decisionId: decision.id,
+      consoleType: consoleSuggestion.consoleType,
+      consoleId: consoleSuggestion.consoleId,
+      classification: "OPERATIONAL",
+    }, operator.id);
+  });
+
+  if (decision.followUpAnswers.length) {
+    addLedger("followup.answer.recorded", {
+      summary: "Respuestas de seguimiento registradas por operador.",
+      decisionId: decision.id,
+      answerCount: decision.followUpAnswers.length,
+      classification: "OPERATIONAL",
+    }, operator.id);
+  }
+
+  BUILD_WEEK_STATE.incident.priority = decision.finalPriority;
+  BUILD_WEEK_STATE.incident.status = "Preparado para derivacion humana";
+  BUILD_WEEK_STATE.incident.updatedAt = decision.decisionAt;
+  BUILD_WEEK_STATE.routing.targetAgency = decision.finalRouting || "Pendiente de derivacion";
+  BUILD_WEEK_STATE.routing.status = "Preparada por decision humana";
+
+  addLocalEvent(`Decision humana ${decision.id} confirmada y enlazada al hilo documental.`);
+  render();
 }
 
 function render() {
@@ -329,13 +820,42 @@ function render() {
   renderDetail();
   renderTimeline();
   renderLedger();
+  renderAssistant();
   renderComparison();
   renderSnapshot();
 }
 
 document.addEventListener("click", (event) => {
-  const button = event.target.closest("[data-model], [data-action], [data-ledger]");
+  const button = event.target.closest("[data-model], [data-action], [data-ledger], [data-assistant]");
   if (!button) return;
+
+  if (button.dataset.assistant) {
+    const assistantAction = button.dataset.assistant;
+    if (assistantAction === "analyze") {
+      runAssistantAnalysis();
+      return;
+    }
+    if (assistantAction === "continue-without-ai") {
+      continueWithoutAI();
+      return;
+    }
+    if (assistantAction === "accept") {
+      setHumanReviewMode(HUMAN_DECISION_STATUS.ACCEPTED);
+      return;
+    }
+    if (assistantAction === "modify") {
+      setHumanReviewMode(HUMAN_DECISION_STATUS.MODIFIED);
+      return;
+    }
+    if (assistantAction === "reject") {
+      setHumanReviewMode(HUMAN_DECISION_STATUS.REJECTED);
+      return;
+    }
+    if (assistantAction === "confirm") {
+      confirmHumanDecision();
+      return;
+    }
+  }
 
   if (button.dataset.model) {
     selectedModel = button.dataset.model;
@@ -469,4 +989,10 @@ els.scenarioSelect.addEventListener("change", (event) => {
   render();
 });
 
+els.assistantScenarioSelect.addEventListener("change", (event) => {
+  loadAssistantScenario(event.target.value);
+});
+
+initializeAssistantScenarios();
 render();
+}());
