@@ -6,27 +6,26 @@
 
   const PRIORITIES = ["GREEN", "YELLOW", "RED", "UNDETERMINED"];
   const CONFIDENCE_LEVELS = ["LOW", "MEDIUM", "HIGH"];
-  const AI_SERVICE_VERSION = "3.0.0";
+  const AI_SERVICE_VERSION = "4A.0.0";
   const AI_ENGINE_LABEL = "PIPO deterministic rule engine";
+  const SECURE_BACKEND_ENDPOINT = "/api/analyze-incident";
+  const SECURE_BACKEND_STATUS_ENDPOINT = "/api/backend-status";
 
   const AI_SERVICE_BACKEND_CONTRACT = {
-    status: "planned",
+    status: "experimental",
     mode: AI_MODES.OPENAI_SECURE_BACKEND,
     transport: "server-side only",
-    frontendPolicy: "No API key, no endpoint placeholder and no direct provider call from GitHub Pages.",
+    frontendPolicy: "No provider credential and no direct provider call from the browser.",
+    endpoint: SECURE_BACKEND_ENDPOINT,
+    statusEndpoint: SECURE_BACKEND_STATUS_ENDPOINT,
     input: [
       "incidentId",
-      "description",
+      "freeText",
       "channel",
-      "location",
-      "canSpeak",
-      "currentRisk",
-      "injuredPersons",
-      "minorsPresent",
-      "weaponsPresent",
-      "possibleDigitalIncident",
-      "stolenOrLostDevice",
-      "additionalInfo",
+      "estimatedLocation",
+      "riskIndicators",
+      "existingContext",
+      "requestedMode",
     ],
     output: [
       "suggestionId",
@@ -38,6 +37,13 @@
       "missingCriticalInformation",
       "followUpQuestions",
       "suggestedConsoles",
+      "suggestedSpecialties",
+      "safetyWarnings",
+      "authorizationRequirements",
+      "confidenceLevel",
+      "reasoningSummary",
+      "sourceFacts",
+      "unsupportedClaims",
       "requiresHumanValidation",
     ],
   };
@@ -524,7 +530,10 @@
   function analyzeIncident(input, context = {}, options = {}) {
     const mode = options.mode || AI_MODES.SIMULATED_DEMO;
     if (mode !== AI_MODES.SIMULATED_DEMO) {
-      throw new Error("OPENAI_SECURE_BACKEND is documented as a future server-side contract and is not connected in this frontend demo.");
+      if (typeof window.fetch !== "function" && typeof options.fetchImpl !== "function") {
+        throw new Error("Secure backend unavailable: fetch is not available.");
+      }
+      return callSecureBackend(input, context, options);
     }
 
     const normalizedInput = normalizeIncidentInput(input, context);
@@ -580,16 +589,125 @@
     };
   }
 
+  function buildBackendRequest(input, context = {}, requestedMode = AI_MODES.OPENAI_SECURE_BACKEND) {
+    const normalizedInput = normalizeIncidentInput(input, context);
+    return {
+      incidentId: normalizedInput.incidentId,
+      freeText: normalizedInput.description,
+      channel: normalizedInput.channel,
+      estimatedLocation: normalizedInput.location,
+      riskIndicators: {
+        canSpeak: normalizedInput.canSpeak,
+        currentRisk: normalizedInput.currentRisk,
+        injuredPersons: normalizedInput.injuredPersons,
+        minorsPresent: normalizedInput.minorsPresent,
+        weaponsPresent: normalizedInput.weaponsPresent,
+        possibleDigitalIncident: normalizedInput.possibleDigitalIncident,
+        stolenOrLostDevice: normalizedInput.stolenOrLostDevice,
+      },
+      existingContext: {
+        incidentStatus: context?.incident?.status || "",
+        currentPriority: context?.incident?.priority || "",
+        availableConsoles: (context?.operationalConsoles || []).map((item) => ({
+          consoleId: item.id,
+          consoleType: item.type,
+          consoleName: item.name,
+        })),
+      },
+      requestedMode,
+      additionalInfo: normalizedInput.additionalInfo,
+    };
+  }
+
+  function normalizeBackendSuggestion(suggestion, fallbackInput) {
+    const normalized = {
+      ...suggestion,
+      id: suggestion.id || suggestion.suggestionId,
+      originalInput: suggestion.originalInput || normalizeIncidentInput(fallbackInput),
+      summary: suggestion.summary || suggestion.neutralSummary,
+      suggestedType: suggestion.suggestedType || suggestion.suggestedIncidentType,
+      riskFactors: suggestion.riskFactors || suggestion.detectedRiskFactors || [],
+      availableInfo: suggestion.availableInfo || suggestion.availableInformation || [],
+      missingInfo: suggestion.missingInfo || suggestion.missingCriticalInformation || [],
+      suggestedQuestions: suggestion.suggestedQuestions || suggestion.followUpQuestions || [],
+      competentAgencies: suggestion.competentAgencies || (suggestion.suggestedConsoles || []).map((item) => item.consoleName),
+      confidence: suggestion.confidence || suggestion.confidenceLevel,
+      explanation: suggestion.explanation || suggestion.reasoningSummary,
+      requiresHumanValidation: true,
+      mode: AI_MODES.OPENAI_SECURE_BACKEND,
+      provider: suggestion.provider || "secure-openai-backend",
+      version: suggestion.version || AI_SERVICE_VERSION,
+      analysisVersion: suggestion.analysisVersion || suggestion.version || AI_SERVICE_VERSION,
+    };
+    normalized.safetyWarnings = [
+      "Secure backend analysis - human validation required.",
+      ...(normalized.safetyWarnings || []),
+    ];
+    return normalized;
+  }
+
+  async function callSecureBackend(input, context = {}, options = {}) {
+    const endpoint = options.endpoint || SECURE_BACKEND_ENDPOINT;
+    const fetchImpl = options.fetchImpl || window.fetch?.bind(window);
+    if (typeof fetchImpl !== "function") {
+      const error = new Error("Secure backend unavailable: fetch is not available.");
+      error.code = "frontend_fetch_unavailable";
+      throw error;
+    }
+
+    const requestBody = buildBackendRequest(input, context, AI_MODES.OPENAI_SECURE_BACKEND);
+    const response = await fetchImpl(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestBody),
+    });
+
+    let payload = null;
+    try {
+      payload = await response.json();
+    } catch (error) {
+      payload = null;
+    }
+
+    if (!response.ok || !payload?.ok || !payload?.suggestion) {
+      const backendError = payload?.error || {};
+      const error = new Error(backendError.message || "Secure backend unavailable.");
+      error.code = backendError.code || "backend_unavailable";
+      error.requestId = backendError.requestId || payload?.audit?.requestId || null;
+      error.audit = payload?.audit || null;
+      throw error;
+    }
+
+    return normalizeBackendSuggestion(payload.suggestion, input);
+  }
+
+  async function getBackendStatus(options = {}) {
+    const endpoint = options.endpoint || SECURE_BACKEND_STATUS_ENDPOINT;
+    const fetchImpl = options.fetchImpl || window.fetch?.bind(window);
+    if (typeof fetchImpl !== "function") {
+      throw new Error("Secure backend status unavailable.");
+    }
+    const response = await fetchImpl(endpoint, { method: "GET" });
+    if (!response.ok) {
+      throw new Error("Secure backend status unavailable.");
+    }
+    const payload = await response.json();
+    return payload.backend || payload;
+  }
+
   function createIncidentAnalysisService(config = {}) {
     const mode = config.mode || AI_MODES.SIMULATED_DEMO;
     return {
       mode,
       analyzeIncident(input, context = {}, options = {}) {
-        return analyzeIncident(input, context, { ...options, mode });
+        return analyzeIncident(input, context, { ...options, mode: options.mode || mode });
       },
       getBackendContract() {
         return { ...AI_SERVICE_BACKEND_CONTRACT };
       },
+      getBackendStatus,
     };
   }
 
@@ -597,8 +715,12 @@
     AI_MODES,
     PRIORITIES,
     CONFIDENCE_LEVELS,
+    AI_SERVICE_VERSION,
     AI_SERVICE_BACKEND_CONTRACT,
     createIncidentAnalysisService,
     analyzeIncident,
+    buildBackendRequest,
+    callSecureBackend,
+    getBackendStatus,
   };
 }());

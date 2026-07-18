@@ -21,6 +21,8 @@ const {
 const {
   createIncidentAnalysisService,
   AI_MODES,
+  AI_SERVICE_VERSION,
+  getBackendStatus,
 } = window.PIPOAIService;
 
 const {
@@ -104,6 +106,11 @@ const els = {
   assistantDigital: document.querySelector("#assistantDigital"),
   assistantStolenDevice: document.querySelector("#assistantStolenDevice"),
   assistantAdditional: document.querySelector("#assistantAdditional"),
+  assistantModeSelect: document.querySelector("#assistantModeSelect"),
+  assistantBackendStatus: document.querySelector("#assistantBackendStatus"),
+  assistantActiveMode: document.querySelector("#assistantActiveMode"),
+  assistantRequestId: document.querySelector("#assistantRequestId"),
+  assistantAnalysisVersion: document.querySelector("#assistantAnalysisVersion"),
   assistantStatus: document.querySelector("#assistantStatus"),
   assistantType: document.querySelector("#assistantType"),
   assistantPriority: document.querySelector("#assistantPriority"),
@@ -126,12 +133,17 @@ const els = {
 
 let selectedModel = MODEL_DEFINITIONS[0].key;
 let selectedScenario = "general";
-const assistantService = createIncidentAnalysisService({ mode: AI_MODES.SIMULATED_DEMO });
+let selectedAssistantMode = AI_MODES.SIMULATED_DEMO;
 let assistantState = {
   suggestion: BUILD_WEEK_STATE.aiSuggestion,
   humanDraft: createHumanDecisionDraft(BUILD_WEEK_STATE.aiSuggestion, getOperatorById("OP-MASTER-01")),
   comparison: compareSuggestionWithHumanDecision(BUILD_WEEK_STATE.aiSuggestion, BUILD_WEEK_STATE.humanDecision),
   validationErrors: [],
+  backendStatus: null,
+  requestId: null,
+  analysisVersion: BUILD_WEEK_STATE.aiSuggestion?.version || "3.0.0",
+  activeMode: AI_MODES.SIMULATED_DEMO,
+  lastInput: null,
   status: "idle",
 };
 
@@ -141,6 +153,30 @@ function formatList(items, fallback = "Sin datos") {
 
 function setText(element, value) {
   if (element) element.textContent = value || "-";
+}
+
+function assistantModeLabel(mode) {
+  return mode === AI_MODES.OPENAI_SECURE_BACKEND ? "Secure OpenAI Backend" : "Simulated AI Demo";
+}
+
+function renderBackendControls() {
+  if (els.assistantModeSelect) {
+    els.assistantModeSelect.value = selectedAssistantMode;
+  }
+
+  const backend = assistantState.backendStatus;
+  const backendCopy = backend
+    ? `${backend.available ? "Disponible" : "No disponible"} / modelo: ${backend.model || "configurado en servidor"} / contrato: ${backend.contractVersion || "-"}`
+    : "Estado pendiente. En GitHub Pages el backend puede no estar disponible.";
+
+  if (els.assistantBackendStatus) {
+    els.assistantBackendStatus.className = `backend-status ${backend?.available ? "online" : "offline"}`;
+    els.assistantBackendStatus.textContent = backendCopy;
+  }
+
+  setText(els.assistantActiveMode, assistantModeLabel(assistantState.activeMode || selectedAssistantMode));
+  setText(els.assistantRequestId, assistantState.requestId || "Pendiente");
+  setText(els.assistantAnalysisVersion, assistantState.analysisVersion || "Pendiente");
 }
 
 function renderPlainList(element, items, fallback = "Sin datos") {
@@ -529,19 +565,22 @@ function renderAssistant() {
   const suggestion = assistantState.suggestion;
   const draft = assistantState.humanDraft || createHumanDecisionDraft(suggestion, getOperatorById("OP-MASTER-01"));
   const statusCopy = {
-    idle: "Listo para analisis simulado. No transmite datos y no usa claves.",
-    analyzed: "Analisis simulado generado. Requiere decision humana.",
+    idle: "Listo para analisis. El modo simulado no transmite datos; el backend experimental requiere servidor local.",
+    processing: `Analisis en curso por ${assistantModeLabel(selectedAssistantMode)}.`,
+    analyzed: `Analisis generado por ${assistantModeLabel(assistantState.activeMode)}. Requiere decision humana.`,
     manual: "IA omitida. El operador continua con carga manual.",
     confirmed: "Decision humana confirmada y registrada en bitacora.",
-    error: "El analisis fallo. Puede reintentar o continuar sin IA.",
+    error: "El analisis fallo. La entrada se conserva; puede reintentar, usar demo simulada o continuar sin IA.",
   };
   const statusClass = assistantState.status === "error" ? "denied" : "allowed";
+
+  renderBackendControls();
 
   els.assistantStatus.className = `access-result ${statusClass}`;
   els.assistantStatus.innerHTML = `
     <strong>${assistantState.status === "confirmed" ? "Validacion confirmada" : "Control humano obligatorio"}</strong>
     <span>${statusCopy[assistantState.status] || statusCopy.idle}</span>
-    <span>${assistantState.validationErrors.length ? assistantState.validationErrors.join(" / ") : "SIMULATED AI DEMO. Sin conexion con emergencias reales."}</span>
+    <span>${assistantState.validationErrors.length ? assistantState.validationErrors.join(" / ") : "Secure backend analysis - human validation required. Datos ficticios. Sin conexion con emergencias reales."}</span>
   `;
 
   setText(els.assistantType, suggestion?.suggestedIncidentType || suggestion?.suggestedType);
@@ -587,6 +626,20 @@ function renderSnapshot() {
   }, null, 2);
 }
 
+async function refreshBackendStatus() {
+  try {
+    assistantState.backendStatus = await getBackendStatus();
+  } catch (error) {
+    assistantState.backendStatus = {
+      available: false,
+      model: "servidor no detectado",
+      contractVersion: "no disponible",
+      warning: "Secure backend unavailable from this static view.",
+    };
+  }
+  renderBackendControls();
+}
+
 function normalizeSuggestionAliases(suggestion) {
   return {
     ...suggestion,
@@ -605,6 +658,9 @@ function normalizeSuggestionAliases(suggestion) {
 
 function storeAssistantSuggestion(suggestion) {
   const normalized = normalizeSuggestionAliases(suggestion);
+  assistantState.requestId = normalized.requestId || normalized.serverAudit?.requestId || null;
+  assistantState.analysisVersion = normalized.analysisVersion || normalized.version || "sin version";
+  assistantState.activeMode = normalized.mode || selectedAssistantMode;
   BUILD_WEEK_STATE.aiSuggestion = normalized;
   BUILD_WEEK_STATE.aiSuggestions.push(normalized);
   stateByModel.aiSuggestion = normalized;
@@ -615,15 +671,21 @@ function storeAssistantSuggestion(suggestion) {
     suggestionId: normalized.suggestionId,
     mode: normalized.mode,
     generatedAt: normalized.generatedAt,
+    requestId: assistantState.requestId,
+    analysisVersion: assistantState.analysisVersion,
     status: "suggestion_presented",
   });
   return normalized;
 }
 
 function recordAssistantSuggestionEvents(suggestion, input) {
+  const modeLabel = suggestion.mode === AI_MODES.OPENAI_SECURE_BACKEND ? "backend seguro experimental" : "demo simulada";
   addLedger("ai.analysis.completed", {
-    summary: "Analisis simulado completado.",
+    summary: `Analisis completado por ${modeLabel}.`,
     suggestionId: suggestion.suggestionId,
+    requestId: suggestion.requestId || suggestion.serverAudit?.requestId || null,
+    analysisVersion: suggestion.analysisVersion || suggestion.version,
+    mode: suggestion.mode,
     suggestedIncidentType: suggestion.suggestedIncidentType,
     suggestedPriority: suggestion.suggestedPriority,
     missingCount: suggestion.missingCriticalInformation.length,
@@ -632,12 +694,14 @@ function recordAssistantSuggestionEvents(suggestion, input) {
   addLedger("ai.suggestion.presented", {
     summary: "Sugerencia presentada para revision humana.",
     suggestionId: suggestion.suggestionId,
+    requestId: suggestion.requestId || suggestion.serverAudit?.requestId || null,
+    mode: suggestion.mode,
     requiresHumanValidation: suggestion.requiresHumanValidation,
     classification: "OPERATIONAL",
   });
   suggestion.suggestedConsoles.forEach((consoleSuggestion) => {
     addLedger("console.suggested", {
-      summary: `${consoleSuggestion.consoleName} sugerida por asistente simulado.`,
+      summary: `${consoleSuggestion.consoleName} sugerida por asistente ${modeLabel}.`,
       suggestionId: suggestion.suggestionId,
       consoleType: consoleSuggestion.consoleType,
       consoleId: consoleSuggestion.consoleId,
@@ -648,7 +712,7 @@ function recordAssistantSuggestionEvents(suggestion, input) {
   });
   suggestion.followUpQuestions.forEach((question) => {
     addLedger("followup.question.created", {
-      summary: "Pregunta de seguimiento creada por asistente simulado.",
+      summary: `Pregunta de seguimiento creada por asistente ${modeLabel}.`,
       suggestionId: suggestion.suggestionId,
       question,
       classification: "OPERATIONAL",
@@ -657,44 +721,73 @@ function recordAssistantSuggestionEvents(suggestion, input) {
   addLocalEvent(`PIPO AI Incident Assistant genero sugerencia ${suggestion.suggestionId} para ${input.channel}.`);
 }
 
-function runAssistantAnalysis() {
+async function runAssistantAnalysis() {
   const input = getAssistantInput();
+  assistantState.lastInput = input;
   assistantState.validationErrors = [];
+  assistantState.status = "processing";
+  assistantState.activeMode = selectedAssistantMode;
+  assistantState.requestId = null;
+  assistantState.analysisVersion = selectedAssistantMode === AI_MODES.OPENAI_SECURE_BACKEND ? "pendiente backend" : AI_SERVICE_VERSION;
+  render();
   try {
     addLedger("ai.analysis.requested", {
-      summary: "Analisis simulado solicitado por operador.",
+      summary: `Analisis solicitado por operador en modo ${assistantModeLabel(selectedAssistantMode)}.`,
       inputChannel: input.channel,
       hasLocation: Boolean(input.location),
+      requestedMode: selectedAssistantMode,
       classification: "OPERATIONAL",
     });
-    const suggestion = assistantService.analyzeIncident(input, BUILD_WEEK_STATE, { mode: AI_MODES.SIMULATED_DEMO });
+    const assistantService = createIncidentAnalysisService({ mode: selectedAssistantMode });
+    const suggestion = await assistantService.analyzeIncident(input, BUILD_WEEK_STATE, { mode: selectedAssistantMode });
     const normalized = storeAssistantSuggestion(suggestion);
     recordAssistantSuggestionEvents(normalized, input);
     addLedger("human.review.started", {
       summary: "Revision humana iniciada sobre sugerencia IA.",
       suggestionId: normalized.suggestionId,
+      requestId: normalized.requestId || normalized.serverAudit?.requestId || null,
+      mode: normalized.mode,
       classification: "OPERATIONAL",
     });
     assistantState.status = "analyzed";
   } catch (error) {
     assistantState.status = "error";
-    assistantState.validationErrors = [error.message];
+    assistantState.requestId = error.requestId || error.audit?.requestId || null;
+    assistantState.analysisVersion = "fallida";
+    assistantState.activeMode = selectedAssistantMode;
+    assistantState.validationErrors = [
+      `${error.message || "Secure backend unavailable."}${error.requestId ? ` RequestId: ${error.requestId}` : ""}`,
+    ];
     addLedger("ai.analysis.failed", {
-      summary: "Analisis simulado fallido. El sistema permite continuar sin IA.",
-      errorMessage: error.message,
+      summary: "Analisis fallido. El sistema permite reintentar, usar demo simulada o continuar sin IA.",
+      errorCode: error.code || "frontend_error",
+      requestId: assistantState.requestId,
+      mode: selectedAssistantMode,
       classification: "OPERATIONAL",
     });
   }
   render();
 }
 
+function useSimulatedDemoMode() {
+  selectedAssistantMode = AI_MODES.SIMULATED_DEMO;
+  assistantState.activeMode = AI_MODES.SIMULATED_DEMO;
+  assistantState.validationErrors = [];
+  assistantState.status = "idle";
+  render();
+}
+
 function continueWithoutAI() {
   const input = getAssistantInput();
+  assistantState.lastInput = input;
   const suggestion = createManualFallbackSuggestion(input, BUILD_WEEK_STATE);
   const normalized = storeAssistantSuggestion(suggestion);
   assistantState.humanDraft.decisionStatus = HUMAN_DECISION_STATUS.MANUAL_WITHOUT_AI;
   assistantState.status = "manual";
   assistantState.validationErrors = [];
+  assistantState.requestId = null;
+  assistantState.analysisVersion = normalized.version || "manual";
+  assistantState.activeMode = normalized.mode || AI_MODES.SIMULATED_DEMO;
   addLedger("human.review.started", {
     summary: "Operacion continua sin IA por decision humana.",
     suggestionId: normalized.suggestionId,
@@ -757,6 +850,8 @@ function confirmHumanDecision() {
   addLedger(decisionEventType, {
     summary: `Decision humana ${decision.decisionStatus.toLowerCase()} sobre sugerencia IA.`,
     suggestionId: assistantState.suggestion.suggestionId,
+    requestId: assistantState.suggestion.requestId || assistantState.suggestion.serverAudit?.requestId || null,
+    analysisVersion: assistantState.suggestion.analysisVersion || assistantState.suggestion.version,
     reason: decision.reason || "sin diferencia material",
     materialDifferences: decision.materialDifferences,
     classification: "OPERATIONAL",
@@ -765,6 +860,8 @@ function confirmHumanDecision() {
   addLedger("human.decision.confirmed", {
     summary: "Decision humana confirmada.",
     decisionId: decision.id,
+    suggestionId: assistantState.suggestion.suggestionId,
+    requestId: assistantState.suggestion.requestId || assistantState.suggestion.serverAudit?.requestId || null,
     finalIncidentType: decision.finalIncidentType,
     finalPriority: decision.finalPriority,
     finalConsoles: decision.finalConsoles.map((item) => item.consoleType),
@@ -833,6 +930,14 @@ document.addEventListener("click", (event) => {
     const assistantAction = button.dataset.assistant;
     if (assistantAction === "analyze") {
       runAssistantAnalysis();
+      return;
+    }
+    if (assistantAction === "retry") {
+      runAssistantAnalysis();
+      return;
+    }
+    if (assistantAction === "use-simulated-demo") {
+      useSimulatedDemoMode();
       return;
     }
     if (assistantAction === "continue-without-ai") {
@@ -993,6 +1098,18 @@ els.assistantScenarioSelect.addEventListener("change", (event) => {
   loadAssistantScenario(event.target.value);
 });
 
+els.assistantModeSelect.addEventListener("change", (event) => {
+  selectedAssistantMode = event.target.value;
+  assistantState.activeMode = selectedAssistantMode;
+  assistantState.validationErrors = [];
+  assistantState.status = "idle";
+  if (selectedAssistantMode === AI_MODES.OPENAI_SECURE_BACKEND) {
+    refreshBackendStatus();
+  }
+  render();
+});
+
 initializeAssistantScenarios();
+refreshBackendStatus();
 render();
 }());

@@ -57,15 +57,81 @@ El resultado siempre incluye `requiresHumanValidation: true`.
 
 ### OPENAI_SECURE_BACKEND
 
-Modo futuro preparado solo como contrato:
+Modo experimental de Etapa 4A:
 
-- proveedor llamado desde servidor o funcion serverless;
-- credenciales fuera del frontend;
-- validacion de sesion, rol, finalidad y auditoria;
+- proveedor llamado desde servidor local Build Week;
+- credencial fuera del frontend;
+- validacion de esquema, limite de caracteres, timeout y errores seguros;
+- auditoria server-side solo de metadatos;
 - entrada y salida compatibles con `AISuggestion`;
-- reemplazo sin cambiar la interfaz.
+- fallback hacia `SIMULATED_DEMO` o continuidad sin IA.
 
-No hay endpoint falso ni proveedor conectado en la demo actual.
+El endpoint conceptual es `POST /api/analyze-incident`. La UI consulta `GET /api/backend-status` para
+mostrar disponibilidad sin exponer credenciales.
+
+La configuracion centralizada vive en `server/config.js`:
+
+- `PIPO_OPENAI_CREDENTIAL`: credencial del proveedor, solo servidor.
+- `PIPO_OPENAI_MODEL`: modelo configurado, por defecto `gpt-5.6`.
+- `PIPO_OPENAI_TIMEOUT_MS`: timeout.
+- `PIPO_OPENAI_MAX_FREE_TEXT_CHARS`: limite de texto.
+- `PIPO_BACKEND_DEMO_ONLY=1`: fuerza backend no disponible para pruebas.
+
+La llamada al proveedor usa Responses API con salida estructurada por JSON schema. Si el proveedor no
+esta disponible, falla sin stack trace y conserva el flujo operativo.
+
+## Contrato Etapa 4A
+
+Entrada minima:
+
+- `incidentId`;
+- `freeText`;
+- `channel`;
+- `estimatedLocation`;
+- `riskIndicators`;
+- `existingContext`;
+- `requestedMode`.
+
+Salida normalizada:
+
+- `neutralSummary`;
+- `suggestedIncidentType`;
+- `suggestedPriority`;
+- `detectedRiskFactors`;
+- `availableInformation`;
+- `missingCriticalInformation`;
+- `followUpQuestions`;
+- `suggestedConsoles`;
+- `suggestedSpecialties`;
+- `safetyWarnings`;
+- `authorizationRequirements`;
+- `confidenceLevel`;
+- `reasoningSummary`;
+- `sourceFacts`;
+- `unsupportedClaims`;
+- `requiresHumanValidation`.
+
+Valores permitidos:
+
+- prioridad: `GREEN`, `YELLOW`, `RED`, `UNDETERMINED`;
+- confianza: `LOW`, `MEDIUM`, `HIGH`;
+- consolas: las definidas en `server/schema.js`.
+
+Si falta informacion o el proveedor devuelve valores fuera de contrato, el backend completa con valores
+seguros, marca advertencias y no inventa datos.
+
+## Gobernanza digital
+
+PIPO se mantiene separado en tres responsabilidades:
+
+- Capa ciudadana: boton PIPO, alerta, ubicacion declarada, evidencia seleccionada y condicion de emergencia.
+- Capa institucional: Centro de Monitoreo, operador, derivacion, funcionario receptor y organismos intervinientes.
+- Capa de gobernanza digital: identidad, MFA, roles, auditoria, cifrado proyectado, hash de evidencia,
+  cadena de custodia, proteccion de datos e interoperabilidad.
+
+Toda capacidad de imagen, voz, ubicacion en tiempo real, dispositivo robado, ciberdelito o tratamiento de
+menores exige finalidad, base legal, autorizacion competente, acceso por rol y auditoria posterior. El
+backend de Etapa 4A no ejecuta ninguna de esas acciones.
 
 ## Bitacora
 

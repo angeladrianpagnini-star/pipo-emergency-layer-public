@@ -116,7 +116,7 @@ assert(incomplete.missingCriticalInformation.length >= 5);
 assert.strictEqual(incomplete.requiresHumanValidation, true);
 
 const backend = createIncidentAnalysisService({ mode: AI_MODES.OPENAI_SECURE_BACKEND });
-assert.throws(() => backend.analyzeIncident(getScenarioById("medical"), BUILD_WEEK_STATE), /future server-side contract/);
+assert.throws(() => backend.analyzeIncident(getScenarioById("medical"), BUILD_WEEK_STATE), /Secure backend unavailable/);
 
 const operator = getOperatorById("OP-MASTER-01");
 const draft = createHumanDecisionDraft(cannotSpeak, operator);

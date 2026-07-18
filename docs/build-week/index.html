@@ -3,12 +3,12 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>PIPO Build Week - Etapa 3</title>
+    <title>PIPO Build Week - Etapa 4A</title>
     <meta
       name="description"
-      content="Version separada de PIPO Emergency Layer para OpenAI Build Week. Etapa 3: asistente de incidentes con validacion humana obligatoria."
+      content="Version separada de PIPO Emergency Layer para OpenAI Build Week. Etapa 4A: backend seguro experimental con fallback simulado y validacion humana obligatoria."
     />
-    <link rel="stylesheet" href="styles.css?v=6" />
+    <link rel="stylesheet" href="styles.css?v=7" />
   </head>
   <body>
     <header class="hero">
@@ -78,10 +78,10 @@
       <section class="panel assistant-panel">
         <div class="section-title">
           <h2>PIPO AI Incident Assistant</h2>
-          <span>SIMULATED AI DEMO</span>
+          <span>Etapa 4A experimental</span>
         </div>
         <p class="lead strong-warning">
-          AI-assisted analysis - human validation required. Analisis asistido por IA - requiere validacion humana.
+          Secure backend analysis - human validation required. Analisis asistido por IA - requiere validacion humana.
         </p>
         <p class="lead">
           El asistente ordena informacion, detecta faltantes y sugiere prioridad o consolas. No despacha
@@ -95,6 +95,37 @@
           <span>4. Bitacora</span>
           <span>5. Derivacion preparada</span>
         </div>
+
+        <div class="assistant-backend-panel" aria-label="Modo de analisis y estado del backend">
+          <div class="form-row">
+            <label for="assistantModeSelect">Modo de analisis</label>
+            <select id="assistantModeSelect">
+              <option value="SIMULATED_DEMO">Simulated AI Demo</option>
+              <option value="OPENAI_SECURE_BACKEND">Secure OpenAI Backend</option>
+            </select>
+          </div>
+          <article>
+            <span>Modo activo</span>
+            <strong id="assistantActiveMode">Simulated AI Demo</strong>
+          </article>
+          <article>
+            <span>Backend</span>
+            <strong id="assistantBackendStatus">Estado pendiente</strong>
+          </article>
+          <article>
+            <span>RequestId</span>
+            <strong id="assistantRequestId">Pendiente</strong>
+          </article>
+          <article>
+            <span>Version analisis</span>
+            <strong id="assistantAnalysisVersion">Pendiente</strong>
+          </article>
+        </div>
+
+        <p class="lead backend-warning">
+          Datos ficticios para demo. El backend experimental no guarda relatos, ubicaciones, evidencia ni datos
+          personales; solo retorna una sugerencia estructurada para revision humana.
+        </p>
 
         <div class="assistant-grid">
           <form id="assistantForm" class="assistant-form">
@@ -182,6 +213,8 @@
             </div>
             <div class="action-row form-row-wide">
               <button type="button" data-assistant="analyze">Analizar incidente</button>
+              <button type="button" data-assistant="retry">Reintentar</button>
+              <button type="button" data-assistant="use-simulated-demo">Usar demo simulada</button>
               <button type="button" data-assistant="continue-without-ai">Continue without AI</button>
             </div>
           </form>
@@ -456,8 +489,8 @@
     <script src="data-models.js?v=5"></script>
     <script src="ledger.js?v=5"></script>
     <script src="incident-scenarios.js?v=5"></script>
-    <script src="ai-service.js?v=5"></script>
+    <script src="ai-service.js?v=6"></script>
     <script src="incident-assistant.js?v=5"></script>
-    <script src="app.js?v=5"></script>
+    <script src="app.js?v=6"></script>
   </body>
 </html>
