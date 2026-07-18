@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PIPO Build Week - Etapa 1</title>
+    <meta
+      name="description"
+      content="Version separada de PIPO Emergency Layer para OpenAI Build Week. Etapa 1: modelos de datos simulados con validacion humana obligatoria."
+    />
+    <link rel="stylesheet" href="styles.css?v=1" />
+  </head>
+  <body>
+    <header class="hero">
+      <div>
+        <p class="eyebrow">OpenAI Build Week Edition</p>
+        <h1>PIPO Emergency Layer</h1>
+        <p>
+          Nueva ruta independiente posterior a v36. Esta vista inicia la evolucion con modelos de datos
+          para incidente, bitacora, IA simulada, decision humana, acta digital, cierre y auditoria.
+        </p>
+      </div>
+      <aside class="safety-card">
+        <strong>Preservacion v36</strong>
+        <span>Esta pagina vive en <code>docs/build-week/</code> y no reemplaza la demo publica actual.</span>
+        <span>Datos simulados. Sin API keys. Sin conexion con emergencias reales.</span>
+      </aside>
+    </header>
+
+    <main class="layout">
+      <section class="panel stage-panel">
+        <div class="section-title">
+          <h2>Etapa 0</h2>
+          <span>Preservacion</span>
+        </div>
+        <div class="checks">
+          <article>
+            <strong>v36 identificada</strong>
+            <span><code>docs/index.html</code>, <code>docs/styles.css</code>, <code>docs/app.js</code></span>
+          </article>
+          <article>
+            <strong>Punto de restauracion</strong>
+            <span><code>pre-build-week-v36</code></span>
+          </article>
+          <article>
+            <strong>Rama de trabajo</strong>
+            <span><code>build-week-2026</code></span>
+          </article>
+          <article>
+            <strong>Publicacion</strong>
+            <span>GitHub Pages sigue apuntando a <code>main:/docs</code>. No se publica esta rama.</span>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="section-title">
+          <h2>Etapa 1</h2>
+          <span>Modelo de datos</span>
+        </div>
+        <p class="lead">
+          Los modelos separan bitacora operativa, decision humana, sugerencia de IA y Acta Digital de
+          Procedimiento. La IA solo propone; el operador valida.
+        </p>
+        <div id="modelList" class="model-list" aria-label="Modelos de datos"></div>
+      </section>
+
+      <section class="panel detail-panel">
+        <div class="section-title">
+          <h2 id="detailTitle">Modelo seleccionado</h2>
+          <span id="detailBadge">Requiere validacion</span>
+        </div>
+        <p id="detailPurpose" class="lead"></p>
+        <div class="detail-grid">
+          <article>
+            <h3>Campos requeridos</h3>
+            <ul id="requiredFields"></ul>
+          </article>
+          <article>
+            <h3>Campos del modelo</h3>
+            <ul id="allFields"></ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel lifecycle-panel">
+        <div class="section-title">
+          <h2>Ciclo documental simulado</h2>
+          <span>Sin borrar eventos</span>
+        </div>
+        <ol id="timeline" class="timeline"></ol>
+      </section>
+
+      <section class="panel compare-panel">
+        <div class="section-title">
+          <h2>IA vs decision humana</h2>
+          <span>Auditable</span>
+        </div>
+        <div class="compare-grid">
+          <article>
+            <span>IA sugirio</span>
+            <strong id="aiPriority">-</strong>
+            <p id="aiRouting">-</p>
+          </article>
+          <article>
+            <span>Operador resolvio</span>
+            <strong id="humanPriority">-</strong>
+            <p id="humanRouting">-</p>
+          </article>
+        </div>
+        <p id="humanReason" class="decision-reason"></p>
+      </section>
+
+      <section class="panel snapshot-panel">
+        <div class="section-title">
+          <h2>Snapshot de datos</h2>
+          <span>Demo JSON</span>
+        </div>
+        <pre id="snapshot"></pre>
+      </section>
+    </main>
+
+    <script src="data-models.js?v=1"></script>
+    <script src="app.js?v=1"></script>
+  </body>
+</html>
