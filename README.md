@@ -17,6 +17,8 @@ La idea principal es simple: una persona debe poder activar una alerta desde una
 - registro operativo general;
 - cierre obligatorio de cada alerta;
 - enfoque de seguridad, privacidad y minimo dato necesario.
+- un recorrido guiado de ocho etapas con recepcion maestra, derivacion paralela, recursos ficticios, actuaciones
+  individuales y devolucion ciudadana depurada.
 
 ## Alcance publico
 

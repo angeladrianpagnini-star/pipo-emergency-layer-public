@@ -1,5 +1,47 @@
 # Build Week Changelog
 
+## Etapa 6C.2 - Ajustes visuales finales del recorrido operativo
+
+- Devuelve el cierre al mismo dispositivo ciudadano mediante una pantalla final de incidente, paquete y seguimiento simulados.
+- Mantiene el identificador, escenario, persona ficticia, region e idioma de la activacion inicial en el telefono final.
+- Enriquece el mapa abstracto con fichas por recurso: organismo, unidad, especialidad, distancia, ETA, disponibilidad,
+  estado operativo y criterio principal de seleccion.
+- Requiere confirmacion humana individual antes de permitir el avance a la intervencion de campo y conserva eventos
+  de demostracion para las transiciones de salida y arribo paralelas.
+- Amplia la prueba estatica y el plan de pruebas para cierre ciudadano, mapa enriquecido, traducciones, estados y ausencia
+  de asignacion automatica.
+- Mantiene intactos `docs/index.html`, `docs/styles.css`, `docs/app.js` y la version publica v36.
+
+## Etapa 6C.1 - Recorrido operativo principal y orquestacion visual del incidente
+
+- Agrega `Recorrido operativo PIPO` como experiencia principal guiada de ocho etapas.
+- Presenta el escenario ficticio de accidente vial con una persona lesionada, posible derrame, riesgo de incendio y
+  transito afectado.
+- Expone tres zonas claras: dispositivo ciudadano, coordinacion institucional y recursos de campo.
+- Conecta una Consola Maestra PIPO con 911 Seguridad, 107 Salud, Transito y Bomberos mediante derivacion simultanea
+  de demostracion.
+- Muestra recursos ficticios, reglas de seleccion explicadas y confirmacion humana simulada por organismo.
+- Representa estados paralelos de campo, actas individuales, integracion documental por referencias, cierre y
+  devolucion ciudadana depurada.
+- Agrega bitacora in-memory enlazada por referencias previas para todos los eventos del recorrido y muestra la cadena
+  completa sin borrar ni ocultar los eventos anteriores del mismo recorrido.
+- Integra `es-AR` y `en-US` con los selectores existentes de idioma y region, sin recargar ni cambiar conexiones.
+- Agrega `operational-journey.js`, `operational-journey.test.js` y `OPERATIONAL_JOURNEY.md`.
+- Mantiene intactos `docs/index.html`, `docs/styles.css`, `docs/app.js`, la configuracion de Pages y v36.
+
+## Etapa 6C.0 - Citizen activation, product clarity and localization hotfix
+
+- Reordena la entrada publica de Build Week hacia una portada centrada en PIPO Emergency Layer.
+- Agrega un telefono ficticio con punto PIPO, menu accesible de condiciones de emergencia y confirmacion de permisos
+  simulados individuales.
+- Agrega una sesion visual simulada con video abstracto, onda de audio, mapa, temporizador, controles de detencion y
+  tarjeta de recepcion institucional.
+- Agrega bitacora in-memory append-only para los eventos de activacion ciudadana de demostracion.
+- Agrega `es-AR` y `en-US`, deteccion por `navigator.language`, selector persistente solo para `pipo_demo_locale` y
+  selector de region independiente.
+- Mueve el contexto de v36, rama, restauracion y modulos previos a secciones tecnicas colapsables.
+- Mantiene intactos `docs/index.html`, `docs/styles.css`, `docs/app.js`, la configuracion de Pages y v36.
+
 ## Etapa 6A - Final audit, feature freeze and release candidate
 
 - Activa feature freeze: no agrega modulos ni funciones operativas.

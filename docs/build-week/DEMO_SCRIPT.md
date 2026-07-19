@@ -1,5 +1,49 @@
 # Demo Script - Build Week Release Candidate
 
+## Etapa 6C.1 - Recorrido operativo principal
+
+1. Iniciar `Recorrido operativo PIPO` y presentar el escenario ficticio de accidente vial.
+2. Mostrar el dispositivo ciudadano: punto PIPO, condicion seleccionada, permisos simulados, ID y alerta recibida por
+   la Consola Maestra PIPO.
+3. Avanzar a la recepcion maestra: contexto disponible, prioridad preliminar, riesgos y datos pendientes.
+4. Avanzar a la derivacion simultanea: 911 Seguridad, 107 Salud, Transito y Bomberos reciben la misma alerta
+   ficticia en paralelo.
+5. Mostrar los cuatro recursos sugeridos, la distancia y ETA simuladas, la regla explicada y la confirmacion humana
+   de demostracion.
+6. Mostrar estados paralelos de campo, contexto prearribo simulado y el mapa abstracto sin servicios externos.
+7. Mostrar que cada organismo conserva un acta individual y que la consola maestra integra referencias sin reescribir
+   su contenido.
+8. Finalizar con cierre institucional y paquete ciudadano depurado: estado, organismos participantes, acciones,
+   documentos habilitados, proximo paso y referencia.
+9. Cambiar idioma o region para demostrar que se actualizan etiquetas de interfaz, no capacidades ni integraciones.
+
+El recorrido dura aproximadamente un minuto. Sus eventos, medios, personas, recursos, tiempos, ubicaciones y
+organismos son ficticios y permanecen en memoria durante la demostracion.
+
+## Etapa 6C.0 - Recorrido ciudadano recomendado
+
+1. Abrir `docs/build-week/` y explicar que PIPO se proyecta como una aplicacion descargable de activacion inmediata.
+2. Mostrar el telefono ficticio y aclarar que el punto PIPO representa un acceso autorizado segun el sistema operativo,
+   no una burbuja universal ya implementada.
+3. Abrir el punto PIPO con teclado o puntero y elegir una condicion de emergencia ficticia.
+4. Mostrar que ubicacion, audio, video, descripcion e informacion de dispositivo son permisos simulados e
+   independientes, inicialmente desactivados.
+5. Iniciar la alerta simulada y recorrer el video abstracto, la onda de audio, el mapa, el temporizador, el incidente
+   y las acciones para detener cada medio simulado.
+6. Mostrar la tarjeta de recepcion institucional y el flujo ciudadano -> consola maestra -> organismo competente ->
+   campo -> acta -> cierre.
+7. Cambiar idioma y region en forma independiente. Aclarar que los nombres locales son etiquetas de demostracion y no
+   integraciones reales.
+8. Cerrar con el aviso: la IA no activa sensores; la persona inicia la sesion y las decisiones son humanas.
+9. Abrir `Informacion tecnica de Build Week` o `Ver modulos avanzados` solo para profundizar en los componentes previos.
+
+## Limites de este recorrido
+
+- No hay aplicacion nativa instalada.
+- No hay sensores, camara, microfono, geolocalizacion, rastreo, despacho ni comunicacion institucional real.
+- No se guarda ningun incidente ni permiso; solo la preferencia `pipo_demo_locale` puede persistir.
+- La bitacora visible es una cadena de demostracion en memoria y no una cadena de custodia oficial.
+
 Duracion objetivo: menos de tres minutos.
 
 ## Recorrido prioritario

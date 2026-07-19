@@ -18,12 +18,16 @@ node --check docs\build-week\field-workflow.js
 node --check docs\build-week\procedure-act.js
 node --check docs\build-week\citizen-closure.js
 node --check docs\build-week\evidence-vault.js
+node --check docs\build-week\citizen-activation.js
+node --check docs\build-week\operational-journey.js
 node --check docs\build-week\app.js
 node docs\build-week\incident-assistant.test.js
 node docs\build-week\field-workflow.test.js
 node docs\build-week\procedure-act.test.js
 node docs\build-week\citizen-closure.test.js
 node docs\build-week\evidence-vault.test.js
+node docs\build-week\citizen-activation.test.js
+node docs\build-week\operational-journey.test.js
 node docs\build-week\server\secure-backend.test.js
 node docs\build-week\release-candidate.test.js
 git diff --check
@@ -152,3 +156,50 @@ Probar en navegador:
 - Las areas de comentario ciudadano y observacion formal tienen etiqueta accesible.
 - Los mensajes de perspectiva, asistente, acta, boveda y bitacora usan regiones de estado anunciables.
 - El release candidate conserva sin cambios los tres archivos protegidos de v36.
+
+## Citizen activation and localization - Etapa 6C.0
+
+- La primera pantalla identifica a PIPO como aplicacion proyectada de activacion inmediata.
+- El telefono ficticio muestra un punto PIPO, indicacion de simulacion y acceso disponible.
+- El punto abre por puntero, foco de teclado y se cierra con Escape.
+- Las nueve condiciones de emergencia se pueden seleccionar.
+- Ubicacion, audio, video, descripcion e informacion ficticia de dispositivo se activan o retiran de forma
+  independiente y no hay ninguna seleccion inicial automatica.
+- Iniciar alerta crea solo una sesion en memoria y permite detener audio, video y ubicacion simulados.
+- La recepcion institucional presenta alerta, permisos, prioridad, operador, consolas, hora e incidente ficticio.
+- La bitacora agrega eventos con referencia previa; no ofrece borrado ni reescritura.
+- El codigo no contiene APIs de sensores reales, `getUserMedia`, geolocalizacion real o persistencia de incidentes.
+- `es-AR` y `en-US` actualizan los controles principales sin recargar y actualizan `document.documentElement.lang`.
+- La region Argentina - Buenos Aires y la demostracion internacional cambian etiquetas sin afirmar integracion real.
+- Escritorio y movil no presentan overflow horizontal, los controles conservan foco visible y los movimientos respetan
+  `prefers-reduced-motion`.
+- Los textos ingleses de navegacion tecnica se traducen al elegir `es-AR`; los terminos internos pueden quedar solo
+  dentro de la seccion tecnica secundaria.
+
+## Recorrido operativo principal - Etapa 6C.1
+
+- El boton `Iniciar demostracion guiada` inicia la primera de ocho etapas sin usar datos persistentes.
+- La Consola Maestra PIPO recibe alerta, prioridad, permisos y datos pendientes ficticios.
+- La derivacion agrega una recepcion paralela para 911 Seguridad, 107 Salud, Transito y Bomberos.
+- Cada organismo muestra un recurso ficticio distinto, distancia, ETA, regla y confirmacion humana simulada.
+- Los recursos muestran estados distintos de campo sin cambiar los registros de los otros organismos.
+- Cada organismo conserva un acta individual y la consola maestra recibe referencias, no reescribe su autoria.
+- El cierre habilita un paquete ciudadano depurado sin informacion restringida.
+- La bitacora mantiene todos los eventos del recorrido con referencia previa; reiniciar abre una corrida nueva en
+  memoria y no borra eventos de la corrida anterior mediante una accion de edicion.
+- Los eventos obligatorios estan presentes: recepcion, validacion, prioridad, derivacion, recursos, campo,
+  documentacion, cierre y paquete ciudadano.
+- `es-AR` y `en-US` actualizan el nuevo recorrido completo; el selector regional solo cambia nombres de demostracion.
+- No hay APIs de sensores, geolocalizacion, medios, despacho, persistencia de incidentes ni integraciones reales.
+
+## Ajustes visuales del recorrido - Etapa 6C.2
+
+- El paso 8 devuelve el cierre al mismo telefono ciudadano, con el mismo incidente, persona ficticia y region de la activacion.
+- El telefono final muestra estado finalizado, hora simulada, organismos, resumen, paquete, documentos, proximos pasos,
+  seguimiento, referencia de integridad y confirmacion pendiente.
+- El mapa mantiene cuatro recursos ficticios y cada ficha muestra organismo, unidad, especialidad, distancia, ETA,
+  disponibilidad, estado operativo y criterio principal.
+- Los recursos permanecen sugeridos y pendientes hasta la confirmacion humana individual; no se asignan al avanzar el paso.
+- El paso de campo muestra estados paralelos distintos y conserva un evento de demostracion para salida o arribo.
+- `es-AR` y `en-US` cubren los nuevos textos de mapa, cierre y dispositivo ciudadano.
+- Escritorio y movil de 390 px no tienen overflow horizontal; el mapa se convierte en fichas verticales en movil.
