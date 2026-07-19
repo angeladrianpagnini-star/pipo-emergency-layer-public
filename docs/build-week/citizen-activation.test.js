@@ -64,7 +64,7 @@ function assertSimulationBoundaries() {
   prohibitedFragments.forEach((fragment) => {
     assert(!source.includes(fragment), `Citizen activation must not use real sensor API fragment: ${fragment}`);
   });
-  assertContains("no instala una aplicacion nativa ni activa sensores", "Spanish simulated-only notice");
+  assertContains("no instala una aplicación nativa ni activa sensores", "Spanish simulated-only notice");
   assertContains("does not install a native app or activate real sensors", "English simulated-only notice");
   assertContains("La IA no activa sensores", "Spanish AI boundary");
   assertContains("AI does not activate sensors", "English AI boundary");

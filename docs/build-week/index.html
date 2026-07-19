@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>PIPO Emergency Layer - Activacion ciudadana simulada</title>
+    <title>PIPO Emergency Layer - Activación ciudadana simulada</title>
     <meta
       name="description"
-      content="Demostracion conceptual de activacion ciudadana, coordinacion institucional y trazabilidad operativa de PIPO Emergency Layer."
+      content="Demostración conceptual de activación ciudadana, coordinación institucional y trazabilidad operativa de PIPO Emergency Layer."
     />
     <link rel="icon" href="data:," />
     <link rel="stylesheet" href="styles.css?v=12" />
@@ -15,7 +15,7 @@
     <div id="pipoCitizenExperience"></div>
     <div id="pipoOperationalJourney"></div>
     <noscript>
-      <p class="pipo-noscript">Esta demostracion requiere JavaScript para mostrar la activacion simulada. No utiliza sensores ni datos reales.</p>
+      <p class="pipo-noscript">Esta demostración requiere JavaScript para mostrar la activación simulada. No utiliza sensores ni datos reales.</p>
     </noscript>
     <header class="hero">
       <div>
@@ -23,17 +23,17 @@
         <h1>PIPO Emergency Layer</h1>
         <p>
           Nueva ruta independiente posterior a v36. Esta vista evoluciona el modelo hacia una arquitectura
-          federada: multiples consolas, operadores, actas individuales, ciberdelitos y expediente maestro.
+          federada: múltiples consolas, operadores, actas individuales, ciberdelitos y expediente maestro.
         </p>
       </div>
       <aside class="safety-card">
-        <strong>Preservacion v36</strong>
-        <span>Esta pagina vive en <code>docs/build-week/</code> y no reemplaza la demo publica actual.</span>
-        <span>Datos simulados. Sin API keys. Sin conexion con emergencias reales.</span>
+        <strong>Preservación v36</strong>
+        <span>Esta página vive en <code>docs/build-week/</code> y no reemplaza la demo pública actual.</span>
+        <span>Datos simulados. Sin API keys. Sin conexión con emergencias reales.</span>
       </aside>
     </header>
 
-    <nav class="section-nav" aria-label="Navegacion Build Week">
+    <nav class="section-nav" aria-label="Navegación Build Week">
       <a href="#perspectives">Perspectives</a>
       <a href="#citizen-closure">Citizen Closure</a>
       <a href="#incident-assistant" data-internal-for-citizen>Incident Assistant</a>
@@ -55,7 +55,7 @@
       <section class="panel stage-panel">
         <div class="section-title">
           <h2>Etapa 0 + 1.1 + 2</h2>
-          <span>Preservacion y bitacora</span>
+          <span>Preservación y bitácora</span>
         </div>
         <div class="checks">
           <article>
@@ -80,7 +80,7 @@
       <section class="panel stage-panel federation-principle">
         <div>
           <p class="eyebrow">Principio de arquitectura</p>
-          <h2>Integracion sin absorcion documental</h2>
+          <h2>Integración sin absorción documental</h2>
           <p>
             La consola maestra integra el incidente y puede solicitar aclaraciones, pero no reescribe,
             elimina, fusiona ni firma actas individuales de otros organismos.
@@ -106,7 +106,7 @@
         </div>
         <p class="lead">
           La misma alerta puede verse como ciudadano, operador de campo, consola federada o consola maestra.
-          El cambio de perspectiva no reinicia el incidente: conserva ID, estado, cronologia, actas, evidencia
+          El cambio de perspectiva no reinicia el incidente: conserva ID, estado, cronología, actas, evidencia
           simulada, derivaciones, observaciones y cierre.
         </p>
         <div class="perspective-controls" aria-label="Selector de perspectiva">
@@ -131,7 +131,7 @@
             <select id="perspectiveConsoleSelect"></select>
           </div>
           <div class="form-row">
-            <label for="perspectiveFieldOperatorSelect">Movil de campo</label>
+            <label for="perspectiveFieldOperatorSelect">Móvil de campo</label>
             <select id="perspectiveFieldOperatorSelect"></select>
           </div>
         </div>
@@ -141,16 +141,16 @@
         <div class="action-row contextual-actions">
           <button type="button" data-citizen-action="demo-5-1" data-perspective-target="MASTER_CONSOLE FEDERATED_CONSOLE">Demo Etapa 5.1</button>
           <button type="button" data-citizen-action="generate-summary" data-perspective-target="MASTER_CONSOLE">Generar resumen ciudadano</button>
-          <button type="button" data-citizen-action="review-summary" data-perspective-target="MASTER_CONSOLE">Revision institucional</button>
+          <button type="button" data-citizen-action="review-summary" data-perspective-target="MASTER_CONSOLE">Revisión institucional</button>
           <button type="button" data-citizen-action="package" data-perspective-target="MASTER_CONSOLE">Preparar paquete</button>
           <button type="button" data-citizen-action="deliver" data-perspective-target="MASTER_CONSOLE">Entregar paquete</button>
           <button type="button" data-citizen-action="toggle-ai" data-perspective-target="MASTER_CONSOLE">Alternar IA demo</button>
           <button type="button" data-citizen-action="open" data-perspective-target="CITIZEN">Abrir entrega</button>
-          <button type="button" data-citizen-action="ack" data-perspective-target="CITIZEN">Confirmar recepcion</button>
+          <button type="button" data-citizen-action="ack" data-perspective-target="CITIZEN">Confirmar recepción</button>
           <button type="button" data-citizen-action="request-access" data-perspective-target="CITIZEN">Solicitar documento</button>
           <button type="button" data-citizen-action="download-doc" data-perspective-target="CITIZEN">Descargar habilitado</button>
-          <button type="button" data-citizen-action="feedback" data-perspective-target="CITIZEN">Enviar opinion</button>
-          <button type="button" data-citizen-action="observation" data-perspective-target="CITIZEN">Crear observacion formal</button>
+          <button type="button" data-citizen-action="feedback" data-perspective-target="CITIZEN">Enviar opinión</button>
+          <button type="button" data-citizen-action="observation" data-perspective-target="CITIZEN">Crear observación formal</button>
           <button type="button" data-citizen-action="followup-required" data-perspective-target="MASTER_CONSOLE">Marcar seguimiento</button>
           <button type="button" data-citizen-action="followup-complete" data-perspective-target="MASTER_CONSOLE FEDERATED_CONSOLE">Completar seguimiento</button>
           <button type="button" data-citizen-action="reset-demo" data-perspective-target="CITIZEN FIELD_OPERATOR FEDERATED_CONSOLE MASTER_CONSOLE">Reset demo data</button>
@@ -164,24 +164,24 @@
           <span>Etapa 4A experimental</span>
         </div>
         <p class="lead strong-warning">
-          Secure backend analysis - human validation required. Analisis asistido por IA - requiere validacion humana.
+          Secure backend analysis - human validation required. Análisis asistido por IA - requiere validación humana.
         </p>
         <p class="lead">
-          El asistente ordena informacion, detecta faltantes y sugiere prioridad o consolas. No despacha
-          recursos, no activa camara, microfono ni ubicacion, no cierra incidentes y no sustituye al operador.
+          El asistente ordena información, detecta faltantes y sugiere prioridad o consolas. No despacha
+          recursos, no activa cámara, micrófono ni ubicación, no cierra incidentes y no sustituye al operador.
         </p>
 
         <div class="assistant-flow" aria-label="Flujo del asistente">
           <span>1. Relato</span>
-          <span>2. Analisis</span>
-          <span>3. Revision humana</span>
-          <span>4. Bitacora</span>
-          <span>5. Derivacion preparada</span>
+          <span>2. Análisis</span>
+          <span>3. Revisión humana</span>
+          <span>4. Bitácora</span>
+          <span>5. Derivación preparada</span>
         </div>
 
-        <div class="assistant-backend-panel" aria-label="Modo de analisis y estado del backend">
+        <div class="assistant-backend-panel" aria-label="Modo de análisis y estado del backend">
           <div class="form-row">
-            <label for="assistantModeSelect">Modo de analisis</label>
+            <label for="assistantModeSelect">Modo de análisis</label>
             <select id="assistantModeSelect">
               <option value="SIMULATED_DEMO">Simulated AI Demo</option>
               <option value="OPENAI_SECURE_BACKEND">Secure OpenAI Backend</option>
@@ -200,14 +200,14 @@
             <strong id="assistantRequestId">Pendiente</strong>
           </article>
           <article>
-            <span>Version analisis</span>
+            <span>Versión análisis</span>
             <strong id="assistantAnalysisVersion">Pendiente</strong>
           </article>
         </div>
 
         <p class="lead backend-warning">
           Datos ficticios para demo. El backend experimental no guarda relatos, ubicaciones, evidencia ni datos
-          personales; solo retorna una sugerencia estructurada para revision humana.
+          personales; solo retorna una sugerencia estructurada para revisión humana.
         </p>
 
         <div class="assistant-grid">
@@ -217,21 +217,21 @@
               <select id="assistantScenarioSelect"></select>
             </div>
             <div class="form-row form-row-wide">
-              <label for="assistantDescription">Descripcion libre del incidente</label>
+              <label for="assistantDescription">Descripción libre del incidente</label>
               <textarea id="assistantDescription" rows="6" placeholder="Escribir relato libre o cargar un escenario ficticio"></textarea>
             </div>
             <div class="form-row">
               <label for="assistantChannel">Canal de ingreso</label>
               <select id="assistantChannel">
                 <option>PIPO Layer</option>
-                <option>Activacion silenciosa</option>
+                <option>Activación silenciosa</option>
                 <option>Llamada derivada</option>
                 <option>Formulario PIPO</option>
                 <option>Mesa de ayuda PIPO</option>
               </select>
             </div>
             <div class="form-row">
-              <label for="assistantLocation">Ubicacion estimada o declarada</label>
+              <label for="assistantLocation">Ubicación estimada o declarada</label>
               <input id="assistantLocation" type="text" placeholder="No informado" />
             </div>
             <div class="form-row">
@@ -291,7 +291,7 @@
               </select>
             </div>
             <div class="form-row form-row-wide">
-              <label for="assistantAdditional">Informacion adicional opcional</label>
+              <label for="assistantAdditional">Información adicional opcional</label>
               <textarea id="assistantAdditional" rows="3" placeholder="Datos complementarios, todos ficticios"></textarea>
             </div>
             <div class="action-row form-row-wide">
@@ -320,7 +320,7 @@
             </div>
             <article class="assistant-block">
               <h3>Resumen neutral</h3>
-              <p id="assistantSummary">Cargar o escribir un incidente para generar analisis simulado.</p>
+              <p id="assistantSummary">Cargar o escribir un incidente para generar análisis simulado.</p>
             </article>
             <div class="split-grid">
               <article>
@@ -344,7 +344,7 @@
             </div>
             <article class="assistant-block">
               <h3>Fundamento y limites</h3>
-              <p id="assistantReasoning">Sin analisis generado.</p>
+              <p id="assistantReasoning">Sin análisis generado.</p>
               <ul id="assistantWarnings"></ul>
               <ul id="assistantUnsupported"></ul>
             </article>
@@ -353,7 +353,7 @@
 
         <div class="human-review-grid">
           <article class="human-review">
-            <h3>Decision del operador</h3>
+            <h3>Decisión del operador</h3>
             <div class="review-actions">
               <button type="button" data-assistant="accept">Aceptar todo</button>
               <button type="button" data-assistant="modify">Aceptar parcialmente</button>
@@ -386,7 +386,7 @@
                 <textarea id="humanReasonInput" rows="3" placeholder="Obligatorio si modifica o rechaza una sugerencia material"></textarea>
               </div>
               <div class="action-row form-row-wide">
-                <button type="button" data-assistant="confirm">Confirmar decision humana</button>
+                <button type="button" data-assistant="confirm">Confirmar decisión humana</button>
               </div>
             </div>
           </article>
@@ -396,7 +396,7 @@
               <span>No puntua al operador</span>
             </div>
             <div id="assistantComparison" class="comparison-box">
-              <p>La comparacion se genera al confirmar la decision humana.</p>
+              <p>La comparación se genera al confirmar la decisión humana.</p>
             </div>
           </article>
         </div>
@@ -408,15 +408,15 @@
           <span>Etapa 4B</span>
         </div>
         <p class="lead strong-warning">
-          Cada intervencion conserva autoria, responsabilidad y trazabilidad propias.
+          Cada intervención conserva autoría, responsabilidad y trazabilidad propias.
         </p>
         <p class="lead">
-          Vista responsive para multiples funcionarios y organismos sobre un mismo incidente. Cada operador
+          Vista responsive para múltiples funcionarios y organismos sobre un mismo incidente. Cada operador
           registra acontecimientos y evidencia simulada, genera su acta individual y conserva autonomia documental.
         </p>
 
         <div class="field-workbench">
-          <section class="field-phone" aria-label="Vista movil del operador de campo">
+          <section class="field-phone" aria-label="Vista móvil del operador de campo">
             <div class="phone-topbar">
               <span>PIPO Field</span>
               <strong id="fieldMobileTime">--:--</strong>
@@ -430,17 +430,17 @@
 
             <div class="field-card">
               <div class="section-title compact-title">
-                <h3>Derivacion</h3>
+                <h3>Derivación</h3>
                 <span id="fieldStatus">ASSIGNED</span>
               </div>
               <p id="fieldIncidentSummary"></p>
               <div id="fieldAssignment" class="field-assignment"></div>
             </div>
 
-            <div id="fieldStatusFlow" class="status-flow" aria-label="Estados de intervencion"></div>
+            <div id="fieldStatusFlow" class="status-flow" aria-label="Estados de intervención"></div>
 
             <div class="field-card">
-              <label for="fieldActionReason">Motivo u observacion operativa</label>
+              <label for="fieldActionReason">Motivo u observación operativa</label>
               <textarea id="fieldActionReason" rows="3" placeholder="Fundamento para rechazo, cancelacion, cierre o aclaracion"></textarea>
               <div class="field-action-grid">
                 <button type="button" data-field-action="accept">Aceptar</button>
@@ -474,12 +474,12 @@
                     </select>
                   </div>
                   <div class="form-row form-row-wide">
-                    <label for="fieldEventLocation">Ubicacion simulada</label>
+                    <label for="fieldEventLocation">Ubicación simulada</label>
                     <input id="fieldEventLocation" type="text" />
                   </div>
                   <div class="form-row form-row-wide">
-                    <label for="fieldEventDescription">Descripcion</label>
-                    <textarea id="fieldEventDescription" rows="3" placeholder="Registrar hecho observado, manifestacion, actuacion o comunicacion"></textarea>
+                    <label for="fieldEventDescription">Descripción</label>
+                    <textarea id="fieldEventDescription" rows="3" placeholder="Registrar hecho observado, manifestación, actuación o comunicación"></textarea>
                   </div>
                 </div>
                 <div class="action-row">
@@ -505,7 +505,7 @@
                     </select>
                   </div>
                   <div class="form-row form-row-wide">
-                    <label for="fieldEvidenceDescription">Descripcion</label>
+                    <label for="fieldEvidenceDescription">Descripción</label>
                     <textarea id="fieldEvidenceDescription" rows="3" placeholder="Solo evidencia ficticia. No sensores reales ni datos personales"></textarea>
                   </div>
                 </div>
@@ -534,7 +534,7 @@
                   </div>
                   <div class="form-row form-row-wide">
                     <label for="fieldSupportReason">Motivo</label>
-                    <textarea id="fieldSupportReason" rows="3" placeholder="Motivo, informacion minima y necesidad operativa"></textarea>
+                    <textarea id="fieldSupportReason" rows="3" placeholder="Motivo, información mínima y necesidad operativa"></textarea>
                   </div>
                 </div>
                 <div class="action-row">
@@ -556,7 +556,7 @@
                   <button type="button" data-field-action="create-act">Crear acta</button>
                   <button type="button" data-field-action="review-act">Revisar</button>
                   <button type="button" data-field-action="finalize-act">Finalizar</button>
-                  <button type="button" data-field-action="amend-act">Ampliar version</button>
+                  <button type="button" data-field-action="amend-act">Ampliar versión</button>
                   <button type="button" data-field-action="clarify-act">Solicitar aclaracion</button>
                 </div>
                 <div id="fieldActPreview" class="act-preview"></div>
@@ -580,7 +580,7 @@
           <span>Etapa 5</span>
         </div>
         <p class="lead">
-          La consola maestra integra actas individuales, bitacora, evidencia simulada y decisiones humanas.
+          La consola maestra integra actas individuales, bitácora, evidencia simulada y decisiones humanas.
           Las fuentes originales se referencian y permanecen preservadas.
         </p>
         <div class="assistant-flow compact-flow" aria-label="Flujo documental de Etapa 5">
@@ -593,7 +593,7 @@
         <div class="action-row">
           <button type="button" data-procedure-action="create">Generar acta</button>
           <button type="button" data-procedure-action="ai-draft">Borrador IA</button>
-          <button type="button" data-procedure-action="review">Revision operador</button>
+          <button type="button" data-procedure-action="review">Revisión operador</button>
           <button type="button" data-procedure-action="clarify">Solicitar aclaracion</button>
           <button type="button" data-procedure-action="answer-clarification">Responder aclaracion</button>
           <button type="button" data-procedure-action="supervisor">Supervisor</button>
@@ -622,7 +622,7 @@
         </div>
         <div class="procedure-grid two-col">
           <article>
-            <h3>Cronologia automatica</h3>
+            <h3>Cronología automática</h3>
             <ol id="procedureChronology" class="compact-list"></ol>
           </article>
           <article>
@@ -642,7 +642,7 @@
           diferencias entre actas, eventos o aclaraciones.
         </p>
         <div class="action-row">
-          <button type="button" data-procedure-action="amend">Ampliar version</button>
+          <button type="button" data-procedure-action="amend">Ampliar versión</button>
           <button type="button" data-procedure-action="rectify">Rectificar</button>
           <button type="button" data-procedure-action="master-record">Generar expediente</button>
           <button type="button" data-procedure-action="propose-closure">Proponer cierre</button>
@@ -677,8 +677,8 @@
           <span>Etapa 5.2</span>
         </div>
         <p class="lead">
-          Esta vista distingue controles implementados en la demo, simulados para analisis y requisitos de
-          arquitectura productiva. No afirma proteccion de transporte cuando corre en HTTP local.
+          Esta vista distingue controles implementados en la demo, simulados para análisis y requisitos de
+          arquitectura productiva. No afirma protección de transporte cuando corre en HTTP local.
         </p>
         <div id="communicationSecurityStatus" class="transport-status"></div>
         <div id="securityControlOverview" class="control-grid"></div>
@@ -718,7 +718,7 @@
         </div>
         <p class="lead">
           Cada vista, denegacion, vencimiento o revocacion queda registrada por evidencia, operador, consola,
-          sesion, finalidad, resultado y autorizacion asociada.
+          sesión, finalidad, resultado y autorización asociada.
         </p>
         <div class="action-row vault-actions" data-internal-vault>
           <button type="button" data-vault-action="request-access">Solicitar acceso</button>
@@ -736,7 +736,7 @@
           <span>Registro autorizado</span>
         </div>
         <p class="lead">
-          El modelo separa entrega voluntaria, preservacion guiada y adquisicion forense autorizada conceptual.
+          El modelo separa entrega voluntaria, preservación guiada y adquisición forense autorizada conceptual.
           No implementa acceso real a dispositivos, cuentas, camaras, microfonos ni herramientas forenses.
         </p>
         <div class="action-row vault-actions" data-internal-vault>
@@ -771,8 +771,8 @@
           <span>Citizen Incident Package</span>
         </div>
         <p class="lead">
-          El ciudadano recibe una version depurada: que se hizo, que organismos participaron, que documentos
-          estan habilitados, cuales son los proximos pasos y que datos quedan restringidos por resguardo.
+          El ciudadano recibe una versión depurada: qué se hizo, qué organismos participaron, qué documentos
+          están habilitados, cuáles son los próximos pasos y qué datos quedan restringidos por resguardo.
         </p>
         <div class="citizen-layout">
           <article>
@@ -784,7 +784,7 @@
             <div id="citizenSafeView" class="mini-record"></div>
           </article>
           <article>
-            <h3>Proximos pasos</h3>
+            <h3>Próximos pasos</h3>
             <ol id="citizenNextSteps" class="compact-list"></ol>
           </article>
           <article>
@@ -800,7 +800,7 @@
             <div id="citizenReceipt" class="mini-record"></div>
           </article>
           <article>
-            <h3>Opinion de servicio</h3>
+            <h3>Opinión de servicio</h3>
             <p class="lead compact-lead">
               Dato de calidad separado: no modifica actas, expediente, sanciones ni cierre.
             </p>
@@ -808,9 +808,9 @@
               <label>Rapidez<select id="feedbackRapidity"></select></label>
               <label>Claridad<select id="feedbackClarity"></select></label>
               <label>Trato<select id="feedbackTreatment"></select></label>
-              <label>Coordinacion<select id="feedbackCoordination"></select></label>
-              <label>Proteccion<select id="feedbackProtection"></select></label>
-              <label>Proximos pasos<select id="feedbackNextSteps"></select></label>
+              <label>Coordinación<select id="feedbackCoordination"></select></label>
+              <label>Protección<select id="feedbackProtection"></select></label>
+              <label>Próximos pasos<select id="feedbackNextSteps"></select></label>
               <label>Satisfaccion<select id="feedbackOverall"></select></label>
             </div>
             <label for="feedbackComment">Comentario opcional</label>
@@ -818,7 +818,7 @@
             <div id="citizenFeedback" class="mini-record"></div>
           </article>
           <article>
-            <h3>Observacion formal</h3>
+            <h3>Observación formal</h3>
             <p class="lead compact-lead">
               Tramite separado: puede pedir aclaracion, ampliacion o rectificacion, pero no altera registros previos.
             </p>
@@ -827,11 +827,11 @@
               <select id="observationCategory">
                 <option value="SOLICITUD_DE_ACLARACION">Solicitud de aclaracion</option>
                 <option value="RECTIFICACION_DATOS">Rectificacion de datos</option>
-                <option value="AMPLIACION_INFORMACION">Ampliacion de informacion</option>
+                <option value="AMPLIACION_INFORMACION">Ampliación de información</option>
                 <option value="TRATO_O_PROCEDIMIENTO">Trato o procedimiento</option>
               </select>
             </div>
-            <label for="observationDescription">Descripcion de la observacion</label>
+            <label for="observationDescription">Descripción de la observación</label>
             <textarea id="observationDescription">Solicito aclarar los pasos posteriores y documentos habilitados.</textarea>
             <div class="action-row small-actions">
               <button type="button" data-citizen-action="assign-observation" data-perspective-target="MASTER_CONSOLE FEDERATED_CONSOLE">Asignar</button>
@@ -933,7 +933,7 @@
           <span>Modelo de datos</span>
         </div>
         <p class="lead">
-          Los modelos separan bitacora operativa, decision humana, sugerencia de IA y Acta Digital de
+          Los modelos separan bitácora operativa, decisión humana, sugerencia de IA y Acta Digital de
           Procedimiento. La IA solo propone; el operador valida.
         </p>
         <div id="modelList" class="model-list" aria-label="Modelos de datos"></div>
@@ -942,7 +942,7 @@
       <section class="panel detail-panel" data-internal-for-citizen>
         <div class="section-title">
           <h2 id="detailTitle">Modelo seleccionado</h2>
-          <span id="detailBadge">Requiere validacion</span>
+          <span id="detailBadge">Requiere validación</span>
         </div>
         <p id="detailPurpose" class="lead"></p>
         <div class="detail-grid">
@@ -967,11 +967,11 @@
 
       <section id="audit" class="panel ledger-panel" data-internal-for-citizen>
         <div class="section-title">
-          <h2>Bitacora operativa append-only</h2>
+          <h2>Bitácora operativa append-only</h2>
           <span>Etapa 2</span>
         </div>
         <p class="lead">
-          Cada accion crea un evento nuevo con operador, consola, sesion, clasificacion, referencia de
+          Cada acción crea un evento nuevo con operador, consola, sesión, clasificación, referencia de
           integridad de demo y enlace al evento anterior. Las correcciones no borran el evento original.
         </p>
         <div class="action-row">
@@ -979,7 +979,7 @@
           <button type="button" data-ledger="support.accepted">Aceptar apoyo</button>
           <button type="button" data-ledger="field.departed">Registrar salida</button>
           <button type="button" data-ledger="field.arrived">Registrar arribo</button>
-          <button type="button" data-ledger="intervention.started">Iniciar intervencion</button>
+          <button type="button" data-ledger="intervention.started">Iniciar intervención</button>
           <button type="button" data-ledger="act.finalized">Finalizar acta demo</button>
           <button type="button" data-action="rectify-ledger">Rectificar evento</button>
           <button type="button" data-action="try-delete-ledger">Intentar borrar evento</button>
@@ -990,7 +990,7 @@
 
       <section class="panel compare-panel" data-internal-for-citizen>
         <div class="section-title">
-          <h2>IA vs decision humana</h2>
+          <h2>IA vs decisión humana</h2>
           <span>Auditable</span>
         </div>
         <div class="compare-grid">
