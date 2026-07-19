@@ -2422,6 +2422,7 @@ pre {
 .journey-phone-content > span { color: var(--muted); font-size: 0.76rem; font-weight: 850; }
 .journey-phone-content > strong { color: var(--ink); font-size: 1.08rem; }
 .journey-phone-content > p { margin: 0; color: var(--muted); font-size: 0.86rem; line-height: 1.38; }
+.journey-phone-user { color: var(--teal-dark) !important; font-size: 0.7rem !important; letter-spacing: 0; }
 
 .journey-permission-list {
   display: flex;
@@ -2590,6 +2591,20 @@ pre {
   line-height: 1.35;
 }
 
+.journey-confirmation-state,
+.journey-map-assignment {
+  display: grid;
+  gap: 3px;
+  margin: 0;
+  border-left: 3px solid var(--amber);
+  padding-left: 8px;
+}
+
+.journey-confirmation-state span,
+.journey-map-assignment span { color: var(--muted); font-size: 0.7rem; font-weight: 850; text-transform: uppercase; }
+.journey-confirmation-state strong,
+.journey-map-assignment strong { color: var(--teal-dark); font-size: 0.8rem; line-height: 1.3; }
+
 .journey-map {
   position: relative;
   min-height: 330px;
@@ -2669,6 +2684,71 @@ pre {
 
 .journey-selection-note span { color: #41635f; }
 
+.journey-map-resource-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.journey-map-resource-card {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--teal);
+  background: #fffdf8;
+  padding: 12px;
+}
+
+.journey-map-resource-card.security { border-left-color: #4d7a94; }
+.journey-map-resource-card.health { border-left-color: #2d9a83; }
+.journey-map-resource-card.traffic { border-left-color: var(--amber); }
+.journey-map-resource-card.fire { border-left-color: var(--coral); }
+
+.journey-map-resource-card header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.journey-map-resource-card header span,
+.journey-map-resource-card header > strong { color: var(--muted); font-size: 0.72rem; font-weight: 900; text-transform: uppercase; }
+.journey-map-resource-card header > strong { max-width: 160px; color: var(--teal-dark); text-align: right; line-height: 1.28; }
+.journey-map-resource-card h3 { margin: 3px 0 0; color: var(--ink); font-size: 1rem; }
+
+.journey-map-resource-data,
+.journey-final-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  margin: 0;
+}
+
+.journey-map-resource-data div,
+.journey-final-summary div {
+  min-width: 0;
+  border: 1px solid var(--line);
+  background: #f9f6ef;
+  padding: 7px;
+}
+
+.journey-map-resource-data dt,
+.journey-final-summary dt { color: var(--muted); font-size: 0.64rem; font-weight: 900; text-transform: uppercase; }
+.journey-map-resource-data dd,
+.journey-final-summary dd { margin: 3px 0 0; color: var(--ink); font-size: 0.76rem; font-weight: 850; line-height: 1.3; overflow-wrap: anywhere; }
+
+.journey-map-human-note {
+  margin: 12px 0 0;
+  border-left: 4px solid var(--teal);
+  background: #e7f2ef;
+  padding: 10px;
+  color: #41635f;
+  font-size: 0.84rem;
+  line-height: 1.42;
+}
+
 .journey-operator-card > p { margin: 0; color: var(--muted); font-size: 0.82rem; line-height: 1.38; }
 .journey-operator-instruction { border-left-color: var(--amber); font-size: 0.77rem; }
 .journey-operator-actions button { flex: 1 1 80px; min-height: 34px; padding: 7px; font-size: 0.72rem; }
@@ -2697,8 +2777,37 @@ pre {
   padding: 16px;
 }
 
-.journey-citizen-package > p:not(:first-child) { margin: 6px 0 12px; color: #41635f; line-height: 1.42; }
-.journey-citizen-package .journey-key-values div { background: rgba(255, 253, 248, 0.76); }
+.journey-closure-flow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 12px;
+  color: var(--teal-dark);
+  font-size: 0.75rem;
+  font-weight: 850;
+}
+
+.journey-closure-flow span,
+.journey-closure-flow strong { border: 1px solid rgba(23, 107, 100, 0.22); background: #f4fbf9; padding: 5px 7px; }
+.journey-closure-flow b { color: var(--coral); font-size: 0.92rem; }
+
+.journey-final-phone {
+  min-height: 0;
+  border-color: #17201d;
+  box-shadow: 0 14px 30px rgba(23, 32, 29, 0.15);
+}
+
+.journey-final-phone-content { display: grid; gap: 10px; padding: 14px; }
+.journey-final-phone-content > strong { color: var(--ink); font-size: 1.08rem; }
+.journey-final-phone-content > p { margin: 0; color: #41635f; font-size: 0.82rem; line-height: 1.4; }
+.journey-final-phone-content .journey-phone-user { display: block; }
+.journey-final-scenario { color: var(--coral); font-size: 0.72rem; font-weight: 900; text-transform: uppercase; }
+
+.journey-return-indicators { display: flex; flex-wrap: wrap; gap: 5px; }
+.journey-return-indicators span { border: 1px solid rgba(23, 107, 100, 0.2); background: #e7f2ef; padding: 5px 7px; color: var(--teal-dark); font-size: 0.68rem; font-weight: 850; }
+.journey-final-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.journey-final-actions button:last-child { grid-column: 1 / -1; }
 
 .journey-ledger-section { padding-bottom: 20px; }
 .journey-ledger { display: grid; gap: 7px; margin: 0; padding: 0; list-style: none; }
@@ -2722,7 +2831,8 @@ pre {
   .journey-field { grid-column: 2; }
   .journey-agency-grid,
   .journey-field-cards,
-  .journey-acts-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .journey-acts-grid,
+  .journey-map-resource-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 900px) {
@@ -2749,9 +2859,13 @@ pre {
   .journey-agency-grid,
   .journey-field-cards,
   .journey-acts-grid,
+  .journey-map-resource-grid,
   .journey-key-values,
   .journey-resource-details,
-  .journey-field-summary { grid-template-columns: 1fr; }
+  .journey-field-summary,
+  .journey-map-resource-data,
+  .journey-final-summary,
+  .journey-final-actions { grid-template-columns: 1fr; }
   .journey-map { min-height: 310px; }
   .journey-map-resource { width: 76px; min-height: 46px; }
   .journey-map-incident { top: 42%; left: 39%; }
@@ -2763,4 +2877,7 @@ pre {
   .journey-controls > div { grid-template-columns: 1fr; }
   .journey-ledger li { grid-template-columns: 1fr; }
   .journey-ledger code { grid-column: auto; }
+  .journey-map-resource-card header { display: grid; }
+  .journey-map-resource-card header > strong { max-width: none; text-align: left; }
+  .journey-final-actions button:last-child { grid-column: auto; }
 }

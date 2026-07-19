@@ -1,5 +1,17 @@
 # Build Week Changelog
 
+## Etapa 6C.2 - Ajustes visuales finales del recorrido operativo
+
+- Devuelve el cierre al mismo dispositivo ciudadano mediante una pantalla final de incidente, paquete y seguimiento simulados.
+- Mantiene el identificador, escenario, persona ficticia, region e idioma de la activacion inicial en el telefono final.
+- Enriquece el mapa abstracto con fichas por recurso: organismo, unidad, especialidad, distancia, ETA, disponibilidad,
+  estado operativo y criterio principal de seleccion.
+- Requiere confirmacion humana individual antes de permitir el avance a la intervencion de campo y conserva eventos
+  de demostracion para las transiciones de salida y arribo paralelas.
+- Amplia la prueba estatica y el plan de pruebas para cierre ciudadano, mapa enriquecido, traducciones, estados y ausencia
+  de asignacion automatica.
+- Mantiene intactos `docs/index.html`, `docs/styles.css`, `docs/app.js` y la version publica v36.
+
 ## Etapa 6C.1 - Recorrido operativo principal y orquestacion visual del incidente
 
 - Agrega `Recorrido operativo PIPO` como experiencia principal guiada de ocho etapas.

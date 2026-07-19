@@ -55,6 +55,48 @@ function assertMultiAgencyScenario() {
   ["1.8 km", "2.1 km", "0.9 km", "3.4 km"].forEach((distance) => assertContains(`"${distance}"`, "simulated distance"));
   assertContains("confirmOutstandingResources", "human resource confirmation");
   assertContains("selectionRule", "resource selection rule");
+  ["mapUnit", "selectionCriterion", "availability", "operationalStatus", "mainCriterion"].forEach((value) => {
+    assertContains(value, "enriched map resource detail");
+  });
+  ["healthSelectionCriterion", "securitySelectionCriterion", "trafficSelectionCriterion", "fireSelectionCriterion"].forEach((value) => {
+    assertContains(value, "agency-specific selection criterion");
+  });
+  ["health: text(\"onWay\")", "security: text(\"assigned\")", "traffic: text(\"arrived\")", "fire: text(\"onWay\")"].forEach((value) => {
+    assertContains(value, "parallel field state");
+  });
+  ["fieldDeparted, `${resources.health.unit}", "fieldDeparted, `${resources.fire.unit}", "fieldArrived, `${resources.traffic.unit}"].forEach((value) => {
+    assertContains(value, "parallel state ledger event");
+  });
+  assertContains("pendingHumanConfirmation", "pending human assignment state");
+  assertContains("assignmentRequired", "human assignment gate");
+  assertContains("if (next >= 5 && !confirmOutstandingResources())", "no automatic assignment gate");
+  assert(!source.includes("if (!state.assignments[agency]) state.assignments[agency] = true;"), "Resources must not be automatically assigned.");
+}
+
+function assertCitizenDeviceClosure() {
+  [
+    "journey-final-phone",
+    "journey-closure-flow",
+    "closureFlowMaster",
+    "closureFlowValidation",
+    "closureFlowPackage",
+    "closureFlowDevice",
+    "demoCitizen",
+    "regionLabel",
+    "incidentClosed",
+    "simulatedClosureTime",
+    "followUpOwner",
+    "packageIntegrity",
+    "receiptConfirmation",
+    "packageReceived",
+    "documentationAvailable",
+    "emergencySessionEnded",
+    "viewSummary",
+    "viewDocuments",
+    "nextSteps",
+    "confirmReceipt",
+  ].forEach((value) => assertContains(value, "citizen device closure content"));
+  assertContains("pkg-${shortHash(incidentId())}", "linked final integrity reference");
 }
 
 function assertLedgerAndSafety() {
@@ -76,7 +118,7 @@ function assertLocalizationAndSurface() {
   });
   assert(html.includes('id="pipoOperationalJourney"'), "Operational journey root must exist.");
   assert(html.includes('src="operational-journey.js?v=1"'), "Operational journey script must load.");
-  [".journey-main-grid", ".journey-agency-grid", ".journey-map", ".journey-field-cards", ".journey-ledger"].forEach((selector) => {
+  [".journey-main-grid", ".journey-agency-grid", ".journey-map", ".journey-map-resource-grid", ".journey-final-phone", ".journey-field-cards", ".journey-ledger"].forEach((selector) => {
     assert(styles.includes(selector), `Missing operational journey style: ${selector}`);
   });
 }
@@ -84,6 +126,7 @@ function assertLocalizationAndSurface() {
 function main() {
   assertGuidedFlow();
   assertMultiAgencyScenario();
+  assertCitizenDeviceClosure();
   assertLedgerAndSafety();
   assertLocalizationAndSurface();
   console.log("PIPO operational journey tests passed");

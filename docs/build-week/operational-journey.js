@@ -34,6 +34,8 @@
       specialty: "emergencyHealth",
       operator: "healthOperator",
       capability: "medicalCare",
+      mapUnit: "healthMapUnit",
+      selectionCriterion: "healthSelectionCriterion",
       mapClass: "health",
     },
     security: {
@@ -44,6 +46,8 @@
       specialty: "securitySupport",
       operator: "securityOperator",
       capability: "sceneSecurity",
+      mapUnit: "securityMapUnit",
+      selectionCriterion: "securitySelectionCriterion",
       mapClass: "security",
     },
     traffic: {
@@ -54,6 +58,8 @@
       specialty: "trafficOrder",
       operator: "trafficOperator",
       capability: "trafficControl",
+      mapUnit: "trafficMapUnit",
+      selectionCriterion: "trafficSelectionCriterion",
       mapClass: "traffic",
     },
     fire: {
@@ -64,6 +70,8 @@
       specialty: "fireResponse",
       operator: "fireOperator",
       capability: "spillAndFireRisk",
+      mapUnit: "fireMapUnit",
+      selectionCriterion: "fireSelectionCriterion",
       mapClass: "fire",
     },
   };
@@ -94,6 +102,9 @@
       masterZone: "B. Coordinacion institucional",
       fieldZone: "C. Recursos de campo",
       pipoPoint: "Punto PIPO",
+      demoCitizen: "Persona usuaria demo",
+      demoRegion: "Argentina - Buenos Aires",
+      internationalRegion: "Demostracion internacional",
       citizenAlert: "Accidente vial",
       citizenReport: "Colision simulada. Hay una persona lesionada, posible derrame y circulacion comprometida.",
       simulatedLocation: "Ubicacion simulada",
@@ -101,6 +112,7 @@
       simulatedVideo: "Video simulado",
       simulatedText: "Relato escrito",
       permissions: "Permisos concedidos",
+      permissionConfirmed: "Consentimiento simulado confirmado",
       connected: "Conexion simulada activa",
       receiver: "Consola receptora",
       connectedOperator: "Operador conectado",
@@ -138,14 +150,19 @@
       pending: "Pendiente",
       assigned: "Asignado",
       confirmResource: "Confirmar recurso",
-      confirmed: "Confirmado por consola",
-      selectionRule: "Recurso sugerido por proximidad, especialidad y disponibilidad. Asignacion confirmada por operador de consola.",
+      confirmed: "Confirmado por operador de consola",
+      pendingHumanConfirmation: "Pendiente de confirmacion humana",
+      selectionRule: "PIPO sugiere recursos mediante proximidad simulada, especialidad, disponibilidad, jurisdiccion y prioridad. La asignacion final requiere confirmacion humana.",
+      assignmentRequired: "Confirme los recursos sugeridos antes de continuar con la intervencion de campo.",
       criteria: "Criterios de seleccion",
       criteriaList: "Cercania simulada, especialidad, disponibilidad, jurisdiccion, prioridad y capacidad requerida.",
       mapTitle: "Mapa operativo simulado",
       mapLead: "Representacion abstracta sin coordenadas, ubicacion real ni servicios externos.",
       incident: "Incidente",
       available: "Disponible",
+      availability: "Disponibilidad",
+      operationalStatus: "Estado operativo",
+      mainCriterion: "Criterio principal",
       onWay: "En camino",
       arrived: "Arribado",
       intervening: "Interviniendo",
@@ -184,16 +201,35 @@
       closureLead: "La consola maestra valida documentos y separa el material entregable de la informacion restringida.",
       validateClosure: "Validar cierre",
       closureReady: "Cierre trazable validado por operador humano.",
+      closureFlowMaster: "Consola maestra",
+      closureFlowValidation: "Validacion del cierre",
+      closureFlowPackage: "Paquete ciudadano",
+      closureFlowDevice: "Dispositivo ciudadano",
       packageTitle: "Devolucion ciudadana simulada",
       packageLead: "El dispositivo recibe un resumen claro, proximos pasos y solo documentos habilitados.",
       incidentClosed: "Incidente finalizado",
+      finalized: "Finalizado",
+      closedAt: "Fecha y hora de cierre",
+      simulatedClosureTime: "18/07/2026 - 10:20 (simulado)",
       participatingAgencies: "Organismos intervinientes",
       relevantActions: "Acciones relevantes",
       availableDocuments: "Documentos disponibles",
       nextMedicalStep: "Proximo paso medico",
       referenceNumber: "Numero de referencia",
-      download: "Ver documento habilitado",
-      observation: "Crear observacion formal",
+      followUpOwner: "Organismo responsable del seguimiento",
+      followUpValue: "107 Salud - seguimiento clinico simulado",
+      packageIntegrity: "Referencia de integridad",
+      receiptConfirmation: "Confirmacion de recepcion",
+      receiptPending: "Pendiente de confirmacion",
+      packageReceived: "Paquete ciudadano recibido",
+      documentationAvailable: "Documentacion disponible",
+      followUpPending: "Seguimiento pendiente",
+      emergencySessionEnded: "Sesion de emergencia finalizada",
+      viewSummary: "Ver resumen",
+      viewDocuments: "Ver documentos",
+      nextSteps: "Proximos pasos",
+      confirmReceipt: "Confirmar recepcion",
+      observation: "Presentar observacion",
       packageDelivered: "Paquete ciudadano simulado entregado. La informacion restringida no se muestra.",
       eventLedger: "Bitacora del recorrido operativo",
       noEvents: "Inicie la demostracion para ver eventos simulados append-only.",
@@ -210,6 +246,14 @@
       securityOperator: "Oficial Movil Demo",
       trafficOperator: "Agente Transito Demo",
       fireOperator: "Jefe de Dotacion Demo",
+      healthMapUnit: "Ambulancia 107-04",
+      securityMapUnit: "Movil 911-12",
+      trafficMapUnit: "Unidad T-08",
+      fireMapUnit: "Dotacion B-03",
+      healthSelectionCriterion: "Cercania + capacidad sanitaria",
+      securitySelectionCriterion: "Jurisdiccion + prioridad",
+      trafficSelectionCriterion: "Mayor proximidad",
+      fireSelectionCriterion: "Capacidad especializada",
       fieldInstruction: "Prioridad de vida, seguridad de escena y coordinacion interinstitucional.",
       packageActions: "Asistencia sanitaria iniciada, escena resguardada, transito ordenado y riesgo de incendio contenido.",
       packageDocuments: "Resumen ciudadano y constancia de atencion simulada.",
@@ -243,6 +287,9 @@
       masterZone: "B. Institutional coordination",
       fieldZone: "C. Field resources",
       pipoPoint: "PIPO point",
+      demoCitizen: "Demo citizen",
+      demoRegion: "Argentina - Buenos Aires",
+      internationalRegion: "International demonstration",
       citizenAlert: "Road incident",
       citizenReport: "Simulated collision. There is an injured person, a possible spill, and disrupted traffic.",
       simulatedLocation: "Simulated location",
@@ -250,6 +297,7 @@
       simulatedVideo: "Simulated video",
       simulatedText: "Written report",
       permissions: "Granted permissions",
+      permissionConfirmed: "Simulated consent confirmed",
       connected: "Simulated connection active",
       receiver: "Receiving console",
       connectedOperator: "Connected operator",
@@ -287,14 +335,19 @@
       pending: "Pending",
       assigned: "Assigned",
       confirmResource: "Confirm resource",
-      confirmed: "Confirmed by console",
-      selectionRule: "Resource suggested by proximity, specialty, and availability. Assignment confirmed by console operator.",
+      confirmed: "Confirmed by console operator",
+      pendingHumanConfirmation: "Pending human confirmation",
+      selectionRule: "PIPO suggests resources through simulated proximity, specialty, availability, jurisdiction, and priority. Final assignment requires human confirmation.",
+      assignmentRequired: "Confirm the suggested resources before continuing to field intervention.",
       criteria: "Selection criteria",
       criteriaList: "Simulated proximity, specialty, availability, jurisdiction, priority, and required capability.",
       mapTitle: "Simulated operational map",
       mapLead: "Abstract representation with no coordinates, real location, or external services.",
       incident: "Incident",
       available: "Available",
+      availability: "Availability",
+      operationalStatus: "Operational status",
+      mainCriterion: "Primary selection criterion",
       onWay: "On the way",
       arrived: "Arrived",
       intervening: "Intervening",
@@ -333,16 +386,35 @@
       closureLead: "The master console validates documents and separates deliverable material from restricted information.",
       validateClosure: "Validate closure",
       closureReady: "Traceable closure validated by human operator.",
+      closureFlowMaster: "Master console",
+      closureFlowValidation: "Closure validation",
+      closureFlowPackage: "Citizen package",
+      closureFlowDevice: "Citizen device",
       packageTitle: "Simulated citizen return",
       packageLead: "The device receives a clear summary, next steps, and only enabled documents.",
       incidentClosed: "Incident closed",
+      finalized: "Finalized",
+      closedAt: "Closure date and time",
+      simulatedClosureTime: "Jul 18, 2026 - 10:20 (simulated)",
       participatingAgencies: "Participating agencies",
       relevantActions: "Relevant actions",
       availableDocuments: "Available documents",
       nextMedicalStep: "Next medical step",
       referenceNumber: "Reference number",
-      download: "View enabled document",
-      observation: "Create formal observation",
+      followUpOwner: "Follow-up responsible agency",
+      followUpValue: "107 Health - simulated clinical follow-up",
+      packageIntegrity: "Integrity reference",
+      receiptConfirmation: "Receipt confirmation",
+      receiptPending: "Pending confirmation",
+      packageReceived: "Citizen package received",
+      documentationAvailable: "Documentation available",
+      followUpPending: "Follow-up pending",
+      emergencySessionEnded: "Emergency session ended",
+      viewSummary: "View summary",
+      viewDocuments: "View documents",
+      nextSteps: "Next steps",
+      confirmReceipt: "Confirm receipt",
+      observation: "Submit observation",
       packageDelivered: "Simulated citizen package delivered. Restricted information is not displayed.",
       eventLedger: "Operational journey ledger",
       noEvents: "Start the demonstration to view append-only simulated events.",
@@ -359,6 +431,14 @@
       securityOperator: "Demo field officer",
       trafficOperator: "Demo traffic agent",
       fireOperator: "Demo fire lead",
+      healthMapUnit: "Ambulance 107-04",
+      securityMapUnit: "Vehicle 911-12",
+      trafficMapUnit: "Unit T-08",
+      fireMapUnit: "Fire unit B-03",
+      healthSelectionCriterion: "Proximity + health capacity",
+      securitySelectionCriterion: "Jurisdiction + priority",
+      trafficSelectionCriterion: "Highest proximity",
+      fireSelectionCriterion: "Specialized capacity",
       fieldInstruction: "Life priority, scene safety, and interagency coordination.",
       packageActions: "Health care initiated, scene protected, traffic organized, and fire risk contained.",
       packageDocuments: "Citizen summary and simulated care certificate.",
@@ -404,6 +484,10 @@
     return text(international ? `international${agency.charAt(0).toUpperCase()}${agency.slice(1)}` : agency);
   }
 
+  function regionLabel() {
+    return text(state.region === "INTERNATIONAL" ? "internationalRegion" : "demoRegion");
+  }
+
   function incidentId() {
     return `PIPO-OPS-${String(Math.max(state.run, 1)).padStart(6, "0")}`;
   }
@@ -445,10 +529,10 @@
     if (!isAtLeast(5)) return text("assigned");
     if (state.step === 5) {
       return {
-        health: text("arrived"),
-        security: text("onWay"),
-        traffic: text("intervening"),
-        fire: text("assigned"),
+        health: text("onWay"),
+        security: text("assigned"),
+        traffic: text("arrived"),
+        fire: text("onWay"),
       }[agency];
     }
     if (state.step === 6) {
@@ -488,9 +572,8 @@
         appendEvent(eventCodes.fieldContext, text("fieldContext"), agency.toUpperCase());
       });
       appendEvent(eventCodes.fieldDeparted, `${resources.health.unit}: ${text("onWay")}`, "HEALTH");
-      appendEvent(eventCodes.fieldDeparted, `${resources.security.unit}: ${text("onWay")}`, "SECURITY");
+      appendEvent(eventCodes.fieldDeparted, `${resources.fire.unit}: ${text("onWay")}`, "FIRE");
       appendEvent(eventCodes.fieldArrived, `${resources.traffic.unit}: ${text("arrived")}`, "TRAFFIC");
-      appendEvent(eventCodes.interventionStarted, `${resources.traffic.unit}: ${text("intervening")}`, "TRAFFIC");
     }
     if (step === 6) {
       agencies.forEach((agency) => appendEvent(eventCodes.interventionCompleted, `${resources[agency].unit}: ${text("completed")}`, agency.toUpperCase()));
@@ -521,14 +604,7 @@
   }
 
   function confirmOutstandingResources() {
-    agencies.forEach((agency) => {
-      suggestResource(agency);
-      if (!state.assignments[agency]) state.assignments[agency] = true;
-    });
-    agencies.forEach((agency) => {
-      const exists = state.events.some((event) => event.code === eventCodes.resourceAssigned && event.agency === agency.toUpperCase());
-      if (!exists) appendEvent(eventCodes.resourceAssigned, `${resources[agency].unit}: ${text("confirmed")}`, agency.toUpperCase());
-    });
+    return agencies.every((agency) => state.assignments[agency]);
   }
 
   function startJourney() {
@@ -548,7 +624,13 @@
     const next = Math.max(1, Math.min(8, state.step + direction));
     if (next === state.step) return;
     if (direction > 0) {
-      if (next >= 4) confirmOutstandingResources();
+      if (next >= 5 && !confirmOutstandingResources()) {
+        state.step = 4;
+        state.message = text("assignmentRequired");
+        render();
+        focusCurrentStep();
+        return;
+      }
       recordStep(next);
     }
     state.step = next;
@@ -595,6 +677,7 @@
           <div class="journey-phone-content">
             <button type="button" class="journey-pipo-point" data-journey-action="start" aria-label="${text("start")}">P</button>
             <span>${text("pipoPoint")}</span>
+            <span class="journey-phone-user">${text("demoCitizen")} | ${regionLabel()}</span>
             <strong>${text("citizenAlert")}</strong>
             <p>${text("citizenReport")}</p>
             <div class="journey-permission-list">
@@ -603,7 +686,7 @@
           </div>
         </div>
         <dl class="journey-key-values">
-          <div><dt>${text("permissions")}</dt><dd>${active ? text("confirmed") : text("pending")}</dd></div>
+          <div><dt>${text("permissions")}</dt><dd>${active ? text("permissionConfirmed") : text("pending")}</dd></div>
           <div><dt>${text("incidentId")}</dt><dd>${active ? incidentId() : "-"}</dd></div>
           <div><dt>${text("receiver")}</dt><dd>${text("masterConsole")}</dd></div>
           <div><dt>${text("connectedOperator")}</dt><dd>${active ? "Turno A / Demo" : "-"}</dd></div>
@@ -669,7 +752,26 @@
           <div><dt>${text("resourceSelected")}</dt><dd>${resource.distance} / ${resource.eta}</dd></div>
         </dl>
         <p class="journey-agency-capability">${text(resource.capability)}</p>
+        <p class="journey-confirmation-state"><span>${text("resourceSelected")}</span><strong>${assigned ? text("confirmed") : text("pendingHumanConfirmation")}</strong></p>
         <button type="button" data-journey-action="confirm-resource" data-agency="${agency}" ${received && !assigned ? "" : "disabled"}>${assigned ? text("confirmed") : text("confirmResource")}</button>
+      </article>`;
+  }
+
+  function renderMapResourceDetails(agency) {
+    const resource = resources[agency];
+    const assigned = state.assignments[agency];
+    return `
+      <article class="journey-map-resource-card ${resources[agency].mapClass}">
+        <header><div><span>${agencyName(agency)}</span><h3>${text(resource.mapUnit)}</h3></div><strong>${assigned ? text("confirmed") : text("pendingHumanConfirmation")}</strong></header>
+        <dl class="journey-map-resource-data">
+          <div><dt>${text("specialty")}</dt><dd>${text(resource.specialty)}</dd></div>
+          <div><dt>${text("distance")}</dt><dd>${resource.distance}</dd></div>
+          <div><dt>${text("eta")}</dt><dd>${resource.eta}</dd></div>
+          <div><dt>${text("availability")}</dt><dd>${text("available")}</dd></div>
+          <div><dt>${text("operationalStatus")}</dt><dd>${assigned ? fieldStatus(agency) : text("pending")}</dd></div>
+          <div><dt>${text("mainCriterion")}</dt><dd>${text(resource.selectionCriterion)}</dd></div>
+        </dl>
+        <p class="journey-map-assignment"><span>${text("resourceSelected")}</span><strong>${assigned ? text("confirmed") : text("pendingHumanConfirmation")}</strong></p>
       </article>`;
   }
 
@@ -683,6 +785,8 @@
           <i class="journey-route route-health" aria-hidden="true"></i><i class="journey-route route-security" aria-hidden="true"></i><i class="journey-route route-traffic" aria-hidden="true"></i><i class="journey-route route-fire" aria-hidden="true"></i>
         </div>
         <div class="journey-selection-note"><strong>${text("criteria")}</strong><span>${text("criteriaList")}</span></div>
+        <div class="journey-map-resource-grid">${agencies.map(renderMapResourceDetails).join("")}</div>
+        <p class="journey-map-human-note">${text("selectionRule")}</p>
       </section>`;
   }
 
@@ -728,9 +832,32 @@
       <section id="journeyClosureZone" class="journey-closure-section ${state.step === 7 ? "is-focused" : ""}" aria-labelledby="journeyClosureTitle">
         <div><p>${text("step7")}</p><h2 id="journeyClosureTitle">${text("closureTitle")}</h2><p>${text("closureLead")}</p><button type="button" data-journey-action="closure" ${isAtLeast(6) && !closed ? "" : "disabled"}>${text("validateClosure")}</button><span class="journey-closure-status">${closed ? text("closureReady") : text("pending")}</span></div>
         <div id="journeyPackageZone" class="journey-citizen-package ${state.step === 8 ? "is-focused" : ""}">
-          <p>${text("step8")}</p><h3>${text("packageTitle")}</h3><p>${text("packageLead")}</p>
-          <dl class="journey-key-values compact"><div><dt>${text("status")}</dt><dd>${delivered ? text("incidentClosed") : text("pending")}</dd></div><div><dt>${text("participatingAgencies")}</dt><dd>${agencies.map(agencyName).join(", ")}</dd></div><div><dt>${text("relevantActions")}</dt><dd>${text("packageActions")}</dd></div><div><dt>${text("availableDocuments")}</dt><dd>${text("packageDocuments")}</dd></div><div><dt>${text("nextMedicalStep")}</dt><dd>${text("packageNext")}</dd></div><div><dt>${text("referenceNumber")}</dt><dd>${incidentId()}</dd></div></dl>
-          <div class="journey-action-row"><button type="button" data-journey-action="package" ${delivered ? "" : "disabled"}>${text("download")}</button><button type="button" class="is-secondary" data-journey-action="observation" ${delivered ? "" : "disabled"}>${text("observation")}</button></div>
+          <p>${text("step8")}</p>
+          <div class="journey-closure-flow" aria-label="${text("step8")}"><span>${text("closureFlowMaster")}</span><b aria-hidden="true">&#8594;</b><span>${text("closureFlowValidation")}</span><b aria-hidden="true">&#8594;</b><span>${text("closureFlowPackage")}</span><b aria-hidden="true">&#8594;</b><strong>${text("closureFlowDevice")}</strong></div>
+          <div class="journey-mini-phone journey-final-phone">
+            <div class="journey-phone-bar"><span>9:41</span><span aria-hidden="true">&#9679; &#9679; &#9679;</span></div>
+            <div class="journey-final-phone-content">
+              <span class="journey-phone-user">${text("demoCitizen")} | ${regionLabel()}</span>
+              <span class="journey-final-scenario">${text("citizenAlert")}</span>
+              <strong>${text("incidentClosed")}</strong>
+              <p>${text("packageLead")}</p>
+              <dl class="journey-final-summary">
+                <div><dt>${text("incidentId")}</dt><dd>${incidentId()}</dd></div>
+                <div><dt>${text("status")}</dt><dd>${delivered ? text("finalized") : text("pending")}</dd></div>
+                <div><dt>${text("closedAt")}</dt><dd>${text("simulatedClosureTime")}</dd></div>
+                <div><dt>${text("participatingAgencies")}</dt><dd>${agencies.map(agencyName).join(", ")}</dd></div>
+                <div><dt>${text("relevantActions")}</dt><dd>${text("packageActions")}</dd></div>
+                <div><dt>${text("packageReceived")}</dt><dd>${delivered ? text("packageDelivered") : text("pending")}</dd></div>
+                <div><dt>${text("availableDocuments")}</dt><dd>${text("packageDocuments")}</dd></div>
+                <div><dt>${text("nextSteps")}</dt><dd>${text("packageNext")}</dd></div>
+                <div><dt>${text("followUpOwner")}</dt><dd>${text("followUpValue")}</dd></div>
+                <div><dt>${text("packageIntegrity")}</dt><dd>pkg-${shortHash(incidentId())}</dd></div>
+                <div><dt>${text("receiptConfirmation")}</dt><dd>${text("receiptPending")}</dd></div>
+              </dl>
+              <div class="journey-return-indicators"><span>${text("packageReceived")}</span><span>${text("documentationAvailable")}</span><span>${text("followUpPending")}</span><span>${text("emergencySessionEnded")}</span></div>
+              <div class="journey-action-row journey-final-actions"><button type="button" data-journey-action="package" ${delivered ? "" : "disabled"}>${text("viewSummary")}</button><button type="button" data-journey-action="package" ${delivered ? "" : "disabled"}>${text("viewDocuments")}</button><button type="button" disabled>${text("nextSteps")}</button><button type="button" disabled>${text("confirmReceipt")}</button><button type="button" class="is-secondary" data-journey-action="observation" ${delivered ? "" : "disabled"}>${text("observation")}</button></div>
+            </div>
+          </div>
         </div>
       </section>`;
   }

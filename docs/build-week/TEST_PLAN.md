@@ -191,3 +191,15 @@ Probar en navegador:
   documentacion, cierre y paquete ciudadano.
 - `es-AR` y `en-US` actualizan el nuevo recorrido completo; el selector regional solo cambia nombres de demostracion.
 - No hay APIs de sensores, geolocalizacion, medios, despacho, persistencia de incidentes ni integraciones reales.
+
+## Ajustes visuales del recorrido - Etapa 6C.2
+
+- El paso 8 devuelve el cierre al mismo telefono ciudadano, con el mismo incidente, persona ficticia y region de la activacion.
+- El telefono final muestra estado finalizado, hora simulada, organismos, resumen, paquete, documentos, proximos pasos,
+  seguimiento, referencia de integridad y confirmacion pendiente.
+- El mapa mantiene cuatro recursos ficticios y cada ficha muestra organismo, unidad, especialidad, distancia, ETA,
+  disponibilidad, estado operativo y criterio principal.
+- Los recursos permanecen sugeridos y pendientes hasta la confirmacion humana individual; no se asignan al avanzar el paso.
+- El paso de campo muestra estados paralelos distintos y conserva un evento de demostracion para salida o arribo.
+- `es-AR` y `en-US` cubren los nuevos textos de mapa, cierre y dispositivo ciudadano.
+- Escritorio y movil de 390 px no tienen overflow horizontal; el mapa se convierte en fichas verticales en movil.
