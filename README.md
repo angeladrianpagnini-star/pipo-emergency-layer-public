@@ -140,3 +140,18 @@ Accordingly, 5.6 Terra is attributed to the final audit and stabilization phase,
 HTML5, CSS3, JavaScript, Node.js, Web Crypto API, GitHub, GitHub Pages, OpenAI Codex, OpenAI Responses API, Structured Outputs, responsive web design, accessibility practices, human-in-the-loop AI, civic tech, cybersecurity, and Markdown.
 
 The project is prepared for the **Work and Productivity** track: its core value is improved coordination, information flow, documentation, and accountability across operational teams and institutions, with citizen activation and closure as the entry and return points.
+
+## License
+
+The software source code in this repository is licensed under the [GNU Affero General Public License v3.0 only](LICENSE) (`AGPL-3.0-only`).
+
+Copyright © 2026 Ángel Adrián Pagnini.
+
+The PIPO Emergency Layer name, logos, visual identity and related branding
+are not licensed for use in a manner that suggests endorsement, affiliation,
+certification or official status. See [TRADEMARKS.md](TRADEMARKS.md).
+
+This repository contains a conceptual demonstration developed for OpenAI
+Build Week 2026. The license does not imply governmental approval,
+integration with real emergency services or authorization to use the PIPO
+brand.
