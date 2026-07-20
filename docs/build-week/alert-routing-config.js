@@ -132,6 +132,97 @@
     traffic: { unit: "Unidad T-08", specialty: { "es-AR": "Corredor y ordenamiento", "en-US": "Traffic corridor" }, distance: "0.9 km", eta: "03 min" },
   };
 
+  const communicationTemplates = [
+    {
+      id: "COM-DEMO-001",
+      sender: "health",
+      recipient: "security",
+      purpose: "supportRequest",
+      status: "read",
+      message: {
+        "es-AR": "Se informa prioridad sanitaria y necesidad de acceso seguro.",
+        "en-US": "Health priority and a need for safe access are reported.",
+      },
+    },
+    {
+      id: "COM-DEMO-002",
+      sender: "security",
+      recipient: "health",
+      purpose: "operationalMessage",
+      status: "acceptance",
+      message: {
+        "es-AR": "Escena en proceso de aseguramiento.",
+        "en-US": "The scene is being secured.",
+      },
+    },
+    {
+      id: "COM-DEMO-003",
+      sender: "prosecution",
+      recipient: "security",
+      purpose: "diligenceRequest",
+      status: "response",
+      message: {
+        "es-AR": "Preservar el lugar y ampliar información.",
+        "en-US": "Preserve the scene and expand the information.",
+      },
+    },
+    {
+      id: "COM-DEMO-004",
+      sender: "station",
+      recipient: "prosecution",
+      purpose: "sharedDocument",
+      status: "read",
+      message: {
+        "es-AR": "Actuación y referencia de denuncia simulada recibidas.",
+        "en-US": "Simulated action and report reference received.",
+      },
+    },
+    {
+      id: "COM-DEMO-005",
+      sender: "master",
+      recipient: "activeRoute",
+      purpose: "priorityUpdate",
+      status: "read",
+      message: {
+        "es-AR": "Prioridad actualizada y recursos confirmados.",
+        "en-US": "Priority updated and resources confirmed.",
+      },
+    },
+    {
+      id: "COM-DEMO-006",
+      sender: "health",
+      recipient: "traffic",
+      purpose: "supportRequest",
+      status: "read",
+      message: {
+        "es-AR": "Se solicita corredor seguro para la atención sanitaria.",
+        "en-US": "A safe corridor is requested for health care.",
+      },
+    },
+    {
+      id: "COM-DEMO-007",
+      sender: "security",
+      recipient: "fire",
+      purpose: "operationalMessage",
+      status: "acceptance",
+      message: {
+        "es-AR": "Se informa riesgo de incendio y se solicita evaluación técnica.",
+        "en-US": "A fire risk is reported and a technical assessment is requested.",
+      },
+    },
+    {
+      id: "COM-DEMO-008",
+      sender: "fire",
+      recipient: "civil",
+      purpose: "supportRequest",
+      status: "read",
+      message: {
+        "es-AR": "Se solicita apoyo para perímetro y evaluación del riesgo.",
+        "en-US": "Support is requested for the perimeter and risk assessment.",
+      },
+    },
+  ];
+
   function getAlert(id) {
     return alerts.find((alert) => alert.id === id) || alerts[0];
   }
@@ -144,13 +235,28 @@
     return item.label[locale] || item.label["es-AR"];
   }
 
+  function isCommunicationAllowed(template, route) {
+    const active = new Set(route);
+    if (template.sender === "master" && template.recipient === "activeRoute") return active.has("master");
+    return active.has(template.sender) && active.has(template.recipient);
+  }
+
+  function getCommunicationRows(route, locale) {
+    return communicationTemplates
+      .filter((template) => isCommunicationAllowed(template, route))
+      .map((template) => ({ ...template, message: template.message[locale] || template.message["es-AR"] }));
+  }
+
   return Object.freeze({
     version: "presentation-unified-1",
     consoles: Object.freeze(consoles),
     alerts: Object.freeze(alerts),
     resources: Object.freeze(resources),
+    communicationTemplates: Object.freeze(communicationTemplates),
     getAlert,
     getConsole,
+    isCommunicationAllowed,
+    getCommunicationRows,
     label,
   });
 });

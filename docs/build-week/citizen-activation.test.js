@@ -4,7 +4,7 @@ const path = require("path");
 
 const root = __dirname;
 const source = fs.readFileSync(path.join(root, "citizen-activation.js"), "utf8");
-const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
+const advancedHtml = fs.readFileSync(path.join(root, "advanced.html"), "utf8");
 const styles = fs.readFileSync(path.join(root, "styles.css"), "utf8");
 
 const requiredEvents = [
@@ -93,8 +93,8 @@ function assertLocalizationAndRegion() {
 }
 
 function assertPresentationSurface() {
-  assert(html.includes('id="pipoCitizenExperience"'), "Citizen product root must be in Build Week HTML.");
-  assert(html.includes('src="citizen-activation.js?v=1"'), "Citizen activation script must be loaded.");
+  assert(advancedHtml.includes('id="pipoCitizenExperience"'), "Citizen product root must be in advanced Build Week HTML.");
+  assert(advancedHtml.includes('src="citizen-activation.js?v=1"'), "Citizen activation script must be loaded by advanced.html.");
   [".pipo-phone", ".pipo-quick-access", ".pipo-primary-nav", ".pipo-live-grid", "@media (max-width: 520px)"].forEach((selector) => {
     assert(styles.includes(selector), `Missing responsive product style: ${selector}`);
   });

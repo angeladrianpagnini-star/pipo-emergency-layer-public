@@ -13,6 +13,7 @@ const testFiles = [
   "evidence-vault.test.js",
   "citizen-activation.test.js",
   "operational-journey.test.js",
+  "presentation-unified.test.js",
   path.join("server", "secure-backend.test.js"),
 ];
 const requiredDocumentation = [
@@ -50,18 +51,21 @@ function walkJavaScriptFiles(directory) {
 }
 
 function assertReleaseSurface() {
-  const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
+  const primaryHtml = fs.readFileSync(path.join(root, "index.html"), "utf8");
+  const advancedHtml = fs.readFileSync(path.join(root, "advanced.html"), "utf8");
   const app = fs.readFileSync(path.join(root, "app.js"), "utf8");
   const vault = fs.readFileSync(path.join(root, "evidence-vault.js"), "utf8");
 
   ["feedbackComment", "observationDescription"].forEach((id) => {
-    assert(html.includes(`for=\"${id}\"`), `Missing explicit accessible label for ${id}`);
+    assert(advancedHtml.includes(`for=\"${id}\"`), `Missing explicit accessible label for ${id}`);
   });
   ["perspectiveMessage", "assistantStatus", "procedureMessage", "vaultMessage", "ledgerValidation"].forEach((id) => {
-    assert(new RegExp(`id=\"${id}\"[^>]*aria-live=\"polite\"`).test(html), `Missing live status region for ${id}`);
+    assert(new RegExp(`id=\"${id}\"[^>]*aria-live=\"polite\"`).test(advancedHtml), `Missing live status region for ${id}`);
   });
 
-  assert(html.includes("data-internal-for-citizen"), "Internal panels must be marked for citizen isolation.");
+  assert(primaryHtml.includes('id="pipoUnifiedPresentation"'), "Unified presentation must remain the default Build Week entry.");
+  assert(!primaryHtml.includes("<template"), "Primary Build Week entry must not keep advanced modules inert in a template.");
+  assert(advancedHtml.includes("data-internal-for-citizen"), "Internal panels must be marked for citizen isolation in advanced.html.");
   assert(app.includes("[data-internal-vault], [data-internal-for-citizen]"), "Citizen isolation must be rendered from the active perspective.");
   assert(!/initializeCitizenControls\(\);\s*refreshBackendStatus\(\);/.test(app), "Static demo must not query a backend automatically at startup.");
   assert(!vault.includes("localStorage"), "Evidence vault must not persist demo material in localStorage.");
