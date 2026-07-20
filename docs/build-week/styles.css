@@ -3239,6 +3239,91 @@ body.presentation-unified > .pipo-noscript {
 .presentation-mini-ledger li { border-left: 3px solid var(--p-institutional); background: #f3f8f6; padding: 7px; color: #456159; font-size: 0.69rem; font-weight: 750; }
 .presentation-legal-note { margin: 14px 0 0; border-left: 3px solid var(--p-warning); background: #fff7e4; padding: 10px; color: #715018; font-size: 0.76rem; line-height: 1.42; }
 
+/* Documentary-control panels remain compact enough to compare on the master console. */
+.presentation-master-resource-grid { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 12px; margin-top: 14px; }
+.presentation-resource-card,
+.presentation-master-context,
+.presentation-service-control,
+.presentation-field-context,
+.presentation-evidence-panel,
+.presentation-field-comms,
+.presentation-act-preview,
+.presentation-consistency { border: 1px solid var(--p-line); border-radius: var(--p-radius); background: #fff; padding: 14px; }
+.presentation-resource-card header,
+.presentation-master-context > header,
+.presentation-service-control > header,
+.presentation-field-context > header,
+.presentation-evidence-panel > header,
+.presentation-act-preview > header,
+.presentation-consistency > header { display: flex; justify-content: space-between; gap: 10px; align-items: start; }
+.presentation-resource-card header p,
+.presentation-master-context p,
+.presentation-service-control header p,
+.presentation-field-context header p,
+.presentation-evidence-panel header p,
+.presentation-act-preview header p,
+.presentation-consistency header p { margin: 0; color: var(--p-muted); font-size: 0.67rem; font-weight: 900; text-transform: uppercase; }
+.presentation-resource-card h3,
+.presentation-master-context h3,
+.presentation-service-control h3,
+.presentation-field-context h3,
+.presentation-evidence-panel h3,
+.presentation-act-preview h3,
+.presentation-consistency h3,
+.presentation-field-comms h3 { margin: 4px 0 0; color: var(--p-navy); font-size: 0.94rem; line-height: 1.3; }
+.presentation-master-context > p { margin-top: 10px; color: var(--p-muted); font-size: 0.74rem; line-height: 1.4; }
+.presentation-access-matrix { margin-top: 12px; border-top: 1px solid #dce9e5; padding-top: 11px; }
+.presentation-access-matrix > header { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+.presentation-access-matrix h4 { margin: 0; color: var(--p-navy); font-size: 0.72rem; letter-spacing: 0.03em; }
+.presentation-access-matrix small { color: var(--p-muted); font-size: 0.64rem; font-weight: 750; }
+.presentation-media-strip { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-top: 10px; }
+.presentation-media-preview { display: grid; min-height: 46px; place-items: center; gap: 3px; border: 1px solid #d7e4e0; border-radius: 6px; background: #f7fbf9; color: #48645d; padding: 5px; font-size: 0.61rem; font-weight: 850; text-align: center; }
+.presentation-media-preview b { color: var(--p-institutional); font-size: 0.82rem; }
+.presentation-media-preview.authorized { border-color: #9fd0bb; background: #edf8f1; color: #216b4b; }
+.presentation-media-preview.restricted { border-color: #e4c996; background: #fff7e5; color: #7b5817; }
+.presentation-media-preview.request { border-color: #d8dee0; background: #f7f8f8; color: #6e7e80; }
+.presentation-access-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; margin-top: 9px; }
+.presentation-access-group { display: grid; gap: 4px; border-radius: 6px; padding: 8px; font-size: 0.64rem; line-height: 1.28; }
+.presentation-access-group b { font-size: 0.62rem; text-transform: uppercase; }
+.presentation-access-group span { color: #49635c; }
+.presentation-access-group.authorized { background: #edf8f1; color: #1e704d; }
+.presentation-access-group.restricted { background: #fff7e5; color: #795414; }
+.presentation-access-group.request { background: #f0f5f3; color: #46655b; }
+.presentation-access-group.disabled { background: #f3f4f4; color: #6f7d7c; }
+.presentation-field-workspace { gap: 12px; }
+.presentation-field-context .presentation-data-list,
+.presentation-service-control .presentation-data-list { margin-top: 12px; }
+.presentation-service-states { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 11px; }
+.presentation-service-states span { border: 1px solid #dce6e3; border-radius: 999px; background: #f7faf9; padding: 4px 7px; color: #61716d; font-size: 0.62rem; font-weight: 800; }
+.presentation-service-states span.is-current { border-color: #88c9ae; background: #e6f5ed; color: #176847; }
+.presentation-evidence-panel .presentation-button-grid,
+.presentation-field-comms .presentation-button-grid,
+.presentation-act-preview .presentation-button-grid,
+.presentation-consistency .presentation-button-grid { margin-top: 12px; }
+.presentation-evidence-records { display: grid; gap: 8px; margin-top: 12px; }
+.presentation-evidence-records > article { border: 1px solid #d8e6e1; border-radius: 6px; background: #f7fbf9; padding: 9px; }
+.presentation-evidence-records > article > b { color: var(--p-institutional); font-size: 0.7rem; }
+.presentation-evidence-records .presentation-data-list { margin-top: 8px; }
+.presentation-evidence-panel .presentation-button-grid button,
+.presentation-field-comms .presentation-button-grid button,
+.presentation-act-preview .presentation-button-grid button,
+.presentation-consistency .presentation-button-grid button { min-height: 35px; font-size: 0.7rem; }
+.presentation-act-sections { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin-top: 12px; }
+.presentation-act-sections span { display: flex; gap: 7px; align-items: center; border: 1px solid #e0eae7; border-radius: 6px; background: #f8fbfa; padding: 7px; color: #48625b; font-size: 0.67rem; font-weight: 760; }
+.presentation-act-sections b { color: var(--p-institutional); font-size: 0.63rem; }
+.presentation-clarification-alert,
+.presentation-addendum { margin-top: 12px; border-left: 3px solid var(--p-warning); background: #fff8e7; padding: 10px; color: #6e5017; font-size: 0.74rem; line-height: 1.42; }
+.presentation-clarification-alert p,
+.presentation-addendum p { margin: 5px 0; }
+.presentation-clarification-alert button { margin-top: 5px; }
+.presentation-consistency { margin-top: 14px; }
+.presentation-consistency-table { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin-top: 12px; }
+.presentation-consistency-table > div,
+.presentation-clarification-form > span { display: grid; gap: 3px; border: 1px solid #e1eae7; border-radius: 6px; background: #f8fbfa; padding: 8px; color: #4f675f; font-size: 0.68rem; }
+.presentation-consistency-table b,
+.presentation-clarification-form b { color: var(--p-navy); font-size: 0.65rem; }
+.presentation-clarification-form { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-top: 10px; }
+
 .presentation-justice-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
 .presentation-justice-grid h3 { margin: 0; color: var(--p-navy); font-size: 1rem; }
 .presentation-justice-grid > article > p { margin: 12px 0 0; color: var(--p-muted); line-height: 1.44; font-size: 0.82rem; }
@@ -3318,7 +3403,8 @@ body.presentation-filming .presentation-section.is-tour-active { opacity: 1; }
   .presentation-section { padding: 18px; }
   .presentation-device-layout,
   .presentation-field-layout,
-  .presentation-closure-layout { grid-template-columns: 1fr; }
+  .presentation-closure-layout,
+  .presentation-master-resource-grid { grid-template-columns: 1fr; }
   .presentation-phone { justify-self: center; }
   .presentation-alert-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .master-console-grid,
@@ -3331,6 +3417,7 @@ body.presentation-filming .presentation-section.is-tour-active { opacity: 1; }
   .presentation-municipal-card { grid-template-columns: 1fr; }
   .presentation-master-record { grid-template-columns: 1fr; }
   .presentation-master-record > div:last-child { justify-items: start; }
+  .presentation-clarification-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .closure-phone { justify-self: center; }
 }
 
@@ -3342,6 +3429,11 @@ body.presentation-filming .presentation-section.is-tour-active { opacity: 1; }
   .presentation-hero { margin-top: 8px; padding: 20px; }
   .presentation-hero h1 { font-size: 2.45rem; }
   .presentation-hero h2 { font-size: 1.2rem; }
+  .presentation-access-grid,
+  .presentation-consistency-table,
+  .presentation-act-sections,
+  .presentation-clarification-form { grid-template-columns: 1fr; }
+  .presentation-media-strip { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .presentation-actions { display: grid; grid-template-columns: 1fr 1fr; }
   .presentation-actions .presentation-primary,
   .presentation-actions .presentation-secondary { min-width: 0; font-size: 0.78rem; }

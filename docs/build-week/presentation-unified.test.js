@@ -30,17 +30,32 @@ function testRoutingConfig() {
 }
 
 function testPresentationSurface() {
-  ["pipoUnifiedPresentation", "alert-routing-config.js?v=2", "presentation-unified.js?v=5", "presentation-unified"].forEach((value) => {
+  ["pipoUnifiedPresentation", "styles.css?v=18", "alert-routing-config.js?v=3", "presentation-unified.js?v=6", "presentation-unified"].forEach((value) => {
     assert(html.includes(value), `Missing unified presentation integration: ${value}`);
   });
   [
-    "presentationCitizen", "presentationMaster", "presentationConsoles", "presentationField", "presentationJustice",
-    "presentationDocumentation", "presentationClosure", "presentationAdvanced", "start-tour", "tour-next", "film", "confidentialFields", "stationScope",
-    "renderCitizen", "renderMaster", "renderConsoles", "renderField", "renderJustice", "renderDocumentation", "renderClosure",
+    "presentationCitizen", "presentationMaster", "presentationConsoles", "presentationField",
+    "presentationDocumentation", "presentationClosure", "presentationAdvanced", "start-tour", "tour-next", "film", "confidentialFields",
+    "renderCitizen", "renderMaster", "renderAccessMatrix", "renderConsoles", "renderServiceControl", "renderEvidence", "renderActPreview", "renderField", "renderDocumentation", "renderClosure",
   ].forEach((value) => assert(source.includes(value), `Missing presentation flow component: ${value}`));
-  [".presentation-hero", ".presentation-phone", ".presentation-console-grid", ".presentation-communications-table", ".presentation-field-layout", ".presentation-closure-layout", "@media (max-width: 420px)"].forEach((selector) => {
+  [".presentation-hero", ".presentation-phone", ".presentation-console-grid", ".presentation-communications-table", ".presentation-field-layout", ".presentation-closure-layout", ".presentation-access-matrix", ".presentation-service-control", ".presentation-consistency", "@media (max-width: 420px)"].forEach((selector) => {
     assert(styles.includes(selector), `Missing presentation style: ${selector}`);
   });
+}
+
+function testDocumentaryControl() {
+  assert.strictEqual(config.fieldService.operatorId, "OP-DEMO-911-04");
+  assert.strictEqual(config.fieldService.agency, "security");
+  assert.deepStrictEqual(config.getAccessMatrix("master").fields, ["location", "audio", "video", "narrative", "priority", "agencies", "permissions", "timeline"]);
+  assert(config.getAccessMatrix("security").fields.includes("securityRisk"), "911 must receive security context.");
+  assert(config.getAccessMatrix("health").fields.includes("minimumHealth"), "107 must receive minimum health context.");
+  assert(config.getAccessMatrix("health").restricted.includes("securityRisk"), "107 must restrict unrelated security content.");
+  assert(config.getAccessMatrix("prosecution").restricted.includes("evidenceContent"), "Prosecution must distinguish restricted evidence content.");
+  assert(config.getAccessMatrix("station").fields.includes("ownAct"), "Police Station must retain its own act context.");
+  ["CONTEXTO HABILITADO PARA ESTA CONSOLA", "INFORME MAESTRO INTERNO DEL INCIDENTE", "Remisión conceptual. No constituye presentación judicial ni actuación institucional real.", "Acta finalizada: el original no se elimina ni se reescribe", "field.service.started", "field.addendum.created", "reportReady", "prepare-summary", "deliver-summary", "HASH-SIM-"].forEach((value) => {
+    assert(source.includes(value), `Missing documentary control requirement: ${value}`);
+  });
+  assert(source.includes("state.actsFinalized && state.consistency.resolved && state.consistency.addendum && state.evidence.length > 0"), "Internal report must remain blocked while simulated documentary requirements are incomplete.");
 }
 
 function routeFor(alertId, options = {}) {
@@ -96,13 +111,13 @@ function testPublicVersionProtection() {
 function testSafetyBoundaries() {
   const forbidden = ["get" + "UserMedia", "geo" + "location", "MediaDevices", "watch" + "Position", 'type="file"', "localStorage", "sessionStorage"];
   forbidden.forEach((fragment) => assert(!source.includes(fragment), `Unified presentation must not use ${fragment}.`));
-  ["No es una denuncia real", "Sin anonimato absoluto", "No official connection", "No sensors, tracking", "humanRequired", "confirmResource", "Demostración conceptual sin conexión institucional real."].forEach((value) => {
+  ["No es una denuncia real", "Sin anonimato absoluto", "No official connection", "No sensors, off-duty surveillance", "humanRequired", "confirmResource", "Demostración conceptual sin conexión institucional real.", "No se utiliza cámara, micrófono, ubicación ni archivos personales reales."].forEach((value) => {
     assert(source.includes(value), `Missing safety or human-control boundary: ${value}`);
   });
 }
 
 function testLocalizedFlow() {
-  ["es-AR", "en-US", "Spanish", "English", "All consoles", "Todas las consolas", "Prosecution / Justice Access"].forEach((value) => {
+  ["es-AR", "en-US", "Spanish", "English", "CONTEXT ENABLED FOR THIS CONSOLE", "CONTEXTO HABILITADO PARA ESTA CONSOLA", "Prosecution / Justice Access"].forEach((value) => {
     assert(source.includes(value) || JSON.stringify(config).includes(value), `Missing localized content: ${value}`);
   });
   assert(!source.includes("innerHTML = user"), "The demo must not inject user-controlled content.");
@@ -111,6 +126,7 @@ function testLocalizedFlow() {
 function main() {
   testRoutingConfig();
   testPresentationSurface();
+  testDocumentaryControl();
   testAdvancedModules();
   testRouteBoundCommunications();
   testSafetyBoundaries();

@@ -126,11 +126,59 @@
   ];
 
   const resources = {
-    security: { unit: "Móvil 911-12", specialty: { "es-AR": "Seguridad de escena", "en-US": "Scene safety" }, distance: "2.1 km", eta: "06 min" },
-    health: { unit: "Unidad sanitaria 107-04", specialty: { "es-AR": "Atención prehospitalaria", "en-US": "Pre-hospital care" }, distance: "1.8 km", eta: "05 min" },
-    fire: { unit: "Dotación B-03", specialty: { "es-AR": "Riesgo de incendio", "en-US": "Fire risk" }, distance: "3.4 km", eta: "09 min" },
-    traffic: { unit: "Unidad T-08", specialty: { "es-AR": "Corredor y ordenamiento", "en-US": "Traffic corridor" }, distance: "0.9 km", eta: "03 min" },
+    security: { unit: { "es-AR": "Móvil 911-12", "en-US": "911-12 Mobile Unit" }, specialty: { "es-AR": "Seguridad de escena", "en-US": "Scene safety" }, distance: "2.1 km", eta: "06 min" },
+    health: { unit: { "es-AR": "Unidad sanitaria 107-04", "en-US": "107-04 Medical Unit" }, specialty: { "es-AR": "Atención prehospitalaria", "en-US": "Pre-hospital care" }, distance: "1.8 km", eta: "05 min" },
+    fire: { unit: { "es-AR": "Dotación B-03", "en-US": "Fire Crew B-03" }, specialty: { "es-AR": "Riesgo de incendio", "en-US": "Fire risk" }, distance: "3.4 km", eta: "09 min" },
+    traffic: { unit: { "es-AR": "Unidad T-08", "en-US": "Traffic Unit T-08" }, specialty: { "es-AR": "Corredor y ordenamiento", "en-US": "Traffic corridor" }, distance: "0.9 km", eta: "03 min" },
   };
+
+  const accessMatrix = {
+    master: {
+      fields: ["location", "audio", "video", "narrative", "priority", "agencies", "permissions", "timeline"],
+      restricted: [],
+      onRequest: [],
+    },
+    security: {
+      fields: ["location", "audio", "video", "securityRisk", "operationalNarrative", "assignedResource"],
+      restricted: ["timeline"],
+      onRequest: ["evidence"],
+    },
+    health: {
+      fields: ["location", "audio", "injuryVideo", "minimumHealth", "safeAccess"],
+      restricted: ["securityRisk", "timeline"],
+      onRequest: ["evidence"],
+    },
+    prosecution: {
+      fields: ["narrative", "evidenceReferences", "communications", "consultations", "documents"],
+      restricted: ["evidenceContent", "audio", "video"],
+      onRequest: ["restrictedContent"],
+    },
+    station: {
+      fields: ["location", "incidentDescription", "documentReference", "ownAct", "enabledEvidence", "prosecutionResponse"],
+      restricted: ["audio", "video", "timeline"],
+      onRequest: ["evidence"],
+    },
+  };
+
+  const defaultAccess = {
+    fields: ["location", "narrative", "priority"],
+    restricted: ["audio", "video", "evidenceContent"],
+    onRequest: ["evidence"],
+  };
+
+  const fieldService = Object.freeze({
+    operatorId: "OP-DEMO-911-04",
+    operator: { "es-AR": "Oficial Móvil Demo 911-04", "en-US": "Demo Mobile Officer 911-04" },
+    role: { "es-AR": "Prevención y primera respuesta", "en-US": "Prevention and first response" },
+    agency: "security",
+    unit: { "es-AR": "Móvil 911-12", "en-US": "911-12 Mobile Unit" },
+    shift: "08:00–16:00",
+    console: "CON-911",
+    start: "08:00",
+    expectedEnd: "16:00",
+    device: "PIPO-FIELD-DEMO-04",
+    operationalLocation: { "es-AR": "Activa — simulada", "en-US": "Active — simulated" },
+  });
 
   const communicationTemplates = [
     {
@@ -247,16 +295,31 @@
       .map((template) => ({ ...template, message: template.message[locale] || template.message["es-AR"] }));
   }
 
+  function getAccessMatrix(consoleId) {
+    return accessMatrix[consoleId] || defaultAccess;
+  }
+
+  function getSuggestedDestination(route, locale) {
+    if (route.includes("prosecution")) return locale === "es-AR" ? "Fiscalía / autoridad judicial competente" : "Prosecution / competent judicial authority";
+    if (route.includes("health")) return locale === "es-AR" ? "Coordinación sanitaria competente" : "Competent health coordination";
+    if (route.includes("civil")) return locale === "es-AR" ? "Defensa Civil competente" : "Competent civil protection";
+    return locale === "es-AR" ? "Organismo competente según la ruta simulada" : "Competent agency according to the simulated route";
+  }
+
   return Object.freeze({
     version: "presentation-unified-1",
     consoles: Object.freeze(consoles),
     alerts: Object.freeze(alerts),
     resources: Object.freeze(resources),
+    accessMatrix: Object.freeze(accessMatrix),
+    fieldService,
     communicationTemplates: Object.freeze(communicationTemplates),
     getAlert,
     getConsole,
     isCommunicationAllowed,
     getCommunicationRows,
+    getAccessMatrix,
+    getSuggestedDestination,
     label,
   });
 });
