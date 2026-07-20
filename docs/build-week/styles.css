@@ -3219,14 +3219,14 @@ body.presentation-unified > .pipo-noscript {
 .presentation-empty { margin: 0; color: var(--p-muted); padding: 18px; }
 
 .presentation-field-layout { display: grid; grid-template-columns: minmax(240px, 340px) minmax(0, 1fr); gap: 24px; align-items: stretch; }
-.field-phone { min-height: 640px; background: #f7faf9; }
+.field-phone { background: #f7faf9; }
 .field-context-card { margin: 14px; border: 1px solid #d7e4e0; border-radius: var(--p-radius); background: white; padding: 12px; }
 .field-context-card > p:first-child { margin: 0; color: var(--p-institutional); font-size: 0.66rem; font-weight: 950; text-transform: uppercase; }
 .field-context-card h3 { margin: 5px 0 0; color: var(--p-navy); font-size: 1rem; line-height: 1.25; }
 .field-context-card > p:last-child { margin: 12px 0 0; color: var(--p-muted); font-size: 0.73rem; line-height: 1.4; }
 .field-media { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; margin-top: 12px; }
 .field-media span { min-height: 50px; display: grid; place-items: center; border-radius: 6px; background: linear-gradient(145deg, #0a3a4c, #176b64); color: #d8faf4; padding: 5px; font-size: 0.61rem; font-weight: 850; text-align: center; }
-.field-phone-actions { position: absolute; right: 0; bottom: 0; left: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; border-top: 1px solid #d7e1de; background: white; padding: 9px; }
+.field-phone-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; border-top: 1px solid #d7e1de; background: white; padding: 9px; }
 .field-phone-actions button { min-height: 35px !important; background: #e7f1ee !important; color: #075b54 !important; font-size: 0.67rem; }
 .presentation-field-workspace { display: grid; align-content: start; background: #f8fbfa; }
 .presentation-field-workspace > header { display: flex; justify-content: space-between; gap: 12px; align-items: start; }
@@ -3455,7 +3455,6 @@ body.presentation-filming .presentation-section.is-tour-active { opacity: 1; }
   .presentation-permission-set > span { border-radius: 6px; }
   .presentation-phone { width: 100%; max-width: 330px; }
   .presentation-phone:not(.field-phone) { min-height: 520px; }
-  .field-phone { min-height: 616px; }
   .master-console-grid dl,
   .presentation-console-card dl,
   .field-context-card dl,
@@ -3473,4 +3472,62 @@ body.presentation-filming .presentation-section.is-tour-active { opacity: 1; }
   .hero-field { right: 50%; bottom: 18px; transform: translateX(50%); }
   .hero-flow { display: none; }
   .presentation-confidential-fields { grid-template-columns: 1fr; }
+}
+
+/* Final flow consistency: field phone stays compact and documents expose their next action. */
+.presentation-other-consoles { margin-top: 14px; border: 1px solid var(--p-line); border-radius: var(--p-radius); background: #f8fbfa; }
+.presentation-other-consoles summary { cursor: pointer; padding: 12px 14px; color: var(--p-institutional); font-size: 0.78rem; font-weight: 900; }
+.presentation-other-consoles[open] > .presentation-console-grid { padding: 0 14px 14px; }
+.presentation-dispatch-list { display: grid; gap: 7px; margin-top: 12px; }
+.presentation-dispatch-list div { display: grid; grid-template-columns: minmax(110px, 0.8fr) minmax(0, 1fr); gap: 3px 8px; border-left: 3px solid var(--p-institutional); background: #f4f9f7; padding: 8px; }
+.presentation-dispatch-list b { color: var(--p-navy); font-size: 0.72rem; }
+.presentation-dispatch-list span { color: #41615a; font-size: 0.72rem; font-weight: 750; }
+.presentation-dispatch-list small { grid-column: 1 / -1; color: var(--p-muted); font-size: 0.64rem; font-weight: 800; }
+
+.field-phone { height: auto; min-height: 0; display: flex; flex-direction: column; align-self: start; background: #f7faf9; }
+.field-phone-context { display: grid; gap: 9px; padding: 13px; }
+.field-phone-context > p { margin: 0; color: var(--p-institutional); font-size: 0.66rem; font-weight: 950; text-transform: uppercase; }
+.field-phone-context h3 { margin: 0; color: var(--p-navy); font-size: 0.94rem; line-height: 1.3; }
+.field-phone-context .presentation-data-list { grid-template-columns: 1fr; margin: 0; }
+.field-phone-context .presentation-data-list div { padding: 7px; }
+.field-phone-context .presentation-data-list dt { font-size: 0.59rem; }
+.field-phone-context .presentation-data-list dd { font-size: 0.7rem; line-height: 1.35; }
+.field-phone-actions { position: static; margin-top: 10px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.field-phone-actions button:last-child { grid-column: 1 / -1; }
+
+.presentation-document-flow { display: grid; gap: 7px; margin-top: 14px; border: 1px solid #b8d6cf; border-radius: var(--p-radius); background: #edf8f4; padding: 14px; }
+.presentation-document-flow > strong { color: var(--p-institutional); font-size: 0.72rem; font-weight: 950; letter-spacing: 0.03em; }
+.presentation-document-flow > span { border-left: 3px solid var(--p-institutional); background: #fff; padding: 7px 9px; color: var(--p-navy); font-size: 0.72rem; font-weight: 850; }
+.presentation-document-flow > b { justify-self: center; color: var(--p-warning); line-height: 0.9; }
+.presentation-document-flow > p { margin: 3px 0 0; color: #41615a; font-size: 0.74rem; line-height: 1.42; }
+
+.presentation-procedure-status { display: grid; gap: 12px; margin-top: 14px; border: 1px solid var(--p-line); border-radius: var(--p-radius); background: #fff; padding: 14px; }
+.presentation-procedure-status > header { display: flex; align-items: start; justify-content: space-between; gap: 10px; }
+.presentation-procedure-status header p { margin: 0; color: var(--p-muted); font-size: 0.66rem; font-weight: 900; text-transform: uppercase; }
+.presentation-procedure-status header h3 { margin: 4px 0 0; color: var(--p-navy); font-size: 0.9rem; line-height: 1.35; }
+.presentation-procedure-status ol { display: grid; gap: 5px; margin: 0; padding: 0; list-style: none; }
+.presentation-procedure-status li { display: flex; align-items: center; justify-content: space-between; gap: 8px; border-left: 3px solid #b9c7c3; background: #f7faf9; padding: 7px 9px; color: #4d645d; font-size: 0.72rem; line-height: 1.35; }
+.presentation-procedure-status li b { flex: 0 0 auto; font-size: 0.64rem; }
+.presentation-procedure-status li.is-completed { border-left-color: #2c9b75; background: #edf8f1; color: #176847; }
+.presentation-procedure-status li.is-in-progress { border-left-color: var(--p-warning); background: #fff7e5; color: #795414; }
+.presentation-procedure-next { display: flex; align-items: end; justify-content: space-between; gap: 10px; border-top: 1px solid #e1ebe8; padding-top: 12px; }
+.presentation-procedure-next p { margin: 0; color: var(--p-muted); font-size: 0.65rem; font-weight: 900; text-transform: uppercase; }
+.presentation-procedure-next strong { display: block; margin-top: 4px; color: var(--p-navy); font-size: 0.78rem; }
+.presentation-procedure-next button { min-height: 34px; }
+.presentation-procedure-notice { margin: 0; border-left: 3px solid var(--p-warning); background: #fff8e7; padding: 9px; color: #705018; font-size: 0.72rem; line-height: 1.4; }
+
+body.presentation-filming .presentation-other-consoles { display: none; }
+
+@media (max-width: 760px) {
+  .presentation-dispatch-list div { grid-template-columns: 1fr; }
+  .presentation-dispatch-list small { grid-column: auto; }
+  .field-phone { width: 100%; max-width: 360px; justify-self: center; }
+  .presentation-procedure-next { align-items: stretch; flex-direction: column; }
+}
+
+@media (max-width: 420px) {
+  .field-phone { min-height: 0; }
+  .field-phone-actions { grid-template-columns: 1fr; }
+  .field-phone-actions button:last-child { grid-column: auto; }
+  .presentation-procedure-status li { align-items: start; flex-direction: column; }
 }

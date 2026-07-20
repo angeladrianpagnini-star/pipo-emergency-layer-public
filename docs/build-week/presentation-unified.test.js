@@ -30,7 +30,7 @@ function testRoutingConfig() {
 }
 
 function testPresentationSurface() {
-  ["pipoUnifiedPresentation", "styles.css?v=19", "alert-routing-config.js?v=3", "presentation-unified.js?v=7", "presentation-unified"].forEach((value) => {
+  ["pipoUnifiedPresentation", "styles.css?v=20", "alert-routing-config.js?v=3", "presentation-unified.js?v=9", "presentation-unified"].forEach((value) => {
     assert(html.includes(value), `Missing unified presentation integration: ${value}`);
   });
   [
@@ -57,7 +57,8 @@ function testDocumentaryControl() {
   });
   assert(source.includes("state.operatorActFinalized && state.allAgencyActsFinalized && state.consistency.resolved && state.consistency.addendum && state.evidence.length > 0"), "Internal report must remain blocked while simulated documentary requirements are incomplete.");
   assert(source.includes('if (action === "finalize-act") { state.operatorAct = "final"; state.operatorActFinalized = true;'), "Finalizing the operator act must set only the operator-act state.");
-  assert(source.includes('if (action === "finalize-all-acts") { state.operatorAct = "final"; state.operatorActFinalized = true; state.allAgencyActsFinalized = true;'), "Finalizing all acts must explicitly finalize all active agency acts.");
+  assert(source.includes('if (!state.operatorActFinalized) missing.push(t("missingOperatorAct"));'), "Finalizing institutional acts must require the finalized operator act.");
+  assert(source.includes('else { state.allAgencyActsFinalized = true; addEvent("master.agency-acts.finalized"'), "Finalizing institutional acts must not overwrite the operator act state.");
   assert(!source.includes("state.actsFinalized"), "The deprecated combined documentary state must not remain.");
 }
 
@@ -111,6 +112,48 @@ function testPublicVersionProtection() {
   assert.strictEqual(changed, "", "v36 public files must remain unchanged.");
 }
 
+function testFinalFlowConsistency() {
+  [
+    "isActiveAgency", "activeInstitutionalAgencies", "activeDispatchResources", "confirmedDispatchResources", "fieldSupportResources", "coordinationOnlyAgencies",
+    "renderMasterDispatch", "renderCompactFieldPhone", "renderProcedureStatus", "renderAgencyActCard", "presentation-other-consoles",
+    "presentation-document-flow", "presentation-procedure-status", "procedureBlock", "go-procedure-next",
+  ].forEach((value) => assert(source.includes(value) || styles.includes(value), `Missing final flow consistency component: ${value}`));
+  assert(source.includes('const specialized = Object.values(config.consoles).filter((console) => console.id !== "master")'), "Master Console must not be rendered among specialized consoles.");
+  assert(source.includes('const resourceSuggestion = involved && config.resources[console.id]'), "Only active agencies with configured resources may receive resource suggestions.");
+  assert(source.includes('fieldSupportResources().filter') || source.includes('function fieldSupportResources()'), "Field support must be derived from confirmed dispatch resources.");
+  assert(source.includes('Móvil 911-12') || JSON.stringify(config.resources).includes("Móvil 911-12"), "911-12 must remain the field unit.");
+  assert(source.includes('Unidad sanitaria 107-04') || JSON.stringify(config.resources).includes("Unidad sanitaria 107-04"), "107-04 must remain the health support unit.");
+  ["ACT-DEMO-911-001", "ACT-DEMO-107-001", "ACT-DEMO-FIS-001", "ACT-DEMO-COM-001"].forEach((reference) => {
+    assert(source.includes(reference), `Missing distinct simulated agency act: ${reference}`);
+  });
+  assert(source.includes('Evidencia ficticia') && source.includes('evidence: "Evidence"'), "Evidence must be localized in Spanish and English.");
+  assert(!styles.includes(".field-phone { min-height: 640px"), "Field phone must not use a fixed 640px minimum height.");
+  assert(!styles.includes(".field-phone { min-height: 616px"), "Mobile field phone must not use a fixed minimum height.");
+  assert(!styles.includes(".field-phone-actions { position: absolute"), "Field phone actions must remain in normal document flow.");
+}
+
+function testMasterReportStatesAndPresentationOrder() {
+  assert(source.includes('const primaryPresentationOrder = ["security", "health", "prosecution", "station"];'), "The principal agencies must use one shared visual order.");
+  assert(source.includes("function orderPresentationAgencies(ids)"), "The visual ordering helper must be shared.");
+  assert(source.includes("function masterReportState()"), "The report must expose a documentary state helper.");
+  assert(source.includes('return reportReady() ? "readyToGenerate" : "blocked";'), "Complete requirements must be distinct from a generated report.");
+  assert(source.includes('readyToGenerate: "Listo para generar"'), "Spanish must localize the ready-to-generate report state.");
+  assert(source.includes('readyToGenerate: "Ready to generate"'), "English must localize the ready-to-generate report state.");
+  assert(source.includes("masterReportPanelStatus()"), "The master panel must render the documentary report state.");
+  assert(source.includes("masterReportPreviewStatus()"), "The preview must render the documentary report state.");
+  assert(source.includes('state.masterReport = "ready"'), "The report may become ready only after generation.");
+  assert(source.includes('state.masterReport = "remitted"'), "The report may become remitted only after simulated remittance.");
+  assert(source.includes("displayRoute().map"), "The main route display must use the shared visual order.");
+  assert(source.includes("const active = activeInstitutionalAgencies().map"), "Specialized consoles must use the shared visual order.");
+}
+
+function testAdvancedProtection() {
+  const { execFileSync } = require("child_process");
+  const repository = path.resolve(root, "..", "..");
+  const changed = execFileSync("git", ["diff", "--name-only", "main", "--", "docs/build-week/advanced.html"], { cwd: repository, encoding: "utf8" }).trim();
+  assert.strictEqual(changed, "", "advanced.html must remain unchanged.");
+}
+
 function testSafetyBoundaries() {
   const forbidden = ["get" + "UserMedia", "geo" + "location", "MediaDevices", "watch" + "Position", 'type="file"', "localStorage", "sessionStorage"];
   forbidden.forEach((fragment) => assert(!source.includes(fragment), `Unified presentation must not use ${fragment}.`));
@@ -135,6 +178,9 @@ function main() {
   testSafetyBoundaries();
   testLocalizedFlow();
   testPublicVersionProtection();
+  testFinalFlowConsistency();
+  testMasterReportStatesAndPresentationOrder();
+  testAdvancedProtection();
   console.log("PIPO unified presentation tests passed");
 }
 
