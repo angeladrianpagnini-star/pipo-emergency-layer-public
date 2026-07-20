@@ -130,6 +130,7 @@
       documentReference: "Referencia documental",
       agency: "Organismo",
       evidence: "Evidencia",
+      reportStates: { blocked: "Bloqueado", readyToGenerate: "Listo para generar", ready: "Preparado para remisi\u00f3n", remitted: "Remitido \u2014 simulaci\u00f3n" },
       actTemplates: {
         security: { author: "911 Seguridad", operator: "Oficial M\u00f3vil Demo 911-04", chronology: "10:12 salida \u00b7 10:18 arribo", facts: "Escena de seguridad y persona lesionada informadas.", actions: "Arribo, aseguramiento de escena y control del riesgo identificado.", evidence: "EVD-DEMO-001", outcome: "Escena preservada y acceso seguro comunicado.", reference: "ACT-DEMO-911-001" },
         health: { author: "107 Salud", operator: "Equipo sanitario Demo 107-04", chronology: "10:14 asignaci\u00f3n \u00b7 10:19 arribo", facts: "Persona lesionada reportada con prioridad sanitaria.", actions: "Evaluaci\u00f3n inicial y atenci\u00f3n prehospitalaria simulada.", evidence: "EVD-DEMO-002", outcome: "Asistencia sanitaria m\u00ednima registrada; traslado simulado disponible.", reference: "ACT-DEMO-107-001" },
@@ -200,6 +201,7 @@
       documentReference: "Document reference",
       agency: "Agency",
       evidence: "Evidence",
+      reportStates: { blocked: "Blocked", readyToGenerate: "Ready to generate", ready: "Prepared for remittance", remitted: "Remitted \u2014 simulation" },
       actTemplates: {
         security: { author: "911 Security", operator: "Demo Mobile Officer 911-04", chronology: "10:12 departure \u00b7 10:18 arrival", facts: "Scene safety and an injured person were reported.", actions: "Arrival, scene safety, and identified-risk control.", evidence: "EVD-DEMO-001", outcome: "Scene preserved and safe access communicated.", reference: "ACT-DEMO-911-001" },
         health: { author: "107 Health", operator: "Demo medical team 107-04", chronology: "10:14 assigned \u00b7 10:19 arrival", facts: "An injured person was reported with health priority.", actions: "Initial assessment and simulated pre-hospital care.", evidence: "EVD-DEMO-002", outcome: "Minimum health assistance recorded; simulated transport available.", reference: "ACT-DEMO-107-001" },
@@ -219,8 +221,19 @@
   function incidentId() { return "PIPO-DEMO-4821"; }
   function addEvent(code, detail) { state.ledger.push({ code, detail, time: `10:${String(12 + state.ledger.length).padStart(2, "0")}` }); }
   function activeRoute() { const route = [...alert().route]; if (state.armedInjured && alert().routeWhen?.injured) alert().routeWhen.injured.forEach((id) => { if (!route.includes(id)) route.push(id); }); return route; }
+  const primaryPresentationOrder = ["security", "health", "prosecution", "station"];
+  function orderPresentationAgencies(ids) {
+    return [...ids].sort((left, right) => {
+      const leftRank = primaryPresentationOrder.indexOf(left);
+      const rightRank = primaryPresentationOrder.indexOf(right);
+      const normalizedLeft = leftRank === -1 ? primaryPresentationOrder.length : leftRank;
+      const normalizedRight = rightRank === -1 ? primaryPresentationOrder.length : rightRank;
+      return normalizedLeft - normalizedRight || left.localeCompare(right);
+    });
+  }
+  function displayRoute() { return ["master", ...activeInstitutionalAgencies()]; }
   function isActiveAgency(consoleId) { return consoleId !== "master" && activeRoute().includes(consoleId); }
-  function activeInstitutionalAgencies() { return activeRoute().filter((id) => id !== "master"); }
+  function activeInstitutionalAgencies() { return orderPresentationAgencies(activeRoute().filter((id) => id !== "master")); }
   function activeAgencies() { return activeInstitutionalAgencies(); }
   function activeDispatchResources() { return activeRoute().filter((id) => isActiveAgency(id) && Boolean(config.resources[id])); }
   function confirmedDispatchResources() { return activeDispatchResources().filter((id) => state.resourcesConfirmed[id]); }
@@ -231,6 +244,16 @@
   function serviceStatus() { return t("serviceStatus")[state.service.status]; }
   function sectionClass(step) { return state.tourStep === step ? "is-tour-active" : ""; }
   function reportReady() { return state.operatorActFinalized && state.allAgencyActsFinalized && state.consistency.resolved && state.consistency.addendum && state.evidence.length > 0; }
+  function masterReportState() {
+    if (state.masterReport === "remitted") return "remitted";
+    if (state.masterReport === "ready") return "ready";
+    return reportReady() ? "readyToGenerate" : "blocked";
+  }
+  function masterReportPanelStatus() {
+    const reportState = masterReportState();
+    return reportState === "blocked" ? t("reportStatuses").draft : t("reportStates")[reportState];
+  }
+  function masterReportPreviewStatus() { return t("reportStates")[masterReportState()]; }
   function formatStatus(status) { return ({ accepted: t("assigned"), departed: t("serviceStatus").enRoute, arrived: t("serviceStatus").onScene, intervening: t("serviceStatus").intervening, completed: t("complete") })[status] || t("pending"); }
   function resourceData() { return config.fieldService; }
   function resourceLabel(id) { return config.resources[id].unit[state.locale]; }
@@ -549,6 +572,43 @@
     }));
     root.querySelectorAll('select[data-unified-action="locale"]').forEach((select) => select.addEventListener("change", () => { state.locale = select.value; render(); }));
     root.querySelectorAll("[data-unified-permission]").forEach((input) => input.addEventListener("change", () => { state.permissions[input.dataset.unifiedPermission] = input.checked; render(); }));
+  }
+
+  function renderMaster() {
+    return `<section id="presentationMaster" class="presentation-section presentation-master ${sectionClass(2)}"><div class="presentation-section-heading"><div><p class="presentation-kicker">B</p><h2>${t("master")}</h2><p>${t("receiving")}</p></div><span class="presentation-step-tag">${t("step")} 2&ndash;4</span></div><div class="master-console-surface"><header><div><span class="console-live-dot"></span>${t("master")} <small>DEMO-01</small></div><span class="presentation-chip critical">${t("priority")}: ${t("critical")}</span></header><div class="master-console-grid"><article class="master-alert-card"><p>${t("incident")}</p><h3>${incidentId()}</h3><strong>${t("scenarioTitle")}</strong>${fieldList([[t("location"), t("mapPreview")], [t("permissions"), `${t("audio")} &middot; ${t("video")}`], [t("risks"), t("armedInjured")], [t("lastUpdate"), "10:24"]])}</article><article class="master-action-card"><p>${t("humanRequired")}</p><div class="presentation-button-grid"><button type="button" data-unified-action="validate">${t("validateAlert")}</button><button type="button" class="presentation-primary" data-unified-action="route" ${state.validated ? "" : "disabled"}>${t("routeParallel")}</button><button type="button" data-unified-action="request">${t("requestInfo")}</button><button type="button" data-unified-action="docs">${t("viewDocs")}</button></div><p class="master-human-note">${state.validated ? t("validated") : t("humanRequired")}</p></article><article class="master-route-card"><p>${t("involved")}</p><div class="presentation-route-chips">${displayRoute().map((id) => `<span class="${state.routed ? "is-routed" : ""}">${consoleName(id)}</span>`).join("")}</div><strong>${state.routed ? t("routed") : t("pending")}</strong></article></div></div><div class="presentation-master-resource-grid">${renderMasterDispatch()}<article class="presentation-master-context"><header><div><p>${t("contextTitle")}</p><h3>${t("master")}</h3></div><span class="presentation-chip success">${t("authorized")}</span></header>${renderAccessMatrix("master")}</article></div></section>`;
+  }
+
+  function renderConsoles() {
+    const specialized = Object.values(config.consoles).filter((console) => console.id !== "master");
+    const active = activeInstitutionalAgencies().map((id) => config.getConsole(id));
+    const activeIds = new Set(active.map((console) => console.id));
+    const inactive = specialized.filter((console) => !activeIds.has(console.id));
+    return `<section id="presentationConsoles" class="presentation-section presentation-consoles ${sectionClass(3)}"><div class="presentation-section-heading"><div><p class="presentation-kicker">C</p><h2>${t("consolesTitle")}</h2><p>${t("consolesLead")}</p></div><span class="presentation-step-tag">${t("step")} 3</span></div><div class="presentation-console-grid">${active.map((console) => renderConsoleCard(console, true)).join("")}</div><details class="presentation-other-consoles"><summary>${t("otherAgencies")}</summary><div class="presentation-console-grid">${inactive.map((console) => renderConsoleCard(console, false)).join("")}</div></details></section>`;
+  }
+
+  function renderDocumentation() {
+    const acts = activeInstitutionalAgencies();
+    const consistencyStatus = state.consistency.resolved ? t("resolved") : state.consistency.addendum ? t("addendumReceived") : state.consistency.requested ? t("clarificationRequested") : t("needsClarification");
+    const reportState = masterReportState();
+    const reportLead = reportState === "blocked" ? t("reportBlocked") : t("reportLead");
+    return `<section id="presentationDocumentation" class="presentation-section presentation-documentation ${sectionClass(7)}"><div class="presentation-section-heading"><div><p class="presentation-kicker">E</p><h2>${t("actsTitle")}</h2><p>${t("actsLead")}</p></div><span class="presentation-step-tag">${t("step")} 7</span></div><div class="presentation-document-grid">${acts.map(renderAgencyActCard).join("")}</div><div class="presentation-document-flow"><strong>${t("individualActs")}</strong>${t("documentFlow").map((item) => `<span>${item}</span>`).join("<b>&darr;</b>")}<p>${t("masterRole")}</p></div>${renderProcedureStatus()}<div class="presentation-consistency"><header><div><p>${t("consistencyTitle")}</p><h3>${t("consistencyLead")}</h3></div><span class="presentation-chip ${state.consistency.resolved ? "success" : "warning"}">${consistencyStatus}</span></header><div class="presentation-consistency-table">${t("consistencyFields").map((item, index) => `<div><b>${item}</b><span>${index === 0 ? t("inconsistencyArrival") : index === 2 ? t("inconsistencyPeople") : state.consistency.requested ? t("resolved") : t("unreviewed")}</span></div>`).join("")}</div><div class="presentation-clarification-form">${t("clarificationFields").map((item, index) => `<span><b>${item}</b>${index === 0 ? resourceData().operator[state.locale] : index === 1 ? consoleName("security") : index === 2 ? t("inconsistencyArrival") : index === 3 ? t("consistencyLead") : index === 4 ? "10:45" : t("critical")}</span>`).join("")}</div><div class="presentation-button-grid"><button type="button" data-unified-action="request-clarification" ${state.consistency.requested ? "disabled" : ""}>${t("requestClarification")}</button><button type="button" data-unified-action="respond-addendum" ${state.consistency.requested && !state.consistency.addendum ? "" : "disabled"}>${t("respondAddendum")}</button><button type="button" class="presentation-primary" data-unified-action="finalize-all-acts" ${state.allAgencyActsFinalized ? "disabled" : ""}>${t("finalizeAllActs")}</button></div>${state.consistency.addendum ? `<article class="presentation-addendum"><h4>${t("addendumTitle")} &middot; ADD-DEMO-911-001</h4><p>${t("addendumLead")}</p><span>${t("originalRecord")} &middot; 10:34 &middot; ${resourceData().operator[state.locale]}</span></article>` : ""}</div><div class="presentation-master-record"><div><p>${t("reportTitle")}</p><h3>${masterReportPanelStatus()}</h3><span>${incidentId()} &middot; DOC-DEMO-MASTER-001</span><p>${reportLead}</p></div><div><p>${t("destination")}</p><strong>${config.getSuggestedDestination(activeRoute(), state.locale)}</strong><button type="button" class="presentation-primary" data-unified-action="generate-report" ${reportState === "readyToGenerate" ? "" : "disabled"}>${t("generateReport")}</button><button type="button" data-unified-action="remit-report" ${state.masterReport === "ready" ? "" : "disabled"}>${t("remit")}</button></div></div>${renderMasterReportPreview()}<p class="presentation-legal-note">${t("remittanceNotice")}</p></section>`;
+  }
+
+  function renderMasterReportPreview() {
+    const sections = t("masterPreviewSections");
+    const resource = resourceData();
+    const reportState = masterReportState();
+    const permissions = Object.keys(state.permissions).filter((key) => state.permissions[key]).map((key) => t(key)).join(" &middot; ") || "&mdash;";
+    const timeline = state.ledger.length ? state.ledger.map((item) => `${item.time} ${item.code}`).join(" &middot; ") : "&mdash;";
+    const evidence = state.evidence.length ? state.evidence.map((item) => `${item.id} / ${t("evidenceTypes")[item.type]}`).join(" &middot; ") : "&mdash;";
+    const communications = config.getCommunicationRows(activeRoute(), state.locale).map((item) => item.id).join(" &middot; ") || "&mdash;";
+    const acts = activeInstitutionalAgencies().map((id) => agencyActTemplate(id).reference).join(" &middot; ");
+    const clarification = state.consistency.requested ? t("clarificationRequested") : "&mdash;";
+    const addendum = state.consistency.addendum ? "ADD-DEMO-911-001" : "&mdash;";
+    const audit = `${incidentId()} &middot; DOC-DEMO-MASTER-001 &middot; HASH-SIM-MASTER-4821`;
+    const resourceSummary = dispatchResourceLines().length ? dispatchResourceLines().join(" &middot; ") : `${resource.unit[state.locale]} &mdash; ${consoleName(resource.agency)}`;
+    const items = [[sections.originalAlert, label(alert())], [sections.permissions, permissions], [sections.timeline, timeline], [sections.agencies, activeInstitutionalAgencies().map(consoleName).join(" &middot; ")], [sections.operators, resource.operator[state.locale]], [sections.resources, resourceSummary], [sections.communications, communications], [sections.evidence, evidence], [sections.acts, acts], [sections.inconsistencies, state.consistency.resolved ? t("resolved") : t("needsClarification")], [sections.clarifications, clarification], [sections.addenda, addendum], [sections.audit, audit], [sections.destination, config.getSuggestedDestination(activeRoute(), state.locale)]];
+    return `<article class="presentation-master-preview"><header><div><p>${t("masterPreviewTitle")}</p><h3>${t("reportTitle")}</h3></div><span class="presentation-chip ${reportState === "blocked" ? "warning" : "success"}">${masterReportPreviewStatus()}</span></header>${fieldList(items)}<p class="presentation-legal-note">${t("masterReportDisclaimer")}</p></article>`;
   }
 
   render();

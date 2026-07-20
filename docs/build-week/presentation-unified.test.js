@@ -30,7 +30,7 @@ function testRoutingConfig() {
 }
 
 function testPresentationSurface() {
-  ["pipoUnifiedPresentation", "styles.css?v=20", "alert-routing-config.js?v=3", "presentation-unified.js?v=8", "presentation-unified"].forEach((value) => {
+  ["pipoUnifiedPresentation", "styles.css?v=20", "alert-routing-config.js?v=3", "presentation-unified.js?v=9", "presentation-unified"].forEach((value) => {
     assert(html.includes(value), `Missing unified presentation integration: ${value}`);
   });
   [
@@ -132,6 +132,21 @@ function testFinalFlowConsistency() {
   assert(!styles.includes(".field-phone-actions { position: absolute"), "Field phone actions must remain in normal document flow.");
 }
 
+function testMasterReportStatesAndPresentationOrder() {
+  assert(source.includes('const primaryPresentationOrder = ["security", "health", "prosecution", "station"];'), "The principal agencies must use one shared visual order.");
+  assert(source.includes("function orderPresentationAgencies(ids)"), "The visual ordering helper must be shared.");
+  assert(source.includes("function masterReportState()"), "The report must expose a documentary state helper.");
+  assert(source.includes('return reportReady() ? "readyToGenerate" : "blocked";'), "Complete requirements must be distinct from a generated report.");
+  assert(source.includes('readyToGenerate: "Listo para generar"'), "Spanish must localize the ready-to-generate report state.");
+  assert(source.includes('readyToGenerate: "Ready to generate"'), "English must localize the ready-to-generate report state.");
+  assert(source.includes("masterReportPanelStatus()"), "The master panel must render the documentary report state.");
+  assert(source.includes("masterReportPreviewStatus()"), "The preview must render the documentary report state.");
+  assert(source.includes('state.masterReport = "ready"'), "The report may become ready only after generation.");
+  assert(source.includes('state.masterReport = "remitted"'), "The report may become remitted only after simulated remittance.");
+  assert(source.includes("displayRoute().map"), "The main route display must use the shared visual order.");
+  assert(source.includes("const active = activeInstitutionalAgencies().map"), "Specialized consoles must use the shared visual order.");
+}
+
 function testAdvancedProtection() {
   const { execFileSync } = require("child_process");
   const repository = path.resolve(root, "..", "..");
@@ -164,6 +179,7 @@ function main() {
   testLocalizedFlow();
   testPublicVersionProtection();
   testFinalFlowConsistency();
+  testMasterReportStatesAndPresentationOrder();
   testAdvancedProtection();
   console.log("PIPO unified presentation tests passed");
 }
