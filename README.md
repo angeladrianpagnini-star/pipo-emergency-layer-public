@@ -92,12 +92,14 @@ The Build Week route is independent at `docs/build-week/`; it does not replace o
 
 1. Open the public Build Week demo. No login or API key is required.
 2. Select `English — International` or `Spanish — Argentina - Buenos Aires`.
-3. In the citizen screen, open the PIPO point, choose the road-incident condition, enable simulated permissions, and start the simulated alert.
-4. Select **Explore institutional coordination**, then start the eight-step guided journey.
-5. Validate the alert, adjust priority, and route it to 911, 107 Health, Traffic, and Fire.
-6. Confirm the four suggested resources. Suggestions are based on simulated proximity, specialty, availability, and jurisdiction; assignment always requires a human confirmation.
-7. Review field status, four independent acts, the master-documentation flow, institutional closure, and the citizen package.
-8. In Spanish, open the advanced modules for the simulated AI, Evidence Vault, audit, and documentation views. Those modules are intentionally unavailable in English until they have a complete English localization.
+3. Start the presentation, open the PIPO point, choose **Security / Police**, review the simulated permissions, and activate the simulated alert.
+4. Run the eight-step professional walkthrough for the default fictional scenario: a robbery with a possibly armed person and an injured person.
+5. Review human validation and the parallel demonstration routing to the Master Console, 911 Security, 107 Health, and Prosecution. Health is added because the fictional scenario includes an injured person.
+6. Confirm the suggested Security and Health resources. Suggestions are simulated; assignment always requires human confirmation.
+7. Review shared simulated field context, fictional evidence, the field consultation to Prosecution, the individual acts, and the master incident record.
+8. Validate the closure and deliver the simulated citizen summary, receipt, and next steps to the citizen device.
+9. Use the PIPO point to select **147 municipal request** to view the separate fictional municipal-response example. All visible alert options and routes come from one shared demonstration configuration.
+10. Open **Explore advanced modules** only after the main walkthrough to see the technical limitations, shared routing configuration, and safety boundaries.
 
 ## What existed before Build Week
 

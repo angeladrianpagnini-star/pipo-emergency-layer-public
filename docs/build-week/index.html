@@ -3,15 +3,17 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>PIPO Emergency Layer - Activación ciudadana simulada</title>
+    <title>PIPO Emergency Layer - Presentación operativa unificada</title>
     <meta
       name="description"
-      content="Demostración conceptual de activación ciudadana, coordinación institucional y trazabilidad operativa de PIPO Emergency Layer."
+      content="Demostración conceptual de activación ciudadana, coordinación institucional, respuesta de campo y cierre trazable de PIPO Emergency Layer."
     />
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="styles.css?v=12" />
+    <link rel="stylesheet" href="styles.css?v=16" />
   </head>
-  <body>
+  <body class="presentation-unified">
+    <div id="pipoUnifiedPresentation"></div>
+    <template id="pipoLegacyBuildWeekModules">
     <div id="pipoCitizenExperience"></div>
     <div id="pipoOperationalJourney"></div>
     <noscript>
@@ -1029,5 +1031,8 @@
     <script src="app.js?v=11"></script>
     <script src="citizen-activation.js?v=1"></script>
     <script src="operational-journey.js?v=1"></script>
+    </template>
+    <script src="alert-routing-config.js?v=1"></script>
+    <script src="presentation-unified.js?v=4"></script>
   </body>
 </html>
