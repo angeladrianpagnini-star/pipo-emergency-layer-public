@@ -30,7 +30,7 @@ function testRoutingConfig() {
 }
 
 function testPresentationSurface() {
-  ["pipoUnifiedPresentation", "styles.css?v=18", "alert-routing-config.js?v=3", "presentation-unified.js?v=6", "presentation-unified"].forEach((value) => {
+  ["pipoUnifiedPresentation", "styles.css?v=19", "alert-routing-config.js?v=3", "presentation-unified.js?v=7", "presentation-unified"].forEach((value) => {
     assert(html.includes(value), `Missing unified presentation integration: ${value}`);
   });
   [
@@ -38,7 +38,7 @@ function testPresentationSurface() {
     "presentationDocumentation", "presentationClosure", "presentationAdvanced", "start-tour", "tour-next", "film", "confidentialFields",
     "renderCitizen", "renderMaster", "renderAccessMatrix", "renderConsoles", "renderServiceControl", "renderEvidence", "renderActPreview", "renderField", "renderDocumentation", "renderClosure",
   ].forEach((value) => assert(source.includes(value), `Missing presentation flow component: ${value}`));
-  [".presentation-hero", ".presentation-phone", ".presentation-console-grid", ".presentation-communications-table", ".presentation-field-layout", ".presentation-closure-layout", ".presentation-access-matrix", ".presentation-service-control", ".presentation-consistency", "@media (max-width: 420px)"].forEach((selector) => {
+  [".presentation-hero", ".presentation-phone", ".presentation-console-grid", ".presentation-communications-table", ".presentation-field-layout", ".presentation-closure-layout", ".presentation-access-matrix", ".presentation-service-control", ".presentation-consistency", ".presentation-master-preview", "@media (max-width: 420px)"].forEach((selector) => {
     assert(styles.includes(selector), `Missing presentation style: ${selector}`);
   });
 }
@@ -52,10 +52,13 @@ function testDocumentaryControl() {
   assert(config.getAccessMatrix("health").restricted.includes("securityRisk"), "107 must restrict unrelated security content.");
   assert(config.getAccessMatrix("prosecution").restricted.includes("evidenceContent"), "Prosecution must distinguish restricted evidence content.");
   assert(config.getAccessMatrix("station").fields.includes("ownAct"), "Police Station must retain its own act context.");
-  ["CONTEXTO HABILITADO PARA ESTA CONSOLA", "INFORME MAESTRO INTERNO DEL INCIDENTE", "Remisión conceptual. No constituye presentación judicial ni actuación institucional real.", "Acta finalizada: el original no se elimina ni se reescribe", "field.service.started", "field.addendum.created", "reportReady", "prepare-summary", "deliver-summary", "HASH-SIM-"].forEach((value) => {
+  ["CONTEXTO HABILITADO PARA ESTA CONSOLA", "INFORME MAESTRO INTERNO DEL INCIDENTE", "Documento conceptual interno. No constituye acta oficial, presentación judicial ni actuación institucional real.", "Remisión conceptual. No constituye presentación judicial ni actuación institucional real.", "Acta finalizada: el original no se elimina ni se reescribe", "field.service.started", "field.addendum.created", "renderMasterReportPreview", "masterPreviewSections", "prepare-summary", "deliver-summary", "HASH-SIM-"].forEach((value) => {
     assert(source.includes(value), `Missing documentary control requirement: ${value}`);
   });
-  assert(source.includes("state.actsFinalized && state.consistency.resolved && state.consistency.addendum && state.evidence.length > 0"), "Internal report must remain blocked while simulated documentary requirements are incomplete.");
+  assert(source.includes("state.operatorActFinalized && state.allAgencyActsFinalized && state.consistency.resolved && state.consistency.addendum && state.evidence.length > 0"), "Internal report must remain blocked while simulated documentary requirements are incomplete.");
+  assert(source.includes('if (action === "finalize-act") { state.operatorAct = "final"; state.operatorActFinalized = true;'), "Finalizing the operator act must set only the operator-act state.");
+  assert(source.includes('if (action === "finalize-all-acts") { state.operatorAct = "final"; state.operatorActFinalized = true; state.allAgencyActsFinalized = true;'), "Finalizing all acts must explicitly finalize all active agency acts.");
+  assert(!source.includes("state.actsFinalized"), "The deprecated combined documentary state must not remain.");
 }
 
 function routeFor(alertId, options = {}) {

@@ -3342,6 +3342,13 @@ body.presentation-unified > .pipo-noscript {
 .presentation-master-record span { color: var(--p-muted); font-size: 0.72rem; font-weight: 750; }
 .presentation-master-record > div:last-child { display: grid; justify-items: end; gap: 7px; }
 .presentation-master-record > div:last-child strong { color: var(--p-institutional); font-size: 0.8rem; }
+.presentation-master-preview { margin-top: 14px; border: 1px solid #b8d6cf; border-radius: var(--p-radius); background: #f7fbf9; padding: 14px; }
+.presentation-master-preview > header { display: flex; justify-content: space-between; gap: 12px; align-items: start; }
+.presentation-master-preview header p { margin: 0; color: var(--p-muted); font-size: 0.67rem; font-weight: 900; text-transform: uppercase; }
+.presentation-master-preview header h3 { margin: 4px 0 0; color: var(--p-navy); font-size: 0.94rem; line-height: 1.25; }
+.presentation-master-preview .presentation-data-list { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 12px; }
+.presentation-master-preview .presentation-data-list div { min-width: 0; }
+.presentation-master-preview .presentation-data-list dd { overflow-wrap: anywhere; }
 
 .presentation-closure-layout { display: grid; grid-template-columns: minmax(260px, 0.85fr) minmax(240px, 340px); gap: 26px; align-items: center; }
 .presentation-closure-console { min-height: 270px; }
@@ -3417,6 +3424,7 @@ body.presentation-filming .presentation-section.is-tour-active { opacity: 1; }
   .presentation-municipal-card { grid-template-columns: 1fr; }
   .presentation-master-record { grid-template-columns: 1fr; }
   .presentation-master-record > div:last-child { justify-items: start; }
+  .presentation-master-preview .presentation-data-list { grid-template-columns: 1fr; }
   .presentation-clarification-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .closure-phone { justify-self: center; }
 }
