@@ -31,7 +31,7 @@ const navigationMarkup = advanced.match(/<nav class="advanced-sync-nav"[\s\S]*?<
   "Estos recursos aparecen únicamente cuando su finalidad resulta pertinente.",
   "Control de servicio",
   "La ubicación operativa es ficticia",
-  "Módulo técnico de actuación individual y revisión documental.",
+  "Módulo técnico de integración y revisión documental.",
   "No sustituye las actas individuales ni constituye expediente judicial oficial.",
   "Demo multiagencia",
   "ESCENARIO PRINCIPAL",
@@ -40,6 +40,7 @@ const navigationMarkup = advanced.match(/<nav class="advanced-sync-nav"[\s\S]*?<
   "Las capacidades avanzadas se habilitan según el escenario seleccionado.",
   "Registro Integrado de Procedimiento y revisión documental",
   "Documento interno de integración y revisión que referencia las actas individuales sin sustituirlas, fusionarlas ni modificar sus fuentes.",
+  "Los modelos separan bitácora operativa, decisiones humanas, actas individuales, Registro Integrado de Procedimiento e Informe Maestro Interno.",
   "Demo documental",
 ].forEach((value) => assert(advanced.includes(value), `Missing advanced synchronization content: ${value}`));
 
@@ -103,6 +104,9 @@ assert(dataModels.includes('key: "digitalAct"') && dataModels.includes('name: "R
   assert(procedure.includes(value), `Internal procedure API must remain stable: ${value}`);
 });
 assert(advanced.includes("<h3>Acta individual</h3>") && app.includes('"Acta individual finalizada y bloqueada."'), "Field Operator acts must remain individual documents.");
+const documentaryFlow = advanced.match(/<div class="advanced-documentary-flow"[\s\S]*?<\/div>/)?.[0] || "";
+assert(documentaryFlow.indexOf("Actas individuales") < documentaryFlow.indexOf("Registro Integrado de Procedimiento"), "The integrated record must follow individual acts in the visible documentary flow.");
+assert(documentaryFlow.indexOf("Registro Integrado de Procedimiento") < documentaryFlow.indexOf("Control de consistencia documental"), "The consistency control must follow the integrated record in the visible documentary flow.");
 [
   "Acta Digital de Procedimiento",
   "Expediente maestro pendiente.",
