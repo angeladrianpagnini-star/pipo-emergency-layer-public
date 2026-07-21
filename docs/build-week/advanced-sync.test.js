@@ -11,6 +11,7 @@ const navigation = fs.readFileSync(path.join(root, "advanced-sync.js"), "utf8");
 const app = fs.readFileSync(path.join(root, "app.js"), "utf8");
 const procedure = fs.readFileSync(path.join(root, "procedure-act.js"), "utf8");
 const fieldWorkflow = fs.readFileSync(path.join(root, "field-workflow.js"), "utf8");
+const dataModels = fs.readFileSync(path.join(root, "data-models.js"), "utf8");
 const navigationMarkup = advanced.match(/<nav class="advanced-sync-nav"[\s\S]*?<\/nav>/)?.[0] || "";
 
 [
@@ -37,7 +38,8 @@ const navigationMarkup = advanced.match(/<nav class="advanced-sync-nav"[\s\S]*?<
   "ESCENARIOS AVANZADOS",
   "Los operadores mostrados representan capacidades disponibles para distintos escenarios avanzados.",
   "Las capacidades avanzadas se habilitan según el escenario seleccionado.",
-  "Acta individual de procedimiento y revisión documental",
+  "Registro Integrado de Procedimiento y revisión documental",
+  "Documento interno de integración y revisión que referencia las actas individuales sin sustituirlas, fusionarlas ni modificar sus fuentes.",
   "Demo documental",
 ].forEach((value) => assert(advanced.includes(value), `Missing advanced synchronization content: ${value}`));
 
@@ -83,16 +85,24 @@ assert(app.includes("operator.shortLabel ||"), "The compact Field Operator label
 assert(app.includes("Modo simulado activo. El backend local opcional no está desplegado en GitHub Pages."), "The Incident Assistant must explain simulated mode without a deployed backend.");
 assert(app.includes("La demostración puede utilizarse completamente sin backend."), "The Incident Assistant must remain usable without a backend.");
 assert(!app.includes("Estado pendiente. En GitHub Pages el backend puede no estar disponible."), "The Incident Assistant must not present a pending backend as a failure.");
+assert(app.includes('backend-status ${backend?.available ? "online" : "simulated"}'), "Simulated mode must use a neutral visual status class.");
+assert(!app.includes('backend-status ${backend?.available ? "online" : "offline"}'), "Simulated mode must not use the offline status class.");
+assert(styles.includes(".backend-status.simulated"), "The neutral simulated backend style must be scoped.");
 [
-  "Acta individual de procedimiento pendiente de generar.",
-  "Acta individual no generada.",
+  "Registro Integrado de Procedimiento pendiente de generar.",
+  "Registro integrado no generado.",
   "Informe Maestro Interno pendiente.",
-  "Acta individual de procedimiento",
+  "Registro Integrado de Procedimiento",
 ].forEach((value) => assert(`${app}\n${procedure}`.includes(value), `Missing final documentary copy: ${value}`));
 assert(app.includes('const blockingLabel = completeness.blockingErrors.length === 1 ? "Bloqueante" : "Bloqueantes";'), "The singular blocking label must remain visible.");
-assert(procedure.includes('blockingErrors: ["acta individual pendiente."]'), "The visible blocking message must identify the pending individual act.");
-assert(!procedure.includes("acta digital"), "Visible procedure messages must use the final individual-act terminology.");
-assert(!advanced.includes("Acta Digital de Procedimiento"), "Visible advanced copy must use the final individual-act terminology.");
+assert(procedure.includes('blockingErrors: ["registro integrado pendiente."]'), "The visible blocking message must identify the pending integrated record.");
+assert(!procedure.includes("acta individual de procedimiento"), "The central procedure module must not use the individual-act name.");
+assert(!advanced.includes("Acta individual de procedimiento"), "Visible advanced copy must not use the individual-act name for the central module.");
+assert(dataModels.includes('key: "digitalAct"') && dataModels.includes('name: "Registro Integrado de Procedimiento"'), "The model name may change without changing its key.");
+["procedureAct", "actId", "function createProcedureAct", "function finalizeProcedureAct", "procedure.act.created"].forEach((value) => {
+  assert(procedure.includes(value), `Internal procedure API must remain stable: ${value}`);
+});
+assert(advanced.includes("<h3>Acta individual</h3>") && app.includes('"Acta individual finalizada y bloqueada."'), "Field Operator acts must remain individual documents.");
 [
   "Acta Digital de Procedimiento",
   "Expediente maestro pendiente.",

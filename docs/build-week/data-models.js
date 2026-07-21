@@ -170,7 +170,7 @@ const MODEL_DEFINITIONS = [
   },
   {
     key: "digitalAct",
-    name: "Acta individual de procedimiento",
+    name: "Registro Integrado de Procedimiento",
     purpose: "Documento institucional estructurado a partir de bitacora y datos validados.",
     required: ["id", "incidentId", "threadId", "version", "status", "author", "startedAt"],
     fields: [

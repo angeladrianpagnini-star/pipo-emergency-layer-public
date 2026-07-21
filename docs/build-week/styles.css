@@ -706,6 +706,10 @@ h3 {
   border-left-color: var(--teal);
 }
 
+.backend-status.simulated {
+  border-left-color: #68807a;
+}
+
 .backend-status.offline {
   border-left-color: var(--amber);
 }

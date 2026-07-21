@@ -342,7 +342,7 @@ const fieldState = createFieldWorkflowState();
 let selectedFieldOperatorId = fieldState.selectedOperatorId;
 let fieldMessage = "Esperando accion del operador.";
 const procedureState = createProcedureActState(BUILD_WEEK_STATE, fieldState, getLedgerEvents());
-let procedureMessage = "Acta individual de procedimiento pendiente de generar.";
+let procedureMessage = "Registro Integrado de Procedimiento pendiente de generar.";
 let citizenState = createCitizenClosureState(BUILD_WEEK_STATE, fieldState, procedureState, getLedgerEvents());
 let citizenMessage = "Simulacion multiperspectiva pendiente de ejecutar.";
 const evidenceVaultState = createEvidenceVaultState(BUILD_WEEK_STATE, getLedgerEvents(), {
@@ -387,7 +387,7 @@ function renderBackendControls() {
     : "Modo simulado activo. El backend local opcional no está desplegado en GitHub Pages. La demostración puede utilizarse completamente sin backend.";
 
   if (els.assistantBackendStatus) {
-    els.assistantBackendStatus.className = `backend-status ${backend?.available ? "online" : "offline"}`;
+    els.assistantBackendStatus.className = `backend-status ${backend?.available ? "online" : "simulated"}`;
     els.assistantBackendStatus.textContent = backendCopy;
   }
 
@@ -1533,20 +1533,20 @@ function renderProcedureAct() {
   }
 
   renderMiniRecord(els.procedureActSummary, act ? [
-    ["Acta", act.actId],
+    ["Registro integrado", act.actId],
     ["Incidente", act.incidentId],
     ["Estado", act.status],
     ["Version", act.version],
     ["Operador", act.operatorId],
     ["Actas fuente", act.individualActIds.join(", ")],
     ["Integridad", act.integrityReference?.value || "pendiente"],
-  ] : [], "Acta individual no generada.");
+  ] : [], "Registro integrado no generado.");
 
   const completeness = procedureState.completeness;
   const blockingLabel = completeness.blockingErrors.length === 1 ? "Bloqueante" : "Bloqueantes";
   els.procedureCompleteness.innerHTML = `
-    <p><strong>Acta ${completeness.percent}% completa</strong></p>
-    <div class="meter" aria-label="Completitud del acta"><span style="width: ${completeness.percent}%"></span></div>
+    <p><strong>Registro integrado ${completeness.percent}% completo</strong></p>
+    <div class="meter" aria-label="Completitud del registro integrado"><span style="width: ${completeness.percent}%"></span></div>
     <p><strong>Completos:</strong> ${formatList(completeness.completed)}</p>
     <p><strong>Pendientes:</strong> ${formatList(completeness.pending)}</p>
     <p><strong>${blockingLabel}:</strong> ${formatList(completeness.blockingErrors)}</p>
@@ -1618,7 +1618,7 @@ function renderProcedureAct() {
     ["Cierre", procedureState.closure.status],
     ["Propuesto", procedureState.closure.proposedStatus || "-"],
     ["Responsable", procedureState.closure.responsible],
-    ["Acta asociada", procedureState.closure.associatedAct || "-"],
+    ["Registro integrado asociado", procedureState.closure.associatedAct || "-"],
     ["Errores", formatList(procedureState.closure.blockingErrors || [])],
   ] : [], "Cierre pendiente. Toda alerta requiere cierre trazable.");
 
@@ -2252,7 +2252,7 @@ function runProcedureCreate() {
   ensureFieldDemoForProcedure();
   return applyProcedureResult(
     createProcedureAct(procedureState, procedureContext()),
-    "Acta individual de procedimiento creada desde actas individuales y bitacora.",
+    "Registro Integrado de Procedimiento creado desde actas individuales y bitacora.",
   );
 }
 
@@ -2267,7 +2267,7 @@ function runProcedureDemo() {
   demo.results.forEach(appendProcedureLedger);
   syncProcedureStateToBuildWeek();
   setProcedureMessage(demo.ok
-    ? "Demo Etapa 5 completada: acta individual, consistencia, hash, Informe Maestro Interno y cierre trazable."
+    ? "Demo Etapa 5 completada: Registro Integrado, consistencia, hash, Informe Maestro Interno y cierre trazable."
     : "Demo Etapa 5 ejecuto pasos, revisar avisos pendientes.", !demo.ok);
   render();
 }
@@ -2278,7 +2278,7 @@ function runProcedureAction(action) {
     return;
   }
   if (!procedureState.procedureAct && action !== "demo") {
-    setProcedureMessage("Primero debe generarse el acta individual de procedimiento.", true);
+    setProcedureMessage("Primero debe generarse el Registro Integrado de Procedimiento.", true);
     renderProcedureAct();
     return;
   }
@@ -2305,8 +2305,8 @@ function runProcedureAction(action) {
     const validated = validateSupervisor(procedureState);
     applyProcedureResult(validated, "Supervisor valido recepcion documental sin modificar relato.");
   }
-  if (action === "submit") applyProcedureResult(submitProcedureAct(procedureState), "Acta presentada para control final.");
-  if (action === "finalize") applyProcedureResult(finalizeProcedureAct(procedureState), "Acta finalizada y bloqueada con referencia de integridad.");
+  if (action === "submit") applyProcedureResult(submitProcedureAct(procedureState), "Registro Integrado presentado para control final.");
+  if (action === "finalize") applyProcedureResult(finalizeProcedureAct(procedureState), "Registro Integrado finalizado y bloqueado con referencia de integridad.");
   if (action === "amend") applyProcedureResult(amendProcedureAct(procedureState), "Ampliacion versionada sin sobrescribir el final.");
   if (action === "rectify") applyProcedureResult(rectifyProcedureAct(procedureState), "Rectificacion versionada sin borrar el documento original.");
   if (action === "master-record") applyProcedureResult(buildMasterIncidentRecord(procedureState), "Informe Maestro Interno generado como indice y sintesis.");
