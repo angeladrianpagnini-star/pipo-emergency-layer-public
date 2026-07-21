@@ -8,6 +8,7 @@ const repository = path.resolve(root, "..", "..");
 const advanced = fs.readFileSync(path.join(root, "advanced.html"), "utf8");
 const styles = fs.readFileSync(path.join(root, "styles.css"), "utf8");
 const navigation = fs.readFileSync(path.join(root, "advanced-sync.js"), "utf8");
+const navigationMarkup = advanced.match(/<nav class="advanced-sync-nav"[\s\S]*?<\/nav>/)?.[0] || "";
 
 [
   "Estado de la edición Build Week",
@@ -37,7 +38,13 @@ assert(!advanced.includes("Acta maestra referenciada"), "The advanced view must 
 assert(styles.includes(".advanced-sync-panel"), "The alignment panel requires scoped styles.");
 assert(styles.includes(".advanced-sync-nav"), "The advanced navigation requires scoped styles.");
 assert(styles.includes(".advanced-service-reference"), "The compact service reference requires scoped styles.");
-assert(navigation.includes('details#pipoAdvancedModules'), "Advanced navigation must expand the preserved technical laboratory when needed.");
+const internalHrefs = [...navigationMarkup.matchAll(/href="(#[^"]+)"/g)].map((match) => match[1]);
+assert(internalHrefs.length > 0, "Advanced navigation must include internal destinations.");
+internalHrefs.forEach((href) => assert(advanced.includes(`id="${href.slice(1)}"`), `Missing navigation destination: ${href}`));
+assert(navigation.includes("scrollIntoView"), "Advanced navigation must scroll to the selected destination.");
+assert(navigation.includes("prefers-reduced-motion: reduce"), "Advanced navigation must respect reduced-motion preferences.");
+assert(navigation.includes("history.replaceState"), "Advanced navigation must update the selected hash without a reload.");
+assert(!navigation.includes("pipoAdvancedModules"), "Advanced navigation must not depend on a non-source wrapper.");
 
 const protectedFiles = execFileSync("git", ["diff", "--name-only", "main", "--", "docs/index.html", "docs/styles.css", "docs/app.js", "docs/build-week/index.html", "docs/build-week/presentation-unified.js", "docs/build-week/alert-routing-config.js", "LICENSE", "TRADEMARKS.md"], { cwd: repository, encoding: "utf8" }).trim();
 assert.strictEqual(protectedFiles, "", "Protected public and guided-presentation files must remain unchanged.");

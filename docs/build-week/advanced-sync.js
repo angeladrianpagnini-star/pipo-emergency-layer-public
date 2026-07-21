@@ -1,5 +1,6 @@
 (() => {
   const navigation = document.querySelector(".advanced-sync-nav");
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   if (!navigation) return;
 
@@ -7,13 +8,15 @@
     const link = event.target.closest('a[href^="#"]');
     if (!link) return;
 
-    const target = document.querySelector(link.getAttribute("href"));
-    const laboratory = target?.closest("details#pipoAdvancedModules");
-
-    if (!target || !laboratory || laboratory.open) return;
+    const selector = link.getAttribute("href");
+    const target = document.querySelector(selector);
+    if (!target) return;
 
     event.preventDefault();
-    laboratory.open = true;
-    requestAnimationFrame(() => target.scrollIntoView({ behavior: "smooth", block: "start" }));
+    target.scrollIntoView({
+      behavior: reducedMotion ? "auto" : "smooth",
+      block: "start",
+    });
+    history.replaceState(null, "", selector);
   });
 })();
