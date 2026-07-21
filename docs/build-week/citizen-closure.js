@@ -170,7 +170,7 @@
         "firmar por otro operador",
         "editar actas ajenas",
         "borrar eventos",
-        "cerrar expediente maestro",
+        "cerrar Informe Maestro Interno",
       ],
     },
     FEDERATED_CONSOLE: {
@@ -201,7 +201,7 @@
     MASTER_CONSOLE: {
       icon: "MAS",
       name: "Consola maestra",
-      role: "Coordinacion y expediente maestro",
+      role: "Coordinacion e Informe Maestro Interno",
       permissions: [
         "mapear el incidente completo",
         "ver participantes y cronologia referenciada",

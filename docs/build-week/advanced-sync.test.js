@@ -8,6 +8,9 @@ const repository = path.resolve(root, "..", "..");
 const advanced = fs.readFileSync(path.join(root, "advanced.html"), "utf8");
 const styles = fs.readFileSync(path.join(root, "styles.css"), "utf8");
 const navigation = fs.readFileSync(path.join(root, "advanced-sync.js"), "utf8");
+const app = fs.readFileSync(path.join(root, "app.js"), "utf8");
+const procedure = fs.readFileSync(path.join(root, "procedure-act.js"), "utf8");
+const fieldWorkflow = fs.readFileSync(path.join(root, "field-workflow.js"), "utf8");
 const navigationMarkup = advanced.match(/<nav class="advanced-sync-nav"[\s\S]*?<\/nav>/)?.[0] || "";
 
 [
@@ -15,7 +18,8 @@ const navigationMarkup = advanced.match(/<nav class="advanced-sync-nav"[\s\S]*?<
   "v36 preservada",
   "Presentación Build Week publicada",
   "Módulos avanzados publicados",
-  "PR #3, #4 y #5 fusionados",
+  "Flujo final consolidado",
+  "Presentación principal y laboratorio avanzado consolidados en",
   "Sin conexiones oficiales ni sensores reales",
   "Flujo operativo y documental final",
   "Informe Maestro Interno",
@@ -28,7 +32,7 @@ const navigationMarkup = advanced.match(/<nav class="advanced-sync-nav"[\s\S]*?<
   "La ubicación operativa es ficticia",
   "Módulo técnico de actuación individual y revisión documental.",
   "No sustituye las actas individuales ni constituye expediente judicial oficial.",
-  "Demo multidisciplinaria",
+  "Demo multiagencia",
   "ESCENARIO PRINCIPAL",
   "ESCENARIOS AVANZADOS",
   "Los operadores mostrados representan capacidades disponibles para distintos escenarios avanzados.",
@@ -44,6 +48,8 @@ const navigationMarkup = advanced.match(/<nav class="advanced-sync-nav"[\s\S]*?<
   'operational-journey.js?v=1',
   "Demo 4 organismos",
   ">Demo Etapa 5<",
+  "PR #3, #4 y #5 fusionados",
+  "Demo multidisciplinaria",
 ].forEach((value) => assert(!advanced.includes(value), `Obsolete advanced content must be removed: ${value}`));
 
 [
@@ -63,6 +69,7 @@ const navigationMarkup = advanced.match(/<nav class="advanced-sync-nav"[\s\S]*?<
 assert(advanced.includes('href="./#presentationCitizen"'), "The advanced view must link to the guided main presentation.");
 assert(advanced.includes('href="./">Volver a la presentación principal'), "The advanced view must keep the return link.");
 assert(advanced.includes('advanced-sync.js?v=1'), "The advanced view must load its non-destructive navigation helper.");
+assert(advanced.includes('data-field-action="demo"'), "The multi-agency demo must preserve its existing field action.");
 assert(!advanced.includes("No se publica esta rama"), "The advanced view must not claim that its branch is unpublished.");
 assert(!advanced.includes("Acta maestra referenciada"), "The advanced view must not present Acta Maestra as the final label.");
 assert(styles.includes(".advanced-sync-panel"), "The alignment panel requires scoped styles.");
@@ -70,6 +77,26 @@ assert(styles.includes(".advanced-sync-nav"), "The advanced navigation requires 
 assert(styles.includes(".advanced-service-reference"), "The compact service reference requires scoped styles.");
 assert(styles.includes(".advanced-sync-nav { position: sticky") && styles.includes("flex-wrap: wrap"), "Desktop advanced navigation must wrap instead of creating a horizontal scrollbar.");
 assert(styles.includes(".advanced-sync-nav { top: 0; margin-top: 10px; flex-wrap: nowrap; overflow-x: auto; }"), "Mobile advanced navigation must keep horizontal scrolling within the control.");
+assert(styles.includes("@media print") && styles.includes("position: static;") && styles.includes("box-shadow: none;"), "Printed advanced navigation must be static and non-overlapping.");
+assert(fieldWorkflow.includes('shortLabel: "Oficial Móvil Demo · 911"'), "The Field Operator must expose its compact presentation label.");
+assert(app.includes("operator.shortLabel ||"), "The compact Field Operator label must be used in the selector.");
+assert(app.includes("Modo simulado activo. El backend local opcional no está desplegado en GitHub Pages."), "The Incident Assistant must explain simulated mode without a deployed backend.");
+assert(app.includes("La demostración puede utilizarse completamente sin backend."), "The Incident Assistant must remain usable without a backend.");
+assert(!app.includes("Estado pendiente. En GitHub Pages el backend puede no estar disponible."), "The Incident Assistant must not present a pending backend as a failure.");
+[
+  "Acta individual de procedimiento pendiente de generar.",
+  "Acta individual no generada.",
+  "Informe Maestro Interno pendiente.",
+  "Acta individual de procedimiento",
+].forEach((value) => assert(`${app}\n${procedure}`.includes(value), `Missing final documentary copy: ${value}`));
+assert(app.includes('const blockingLabel = completeness.blockingErrors.length === 1 ? "Bloqueante" : "Bloqueantes";'), "The singular blocking label must remain visible.");
+assert(procedure.includes('blockingErrors: ["acta individual pendiente."]'), "The visible blocking message must identify the pending individual act.");
+assert(!procedure.includes("acta digital"), "Visible procedure messages must use the final individual-act terminology.");
+assert(!advanced.includes("Acta Digital de Procedimiento"), "Visible advanced copy must use the final individual-act terminology.");
+[
+  "Acta Digital de Procedimiento",
+  "Expediente maestro pendiente.",
+].forEach((value) => assert(!`${app}\n${procedure}`.includes(value), `Legacy documentary copy must be removed: ${value}`));
 const internalHrefs = [...navigationMarkup.matchAll(/href="(#[^"]+)"/g)].map((match) => match[1]);
 assert(internalHrefs.length > 0, "Advanced navigation must include internal destinations.");
 internalHrefs.forEach((href) => assert(advanced.includes(`id="${href.slice(1)}"`), `Missing navigation destination: ${href}`));
@@ -79,7 +106,7 @@ assert(navigation.includes("history.replaceState"), "Advanced navigation must up
 const obsoleteWrapper = ["pipo", "AdvancedModules"].join("");
 assert(!navigation.includes(obsoleteWrapper), "Advanced navigation must not depend on a non-source wrapper.");
 
-const protectedFiles = execFileSync("git", ["diff", "--name-only", "main", "--", "docs/index.html", "docs/styles.css", "docs/app.js", "docs/build-week/index.html", "docs/build-week/presentation-unified.js", "docs/build-week/alert-routing-config.js", "LICENSE", "TRADEMARKS.md"], { cwd: repository, encoding: "utf8" }).trim();
+const protectedFiles = execFileSync("git", ["diff", "--name-only", "main", "--", "docs/index.html", "docs/styles.css", "docs/app.js", "docs/build-week/index.html", "docs/build-week/alert-routing-config.js", "LICENSE", "TRADEMARKS.md"], { cwd: repository, encoding: "utf8" }).trim();
 assert.strictEqual(protectedFiles, "", "Protected public and guided-presentation files must remain unchanged.");
 
 console.log("PIPO advanced synchronization tests passed");

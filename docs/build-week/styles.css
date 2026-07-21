@@ -3454,6 +3454,15 @@ body.advanced-demo { background: #f5f7f6; }
   .advanced-section-heading > span { align-self: flex-start; }
 }
 
+@media print {
+  .advanced-sync-nav {
+    position: static;
+    top: auto;
+    box-shadow: none;
+    overflow: visible;
+  }
+}
+
 body.presentation-filming .presentation-console-card:not(.is-involved),
 body.presentation-filming .presentation-municipal-card { display: none; }
 body.presentation-filming .presentation-section:not(.is-tour-active) { opacity: 0.78; }

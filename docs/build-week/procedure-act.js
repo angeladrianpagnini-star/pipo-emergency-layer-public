@@ -198,7 +198,7 @@
         completed: [],
         pending: REQUIRED_COMPLETENESS_ITEMS.map((item) => item[1]),
         warnings: [],
-        blockingErrors: ["Acta Digital de Procedimiento no generada."],
+        blockingErrors: ["acta individual pendiente."],
         recommendations: [],
       },
       findings: [],
@@ -217,7 +217,7 @@
       closure: null,
       exports: [],
       printViewHtml: "",
-      lastMessage: "Etapa 5 lista para generar acta digital.",
+      lastMessage: "Etapa 5 lista para generar acta individual de procedimiento.",
       contextSnapshot: {
         buildWeekState: clone(buildWeekState),
         fieldState: clone(fieldState),
@@ -362,7 +362,7 @@
       manifestacionesTerceros: linesFrom(grouped[INFORMATION_CLASSES.THIRD_PARTY_STATEMENT], "manifestaciones de terceros"),
       datosSistema: linesFrom(grouped[INFORMATION_CLASSES.SYSTEM_DATA], "datos del sistema"),
       actuacionesRealizadas: linesFrom(grouped[INFORMATION_CLASSES.ACTION_PERFORMED], "actuaciones realizadas"),
-      organismosIntervinientes: collectConsoles(fieldState, buildWeekState).map((consoleId) => `${consoleId} incorporado al expediente maestro.`),
+      organismosIntervinientes: collectConsoles(fieldState, buildWeekState).map((consoleId) => `${consoleId} incorporado al Informe Maestro Interno.`),
       evidenciaVinculada: evidence.length
         ? evidence.map((item) => `${item.evidenceId}: ${item.type} / ${item.integrityReference}`)
         : ["Dato no disponible: evidencia vinculada."],
@@ -501,11 +501,11 @@
     state.findings = runConsistencyEngine(state, { buildWeekState, fieldState, ledgerEvents });
     state.supervision = determineSupervision(state, { buildWeekState, fieldState });
     state.printViewHtml = buildPrintView(procedureAct, state);
-    state.lastMessage = "Acta Digital de Procedimiento creada en borrador.";
+    state.lastMessage = "Acta individual de procedimiento creada en borrador.";
 
     return ok({
       procedureAct,
-      ledger: ledgerEnvelope(actor, "procedure.act.created", "Acta Digital de Procedimiento creada en borrador.", {
+      ledger: ledgerEnvelope(actor, "procedure.act.created", "Acta individual de procedimiento creada en borrador.", {
         actId: procedureAct.actId,
         version: procedureAct.version,
         status: procedureAct.status,
@@ -518,7 +518,7 @@
   }
 
   function generateAiDraft(state) {
-    if (!state.procedureAct) return fail("Primero debe generarse el acta digital.");
+    if (!state.procedureAct) return fail("Primero debe generarse el acta individual.");
     const sections = createAiDraftSections({
       buildWeekState: state.contextSnapshot.buildWeekState,
       fieldState: state.contextSnapshot.fieldState,
@@ -558,7 +558,7 @@
         completed: [],
         pending: REQUIRED_COMPLETENESS_ITEMS.map((item) => item[1]),
         warnings: [],
-        blockingErrors: ["Acta Digital de Procedimiento no generada."],
+        blockingErrors: ["acta individual pendiente."],
         recommendations: [],
       };
     }
@@ -607,7 +607,7 @@
     const fieldState = context.fieldState || state.contextSnapshot.fieldState || {};
     const findings = [];
     if (!act) {
-      return [finding(FINDING_TYPES.BLOCKING_ERROR, "procedure_act_missing", "No existe Acta Digital de Procedimiento.")];
+      return [finding(FINDING_TYPES.BLOCKING_ERROR, "procedure_act_missing", "No existe acta individual de procedimiento.")];
     }
 
     if (!act.operatorId) findings.push(finding(FINDING_TYPES.BLOCKING_ERROR, "responsible_missing", "Acta sin responsable."));
@@ -715,7 +715,7 @@
   }
 
   function updateCompleteness(state) {
-    if (!state.procedureAct) return fail("Primero debe generarse el acta digital.");
+    if (!state.procedureAct) return fail("Primero debe generarse el acta individual de procedimiento.");
     state.completeness = calculateCompleteness(state.procedureAct);
     return ok({
       completeness: state.completeness,
@@ -728,7 +728,7 @@
   }
 
   function checkConsistency(state) {
-    if (!state.procedureAct) return fail("Primero debe generarse el acta digital.");
+    if (!state.procedureAct) return fail("Primero debe generarse el acta individual de procedimiento.");
     const findings = runConsistencyEngine(state);
     return ok({
       findings,
@@ -741,7 +741,7 @@
   }
 
   function completeOperatorReview(state, reviewStatement = "El funcionario actuante revisa el borrador y confirma su contenido como demo.") {
-    if (!state.procedureAct) return fail("Primero debe generarse el acta digital.");
+    if (!state.procedureAct) return fail("Primero debe generarse el acta individual de procedimiento.");
     if (state.procedureAct.locked) return fail("El acta finalizada esta bloqueada.");
     state.procedureAct.content.confirmation.reviewStatement = reviewStatement;
     state.procedureAct.content.confirmation.timestamp = nowIso();
@@ -760,7 +760,7 @@
   }
 
   function submitProcedureAct(state) {
-    if (!state.procedureAct) return fail("Primero debe generarse el acta digital.");
+    if (!state.procedureAct) return fail("Primero debe generarse el acta individual de procedimiento.");
     const consistency = runConsistencyEngine(state);
     const blocking = consistency.filter((item) => item.type === FINDING_TYPES.BLOCKING_ERROR);
     if (blocking.length) {
@@ -778,7 +778,7 @@
   }
 
   function requestSupervisorReview(state, reason = "Revision requerida por criticidad, evidencia sensible o multiples organismos.") {
-    if (!state.procedureAct) return fail("Primero debe generarse el acta digital.");
+    if (!state.procedureAct) return fail("Primero debe generarse el acta individual de procedimiento.");
     state.supervision = determineSupervision(state);
     state.supervision.required = true;
     state.supervision.status = SUPERVISION_STATUSES.IN_REVIEW;
@@ -801,7 +801,7 @@
   }
 
   function observeSupervisor(state, observation = "Solicitar ampliacion antes de cierre.") {
-    if (!state.procedureAct) return fail("Primero debe generarse el acta digital.");
+    if (!state.procedureAct) return fail("Primero debe generarse el acta individual de procedimiento.");
     state.supervision.required = true;
     state.supervision.status = SUPERVISION_STATUSES.OBSERVED;
     state.supervision.reviewedAt = nowIso();
@@ -822,7 +822,7 @@
   }
 
   function validateSupervisor(state, observation = "Supervisor valida recepcion documental sin modificar relato.") {
-    if (!state.procedureAct) return fail("Primero debe generarse el acta digital.");
+    if (!state.procedureAct) return fail("Primero debe generarse el acta individual de procedimiento.");
     state.supervision.required = true;
     state.supervision.status = SUPERVISION_STATUSES.VALIDATED;
     state.supervision.validatedAt = nowIso();
@@ -846,7 +846,7 @@
   }
 
   function requestClarification(state, requestInput = {}) {
-    if (!state.procedureAct) return fail("Primero debe generarse el acta digital.");
+    if (!state.procedureAct) return fail("Primero debe generarse el acta individual de procedimiento.");
     const request = {
       id: `PCLAR-${String(state.clarificationRequests.length + 1).padStart(3, "0")}`,
       incidentId: state.incidentId,
@@ -901,7 +901,7 @@
   }
 
   function finalizeProcedureAct(state) {
-    if (!state.procedureAct) return fail("Primero debe generarse el acta digital.");
+    if (!state.procedureAct) return fail("Primero debe generarse el acta individual de procedimiento.");
     if (state.procedureAct.locked) return fail("El acta finalizada ya esta bloqueada.");
     state.completeness = calculateCompleteness(state.procedureAct);
     state.findings = runConsistencyEngine(state);
@@ -921,10 +921,10 @@
     state.procedureAct.locked = true;
     pushVersion(state, state.procedureAct, state.procedureAct.operatorId, "Finalizacion con control de completitud y consistencia.", "v3", PROCEDURE_ACT_STATUSES.FINALIZED);
     state.printViewHtml = buildPrintView(state.procedureAct, state);
-    state.lastMessage = "Acta Digital finalizada y bloqueada.";
+    state.lastMessage = "Acta individual finalizada y bloqueada.";
     return ok({
       procedureAct: state.procedureAct,
-      ledger: ledgerEnvelopeFromAct(state.procedureAct, "procedure.act.finalized", "Acta Digital finalizada y bloqueada.", {
+      ledger: ledgerEnvelopeFromAct(state.procedureAct, "procedure.act.finalized", "Acta individual finalizada y bloqueada.", {
         actId: state.procedureAct.actId,
         version: state.procedureAct.version,
         integrityReference: state.procedureAct.integrityReference,
@@ -969,7 +969,7 @@
   }
 
   function annulProcedureAct(state, reason = "", authority = "Autoridad simulada") {
-    if (!state.procedureAct) return fail("Primero debe generarse el acta digital.");
+    if (!state.procedureAct) return fail("Primero debe generarse el acta individual de procedimiento.");
     if (!compact(reason)) return fail("La anulacion requiere motivo y autoridad.");
     const version = createDetachedVersion(state, "v3.3", PROCEDURE_ACT_STATUSES.ANNULLED_WITH_REASON, reason, {
       authority,
@@ -988,7 +988,7 @@
   }
 
   function buildMasterIncidentRecord(state) {
-    if (!state.procedureAct) return fail("Primero debe generarse el acta digital.");
+    if (!state.procedureAct) return fail("Primero debe generarse el acta individual de procedimiento.");
     const fieldState = state.contextSnapshot.fieldState || {};
     const buildWeekState = state.contextSnapshot.buildWeekState || {};
     const divergences = state.findings.filter((item) => ["divergent_records", "intervention_before_arrival", "closure_before_arrival", "time_inconsistency"].includes(item.code));
@@ -1028,7 +1028,7 @@
     state.masterIncidentRecord = record;
     return ok({
       masterIncidentRecord: record,
-      ledger: ledgerEnvelopeFromAct(state.procedureAct, "master.record.generated", "Expediente maestro generado como indice y sintesis.", {
+      ledger: ledgerEnvelopeFromAct(state.procedureAct, "master.record.generated", "Informe Maestro Interno generado como indice y sintesis.", {
         masterRecordId: record.id,
         individualActs: record.individualActs,
         procedureActId: record.procedureActId,
@@ -1036,8 +1036,8 @@
     });
   }
 
-  function proposeClosure(state, status = CLOSURE_STATUSES.CLOSED_WITH_PROCEDURE_ACT, summary = "Cierre propuesto con Acta Digital de Procedimiento.", followUp = "Seguimiento no requerido luego de validacion.") {
-    if (!state.procedureAct) return fail("Primero debe generarse el acta digital.");
+  function proposeClosure(state, status = CLOSURE_STATUSES.CLOSED_WITH_PROCEDURE_ACT, summary = "Cierre propuesto con acta individual de procedimiento.", followUp = "Seguimiento no requerido luego de validacion.") {
+    if (!state.procedureAct) return fail("Primero debe generarse el acta individual.");
     if (!Object.values(CLOSURE_STATUSES).includes(status)) return fail("Estado de cierre no permitido.");
     const requirements = validateClosureRequirements(state, status, summary, followUp);
     if (!requirements.valid) {
@@ -1121,7 +1121,7 @@
   }
 
   function exportProcedureJson(state) {
-    if (!state.procedureAct) return fail("Primero debe generarse el acta digital.");
+    if (!state.procedureAct) return fail("Primero debe generarse el acta individual de procedimiento.");
     const exported = {
       exportId: `EXPORT-${String(state.exports.length + 1).padStart(3, "0")}`,
       exportedAt: nowIso(),
@@ -1147,7 +1147,7 @@
     if (!act) return "";
     const sections = state.aiDraft?.sections || {};
     return [
-      `<h1>Acta Digital de Procedimiento PIPO</h1>`,
+      `<h1>Acta individual de procedimiento</h1>`,
       `<p>${AI_DRAFT_NOTICE}</p>`,
       `<p>${INTEGRATION_PRINCIPLE}</p>`,
       `<h2>Identificacion</h2>`,

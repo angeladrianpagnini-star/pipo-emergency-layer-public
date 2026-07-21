@@ -64,6 +64,7 @@
     {
       operatorId: "OP-FIELD-911-A",
       fictitiousName: "Oficial Movil Demo",
+      shortLabel: "Oficial Móvil Demo · 911",
       organization: "911 Seguridad",
       consoleId: "CON-911",
       role: "movil policial",

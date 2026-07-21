@@ -342,7 +342,7 @@ const fieldState = createFieldWorkflowState();
 let selectedFieldOperatorId = fieldState.selectedOperatorId;
 let fieldMessage = "Esperando accion del operador.";
 const procedureState = createProcedureActState(BUILD_WEEK_STATE, fieldState, getLedgerEvents());
-let procedureMessage = "Acta Digital de Procedimiento pendiente de generar.";
+let procedureMessage = "Acta individual de procedimiento pendiente de generar.";
 let citizenState = createCitizenClosureState(BUILD_WEEK_STATE, fieldState, procedureState, getLedgerEvents());
 let citizenMessage = "Simulacion multiperspectiva pendiente de ejecutar.";
 const evidenceVaultState = createEvidenceVaultState(BUILD_WEEK_STATE, getLedgerEvents(), {
@@ -382,9 +382,9 @@ function renderBackendControls() {
   }
 
   const backend = assistantState.backendStatus;
-  const backendCopy = backend
-    ? `${backend.available ? "Disponible" : "No disponible"} / modelo: ${backend.model || "configurado en servidor"} / contrato: ${backend.contractVersion || "-"}`
-    : "Estado pendiente. En GitHub Pages el backend puede no estar disponible.";
+  const backendCopy = backend?.available
+    ? `Backend local opcional disponible / modelo: ${backend.model || "configurado en servidor"} / contrato: ${backend.contractVersion || "-"}`
+    : "Modo simulado activo. El backend local opcional no está desplegado en GitHub Pages. La demostración puede utilizarse completamente sin backend.";
 
   if (els.assistantBackendStatus) {
     els.assistantBackendStatus.className = `backend-status ${backend?.available ? "online" : "offline"}`;
@@ -1540,15 +1540,16 @@ function renderProcedureAct() {
     ["Operador", act.operatorId],
     ["Actas fuente", act.individualActIds.join(", ")],
     ["Integridad", act.integrityReference?.value || "pendiente"],
-  ] : [], "Acta Digital de Procedimiento no generada.");
+  ] : [], "Acta individual no generada.");
 
   const completeness = procedureState.completeness;
+  const blockingLabel = completeness.blockingErrors.length === 1 ? "Bloqueante" : "Bloqueantes";
   els.procedureCompleteness.innerHTML = `
     <p><strong>Acta ${completeness.percent}% completa</strong></p>
     <div class="meter" aria-label="Completitud del acta"><span style="width: ${completeness.percent}%"></span></div>
     <p><strong>Completos:</strong> ${formatList(completeness.completed)}</p>
     <p><strong>Pendientes:</strong> ${formatList(completeness.pending)}</p>
-    <p><strong>Bloqueantes:</strong> ${formatList(completeness.blockingErrors)}</p>
+    <p><strong>${blockingLabel}:</strong> ${formatList(completeness.blockingErrors)}</p>
   `;
 
   els.procedureFindings.innerHTML = "";
@@ -1598,13 +1599,13 @@ function renderProcedureAct() {
 
   const master = procedureState.masterIncidentRecord;
   renderMiniRecord(els.procedureMasterRecordDetail, master ? [
-    ["Expediente", master.id],
+    ["Informe Maestro Interno", master.id],
     ["Organismos", master.organizations.join(", ")],
     ["Operadores", master.operators.length],
     ["Actas", master.individualActs.join(", ")],
     ["Divergencias", master.divergenceNotice],
     ["Cierre", master.closureStatus],
-  ] : [], "Expediente maestro pendiente.");
+  ] : [], "Informe Maestro Interno pendiente.");
 
   renderMiniRecord(els.procedureSupervision, [
     ["Requiere", procedureState.supervision.required ? "si" : "no"],
@@ -1969,7 +1970,7 @@ function initializeFieldWorkflowControls() {
   fieldState.operators.forEach((operator) => {
     const option = document.createElement("option");
     option.value = operator.operatorId;
-    option.textContent = `${operator.fictitiousName} / ${operator.organization}`;
+    option.textContent = operator.shortLabel || `${operator.fictitiousName} / ${operator.organization}`;
     els.fieldOperatorSelect.appendChild(option);
   });
   els.fieldOperatorSelect.value = selectedFieldOperatorId;
@@ -2202,7 +2203,7 @@ function runFieldDemoSequence() {
   selectedFieldOperatorId = "OP-FIELD-911-A";
   els.fieldOperatorSelect.value = selectedFieldOperatorId;
   fieldState.demoCompleted = true;
-  setFieldMessage(`Demo multidisciplinaria ejecutada: ${steps.length} eventos operativos agregados.`);
+  setFieldMessage(`Demo multiagencia ejecutada: ${steps.length} eventos operativos agregados.`);
   render();
 }
 
@@ -2251,7 +2252,7 @@ function runProcedureCreate() {
   ensureFieldDemoForProcedure();
   return applyProcedureResult(
     createProcedureAct(procedureState, procedureContext()),
-    "Acta Digital de Procedimiento creada desde actas individuales y bitacora.",
+    "Acta individual de procedimiento creada desde actas individuales y bitacora.",
   );
 }
 
@@ -2266,7 +2267,7 @@ function runProcedureDemo() {
   demo.results.forEach(appendProcedureLedger);
   syncProcedureStateToBuildWeek();
   setProcedureMessage(demo.ok
-    ? "Demo Etapa 5 completada: acta, consistencia, hash, expediente y cierre trazable."
+    ? "Demo Etapa 5 completada: acta individual, consistencia, hash, Informe Maestro Interno y cierre trazable."
     : "Demo Etapa 5 ejecuto pasos, revisar avisos pendientes.", !demo.ok);
   render();
 }
@@ -2277,7 +2278,7 @@ function runProcedureAction(action) {
     return;
   }
   if (!procedureState.procedureAct && action !== "demo") {
-    setProcedureMessage("Primero debe generarse el Acta Digital de Procedimiento.", true);
+    setProcedureMessage("Primero debe generarse el acta individual de procedimiento.", true);
     renderProcedureAct();
     return;
   }
@@ -2308,7 +2309,7 @@ function runProcedureAction(action) {
   if (action === "finalize") applyProcedureResult(finalizeProcedureAct(procedureState), "Acta finalizada y bloqueada con referencia de integridad.");
   if (action === "amend") applyProcedureResult(amendProcedureAct(procedureState), "Ampliacion versionada sin sobrescribir el final.");
   if (action === "rectify") applyProcedureResult(rectifyProcedureAct(procedureState), "Rectificacion versionada sin borrar el documento original.");
-  if (action === "master-record") applyProcedureResult(buildMasterIncidentRecord(procedureState), "Expediente maestro generado como indice y sintesis.");
+  if (action === "master-record") applyProcedureResult(buildMasterIncidentRecord(procedureState), "Informe Maestro Interno generado como indice y sintesis.");
   if (action === "propose-closure") {
     const result = proposeClosure(procedureState, CLOSURE_STATUSES.CLOSED_WITH_PROCEDURE_ACT);
     const isBlocked = result.ok && result.closure?.status === "BLOCKED";
