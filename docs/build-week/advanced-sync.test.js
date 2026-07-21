@@ -28,7 +28,37 @@ const navigationMarkup = advanced.match(/<nav class="advanced-sync-nav"[\s\S]*?<
   "La ubicación operativa es ficticia",
   "Módulo técnico de actuación individual y revisión documental.",
   "No sustituye las actas individuales ni constituye expediente judicial oficial.",
+  "Demo multidisciplinaria",
+  "ESCENARIO PRINCIPAL",
+  "ESCENARIOS AVANZADOS",
+  "Los operadores mostrados representan capacidades disponibles para distintos escenarios avanzados.",
+  "Las capacidades avanzadas se habilitan según el escenario seleccionado.",
+  "Acta individual de procedimiento y revisión documental",
+  "Demo documental",
 ].forEach((value) => assert(advanced.includes(value), `Missing advanced synchronization content: ${value}`));
+
+[
+  "pipoCitizenExperience",
+  "pipoOperationalJourney",
+  'citizen-activation.js?v=1',
+  'operational-journey.js?v=1',
+  "Demo 4 organismos",
+  ">Demo Etapa 5<",
+].forEach((value) => assert(!advanced.includes(value), `Obsolete advanced content must be removed: ${value}`));
+
+[
+  "data-models.js",
+  "ledger.js",
+  "incident-scenarios.js",
+  "ai-service.js",
+  "incident-assistant.js",
+  "field-workflow.js",
+  "procedure-act.js",
+  "citizen-closure.js",
+  "evidence-vault.js",
+  "app.js",
+  "advanced-sync.js",
+].forEach((script) => assert(advanced.includes(script), `Advanced technical script must remain loaded: ${script}`));
 
 assert(advanced.includes('href="./#presentationCitizen"'), "The advanced view must link to the guided main presentation.");
 assert(advanced.includes('href="./">Volver a la presentación principal'), "The advanced view must keep the return link.");
@@ -38,6 +68,8 @@ assert(!advanced.includes("Acta maestra referenciada"), "The advanced view must 
 assert(styles.includes(".advanced-sync-panel"), "The alignment panel requires scoped styles.");
 assert(styles.includes(".advanced-sync-nav"), "The advanced navigation requires scoped styles.");
 assert(styles.includes(".advanced-service-reference"), "The compact service reference requires scoped styles.");
+assert(styles.includes(".advanced-sync-nav { position: sticky") && styles.includes("flex-wrap: wrap"), "Desktop advanced navigation must wrap instead of creating a horizontal scrollbar.");
+assert(styles.includes(".advanced-sync-nav { top: 0; margin-top: 10px; flex-wrap: nowrap; overflow-x: auto; }"), "Mobile advanced navigation must keep horizontal scrolling within the control.");
 const internalHrefs = [...navigationMarkup.matchAll(/href="(#[^"]+)"/g)].map((match) => match[1]);
 assert(internalHrefs.length > 0, "Advanced navigation must include internal destinations.");
 internalHrefs.forEach((href) => assert(advanced.includes(`id="${href.slice(1)}"`), `Missing navigation destination: ${href}`));

@@ -80,7 +80,7 @@ function testAdvancedModules() {
   [
     "data-models.js", "ledger.js", "incident-scenarios.js", "ai-service.js", "incident-assistant.js",
     "field-workflow.js", "procedure-act.js", "citizen-closure.js", "evidence-vault.js", "app.js",
-    "citizen-activation.js", "operational-journey.js",
+    "advanced-sync.js",
   ].forEach((script) => assert(advancedHtml.includes(script), `advanced.html must load ${script}.`));
 }
 

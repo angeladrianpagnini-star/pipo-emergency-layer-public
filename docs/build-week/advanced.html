@@ -128,8 +128,6 @@
         </article>
       </div>
     </section>
-    <div id="pipoCitizenExperience"></div>
-    <div id="pipoOperationalJourney"></div>
     <noscript>
       <p class="pipo-noscript">Esta demostración requiere JavaScript para mostrar la activación simulada. No utiliza sensores ni datos reales.</p>
     </noscript>
@@ -549,6 +547,12 @@
           </div>
           <p>La ubicación operativa es ficticia y solo representa disponibilidad durante el servicio simulado. No implementa vigilancia real ni puntuaciones automáticas de funcionarios.</p>
         </aside>
+        <aside class="advanced-module-note" aria-labelledby="fieldScenarioScopeTitle">
+          <strong id="fieldScenarioScopeTitle">Escenarios disponibles</strong>
+          <p><strong>ESCENARIO PRINCIPAL</strong><br />Móvil 911-12 y Unidad sanitaria 107-04; Fiscalía y Comisaría como actuaciones institucionales/documentales.</p>
+          <p><strong>ESCENARIOS AVANZADOS</strong><br />Tránsito, Bomberos, Policía Científica, Ciberdelitos y otros organismos simulados.</p>
+          <p>Las capacidades avanzadas se habilitan según el escenario seleccionado. Su presencia en el laboratorio no implica intervención simultánea ni asignación automática.</p>
+        </aside>
 
         <div class="field-workbench">
           <section class="field-phone" aria-label="Vista móvil del operador de campo">
@@ -585,7 +589,7 @@
                 <button type="button" data-field-action="start">Iniciar</button>
                 <button type="button" data-field-action="active">Activo</button>
                 <button type="button" data-field-action="complete">Completar</button>
-                <button type="button" data-field-action="demo">Demo 4 organismos</button>
+                <button type="button" data-field-action="demo">Demo multidisciplinaria</button>
               </div>
               <p id="fieldActionMessage" class="field-message">Esperando accion del operador.</p>
             </div>
@@ -698,6 +702,7 @@
               </article>
             </div>
 
+            <p class="advanced-module-note">Los operadores mostrados representan capacidades disponibles para distintos escenarios avanzados. No todos intervienen simultáneamente ni forman parte automática del escenario principal.</p>
             <article class="field-card">
               <div class="section-title compact-title">
                 <h3>Comparacion multioperador</h3>
@@ -711,7 +716,7 @@
 
       <section id="procedure-act" class="panel procedure-panel" data-internal-for-citizen>
         <div class="section-title">
-          <h2>Acta Digital de Procedimiento PIPO</h2>
+          <h2>Acta individual de procedimiento y revisión documental</h2>
           <span>Etapa 5</span>
         </div>
         <p class="advanced-module-note">Módulo técnico de actuación individual y revisión documental.</p>
@@ -741,7 +746,7 @@
           <button type="button" data-procedure-action="supervisor">Supervisor</button>
           <button type="button" data-procedure-action="submit">Presentar</button>
           <button type="button" data-procedure-action="finalize">Finalizar acta</button>
-          <button type="button" data-procedure-action="demo">Demo Etapa 5</button>
+          <button type="button" data-procedure-action="demo">Demo documental</button>
         </div>
           <div id="procedureMessage" class="access-result" role="status" aria-live="polite"></div>
         <div class="procedure-grid">
@@ -1181,8 +1186,6 @@
     <script src="citizen-closure.js?v=1"></script>
     <script src="evidence-vault.js?v=1"></script>
     <script src="app.js?v=11"></script>
-    <script src="citizen-activation.js?v=1"></script>
-    <script src="operational-journey.js?v=1"></script>
     <script src="advanced-sync.js?v=1"></script>
   </body>
 </html>

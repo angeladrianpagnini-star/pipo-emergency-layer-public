@@ -4,7 +4,6 @@ const path = require("path");
 
 const root = __dirname;
 const source = fs.readFileSync(path.join(root, "operational-journey.js"), "utf8");
-const advancedHtml = fs.readFileSync(path.join(root, "advanced.html"), "utf8");
 const styles = fs.readFileSync(path.join(root, "styles.css"), "utf8");
 
 const requiredEvents = [
@@ -116,8 +115,6 @@ function assertLocalizationAndSurface() {
   ["es-AR", "en-US", "pipo-demo-locale-change", "pipo-demo-region-change", "AR_BUENOS_AIRES", "INTERNATIONAL"].forEach((value) => {
     assertContains(value, "locale or region integration");
   });
-  assert(advancedHtml.includes('id="pipoOperationalJourney"'), "Operational journey root must exist in advanced.html.");
-  assert(advancedHtml.includes('src="operational-journey.js?v=1"'), "Operational journey script must load from advanced.html.");
   [".journey-main-grid", ".journey-agency-grid", ".journey-map", ".journey-map-resource-grid", ".journey-final-phone", ".journey-field-cards", ".journey-ledger"].forEach((selector) => {
     assert(styles.includes(selector), `Missing operational journey style: ${selector}`);
   });
