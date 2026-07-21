@@ -706,6 +706,10 @@ h3 {
   border-left-color: var(--teal);
 }
 
+.backend-status.simulated {
+  border-left-color: #68807a;
+}
+
 .backend-status.offline {
   border-left-color: var(--amber);
 }
@@ -3452,6 +3456,15 @@ body.advanced-demo { background: #f5f7f6; }
   .advanced-document-comparison { grid-template-columns: 1fr; }
   .advanced-sync-nav { top: 0; margin-top: 10px; flex-wrap: nowrap; overflow-x: auto; }
   .advanced-section-heading > span { align-self: flex-start; }
+}
+
+@media print {
+  .advanced-sync-nav {
+    position: static;
+    top: auto;
+    box-shadow: none;
+    overflow: visible;
+  }
 }
 
 body.presentation-filming .presentation-console-card:not(.is-involved),

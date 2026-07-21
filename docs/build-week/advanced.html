@@ -39,7 +39,7 @@
         <li><strong>v36 preservada</strong><span>Versión preexistente sin modificaciones.</span></li>
         <li><strong>Presentación Build Week publicada</strong><span>Disponible desde <code>main</code>.</span></li>
         <li><strong>Módulos avanzados publicados</strong><span>Laboratorio técnico conceptual y simulado.</span></li>
-        <li><strong>PR #3, #4 y #5 fusionados</strong><span>Flujo final consolidado para evaluación.</span></li>
+        <li><strong>Flujo final consolidado</strong><span>Presentación principal y laboratorio avanzado consolidados en <code>main</code>.</span></li>
         <li><strong>Sin conexiones oficiales ni sensores reales</strong><span>Datos, ubicaciones y documentos ficticios.</span></li>
       </ul>
       <div class="advanced-alignment-grid">
@@ -70,7 +70,7 @@
       <a href="#perspectives">Perspectivas</a>
       <a href="#incident-assistant">Incident Assistant</a>
       <a href="#field-operators">Field Operator</a>
-      <a href="#procedure-act">Actas y documentación</a>
+      <a href="#procedure-act">Registro integrado y documentación</a>
       <a href="#evidence-vault">Evidencia</a>
       <a href="#security-status">Seguridad</a>
       <a href="#audit">Auditoría</a>
@@ -154,7 +154,7 @@
       <a href="#master-console" data-internal-for-citizen>Master Console</a>
       <a href="#field-operators" data-internal-for-citizen>Field Operators</a>
       <a href="#individual-acts" data-internal-for-citizen>Individual Acts</a>
-      <a href="#procedure-act" data-internal-for-citizen>Procedure Act</a>
+      <a href="#procedure-act" data-internal-for-citizen>Registro Integrado</a>
       <a href="#security-status" data-internal-for-citizen>Security Status</a>
       <a href="#evidence-vault" data-internal-for-citizen>Evidence Vault</a>
       <a href="#access-requests" data-internal-for-citizen>Access Requests</a>
@@ -307,7 +307,7 @@
           </article>
           <article>
             <span>Backend</span>
-            <strong id="assistantBackendStatus">Estado pendiente</strong>
+            <strong id="assistantBackendStatus">Modo simulado activo. El backend local opcional no está desplegado en GitHub Pages. La demostración puede utilizarse completamente sin backend.</strong>
           </article>
           <article>
             <span>RequestId</span>
@@ -589,7 +589,7 @@
                 <button type="button" data-field-action="start">Iniciar</button>
                 <button type="button" data-field-action="active">Activo</button>
                 <button type="button" data-field-action="complete">Completar</button>
-                <button type="button" data-field-action="demo">Demo multidisciplinaria</button>
+                <button type="button" data-field-action="demo">Demo multiagencia</button>
               </div>
               <p id="fieldActionMessage" class="field-message">Esperando accion del operador.</p>
             </div>
@@ -716,42 +716,44 @@
 
       <section id="procedure-act" class="panel procedure-panel" data-internal-for-citizen>
         <div class="section-title">
-          <h2>Acta individual de procedimiento y revisión documental</h2>
+          <h2>Registro Integrado de Procedimiento y revisión documental</h2>
           <span>Etapa 5</span>
         </div>
-        <p class="advanced-module-note">Módulo técnico de actuación individual y revisión documental.</p>
+        <p class="advanced-module-note">Módulo técnico de integración y revisión documental.</p>
         <p class="lead">
           La consola maestra integra referencias a actas individuales, bitácora, evidencia simulada y decisiones humanas.
           Las fuentes originales se referencian y permanecen preservadas.
         </p>
+        <p class="advanced-module-note">Documento interno de integración y revisión que referencia las actas individuales sin sustituirlas, fusionarlas ni modificar sus fuentes.</p>
         <div class="advanced-documentary-flow" aria-label="Flujo documental final">
-          <strong>Actas individuales</strong><b>↓</b><strong>Control de consistencia documental</strong><b>↓</b>
+          <strong>Actas individuales</strong><b>↓</b><strong>Registro Integrado de Procedimiento</strong><b>↓</b>
+          <strong>Control de consistencia documental</strong><b>↓</b>
           <strong>Solicitud de ampliación</strong><b>↓</b><strong>Adenda no destructiva</strong><b>↓</b>
           <strong>Informe Maestro Interno</strong><b>↓</b><strong>Remisión institucional simulada</strong><b>↓</b>
           <strong>Resumen de Cierre Ciudadano</strong>
         </div>
         <div class="assistant-flow compact-flow" aria-label="Flujo documental de Etapa 5">
-          <span>1. Acta</span>
+          <span>1. Registro integrado</span>
           <span>2. Borrador IA</span>
           <span>3. Consistencia</span>
           <span>4. Supervisor</span>
           <span>5. Cierre</span>
         </div>
         <div class="action-row">
-          <button type="button" data-procedure-action="create">Generar acta</button>
+          <button type="button" data-procedure-action="create">Generar registro integrado</button>
           <button type="button" data-procedure-action="ai-draft">Borrador IA</button>
           <button type="button" data-procedure-action="review">Revisión operador</button>
           <button type="button" data-procedure-action="clarify">Solicitar aclaracion</button>
           <button type="button" data-procedure-action="answer-clarification">Responder aclaracion</button>
           <button type="button" data-procedure-action="supervisor">Supervisor</button>
           <button type="button" data-procedure-action="submit">Presentar</button>
-          <button type="button" data-procedure-action="finalize">Finalizar acta</button>
+          <button type="button" data-procedure-action="finalize">Finalizar registro integrado</button>
           <button type="button" data-procedure-action="demo">Demo documental</button>
         </div>
           <div id="procedureMessage" class="access-result" role="status" aria-live="polite"></div>
         <div class="procedure-grid">
           <article>
-            <h3>Acta</h3>
+            <h3>Registro integrado</h3>
             <div id="procedureActSummary" class="mini-record"></div>
           </article>
           <article>
@@ -1092,8 +1094,8 @@
           <span>Modelo de datos</span>
         </div>
         <p class="lead">
-          Los modelos separan bitácora operativa, decisión humana, sugerencia de IA y Acta Digital de
-          Procedimiento. La IA solo propone; el operador valida.
+          Los modelos separan bitácora operativa, decisiones humanas, actas individuales, Registro Integrado de
+          Procedimiento e Informe Maestro Interno. La IA solo propone; el operador valida.
         </p>
         <div id="modelList" class="model-list" aria-label="Modelos de datos"></div>
       </section>

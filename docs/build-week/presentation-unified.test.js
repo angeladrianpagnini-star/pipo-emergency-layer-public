@@ -159,9 +159,11 @@ function testAdvancedProtection() {
 function testSafetyBoundaries() {
   const forbidden = ["get" + "UserMedia", "geo" + "location", "MediaDevices", "watch" + "Position", 'type="file"', "localStorage", "sessionStorage"];
   forbidden.forEach((fragment) => assert(!source.includes(fragment), `Unified presentation must not use ${fragment}.`));
-  ["No es una denuncia real", "Sin anonimato absoluto", "No official connection", "No sensors, off-duty surveillance", "humanRequired", "confirmResource", "Demostración conceptual sin conexión institucional real.", "No se utiliza cámara, micrófono, ubicación ni archivos personales reales."].forEach((value) => {
+  ["No es una denuncia real", "Sin anonimato absoluto", "No official connection", "No real sensors, no persistent surveillance, no personal uploads, and no official connections.", "Sin sensores reales, sin vigilancia permanente, sin cargas personales ni conexiones oficiales.", "humanRequired", "confirmResource", "Demostración conceptual sin conexión institucional real.", "No se utiliza cámara, micrófono, ubicación ni archivos personales reales."].forEach((value) => {
     assert(source.includes(value), `Missing safety or human-control boundary: ${value}`);
   });
+  assert(!source.includes("Sin sensores, vigilancia fuera de servicio, cargas personales ni conexiones oficiales."), "The prior Spanish scope sentence must be replaced.");
+  assert(!source.includes("No sensors, off-duty surveillance, personal uploads, or official connections."), "The prior English scope sentence must be replaced.");
 }
 
 function testLocalizedFlow() {

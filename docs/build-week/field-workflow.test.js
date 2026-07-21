@@ -67,6 +67,7 @@ const {
 
 const state = createFieldWorkflowState();
 assert(state.operators.length >= 4);
+assert.strictEqual(state.operators.find((operator) => operator.operatorId === "OP-FIELD-911-A").shortLabel, "Oficial Móvil Demo · 911");
 
 const policeId = "OP-FIELD-911-A";
 const healthId = "OP-FIELD-107-A";

@@ -198,7 +198,7 @@
         completed: [],
         pending: REQUIRED_COMPLETENESS_ITEMS.map((item) => item[1]),
         warnings: [],
-        blockingErrors: ["Acta Digital de Procedimiento no generada."],
+        blockingErrors: ["registro integrado pendiente."],
         recommendations: [],
       },
       findings: [],
@@ -217,7 +217,7 @@
       closure: null,
       exports: [],
       printViewHtml: "",
-      lastMessage: "Etapa 5 lista para generar acta digital.",
+      lastMessage: "Etapa 5 lista para generar Registro Integrado de Procedimiento.",
       contextSnapshot: {
         buildWeekState: clone(buildWeekState),
         fieldState: clone(fieldState),
@@ -362,7 +362,7 @@
       manifestacionesTerceros: linesFrom(grouped[INFORMATION_CLASSES.THIRD_PARTY_STATEMENT], "manifestaciones de terceros"),
       datosSistema: linesFrom(grouped[INFORMATION_CLASSES.SYSTEM_DATA], "datos del sistema"),
       actuacionesRealizadas: linesFrom(grouped[INFORMATION_CLASSES.ACTION_PERFORMED], "actuaciones realizadas"),
-      organismosIntervinientes: collectConsoles(fieldState, buildWeekState).map((consoleId) => `${consoleId} incorporado al expediente maestro.`),
+      organismosIntervinientes: collectConsoles(fieldState, buildWeekState).map((consoleId) => `${consoleId} incorporado al Informe Maestro Interno.`),
       evidenciaVinculada: evidence.length
         ? evidence.map((item) => `${item.evidenceId}: ${item.type} / ${item.integrityReference}`)
         : ["Dato no disponible: evidencia vinculada."],
@@ -501,11 +501,11 @@
     state.findings = runConsistencyEngine(state, { buildWeekState, fieldState, ledgerEvents });
     state.supervision = determineSupervision(state, { buildWeekState, fieldState });
     state.printViewHtml = buildPrintView(procedureAct, state);
-    state.lastMessage = "Acta Digital de Procedimiento creada en borrador.";
+    state.lastMessage = "Registro Integrado de Procedimiento creado en borrador.";
 
     return ok({
       procedureAct,
-      ledger: ledgerEnvelope(actor, "procedure.act.created", "Acta Digital de Procedimiento creada en borrador.", {
+      ledger: ledgerEnvelope(actor, "procedure.act.created", "Registro Integrado de Procedimiento creado en borrador.", {
         actId: procedureAct.actId,
         version: procedureAct.version,
         status: procedureAct.status,
@@ -518,7 +518,7 @@
   }
 
   function generateAiDraft(state) {
-    if (!state.procedureAct) return fail("Primero debe generarse el acta digital.");
+    if (!state.procedureAct) return fail("Primero debe generarse el Registro Integrado de Procedimiento.");
     const sections = createAiDraftSections({
       buildWeekState: state.contextSnapshot.buildWeekState,
       fieldState: state.contextSnapshot.fieldState,
@@ -558,7 +558,7 @@
         completed: [],
         pending: REQUIRED_COMPLETENESS_ITEMS.map((item) => item[1]),
         warnings: [],
-        blockingErrors: ["Acta Digital de Procedimiento no generada."],
+        blockingErrors: ["registro integrado pendiente."],
         recommendations: [],
       };
     }
@@ -594,7 +594,7 @@
       pending,
       warnings,
       blockingErrors,
-      recommendations: pending.length ? ["Completar pendientes antes de finalizar."] : ["Acta lista para control de consistencia."],
+      recommendations: pending.length ? ["Completar pendientes antes de finalizar."] : ["Registro Integrado listo para control de consistencia."],
     };
   }
 
@@ -607,11 +607,11 @@
     const fieldState = context.fieldState || state.contextSnapshot.fieldState || {};
     const findings = [];
     if (!act) {
-      return [finding(FINDING_TYPES.BLOCKING_ERROR, "procedure_act_missing", "No existe Acta Digital de Procedimiento.")];
+      return [finding(FINDING_TYPES.BLOCKING_ERROR, "procedure_act_missing", "No existe Registro Integrado de Procedimiento.")];
     }
 
-    if (!act.operatorId) findings.push(finding(FINDING_TYPES.BLOCKING_ERROR, "responsible_missing", "Acta sin responsable."));
-    if (!act.content?.result?.outcome) findings.push(finding(FINDING_TYPES.BLOCKING_ERROR, "result_missing", "Acta sin resultado."));
+    if (!act.operatorId) findings.push(finding(FINDING_TYPES.BLOCKING_ERROR, "responsible_missing", "Registro Integrado sin responsable."));
+    if (!act.content?.result?.outcome) findings.push(finding(FINDING_TYPES.BLOCKING_ERROR, "result_missing", "Registro Integrado sin resultado."));
     if (!act.content?.confirmation?.reviewStatement) findings.push(finding(FINDING_TYPES.BLOCKING_ERROR, "confirmation_missing", "Confirmacion humana pendiente."));
     if (!act.individualActIds?.length) findings.push(finding(FINDING_TYPES.BLOCKING_ERROR, "individual_acts_missing", "Cierre sin acta o reporte individual."));
     if (!state.chronology.length) findings.push(finding(FINDING_TYPES.BLOCKING_ERROR, "chronology_missing", "Cronologia automatica vacia."));
@@ -715,11 +715,11 @@
   }
 
   function updateCompleteness(state) {
-    if (!state.procedureAct) return fail("Primero debe generarse el acta digital.");
+    if (!state.procedureAct) return fail("Primero debe generarse el Registro Integrado de Procedimiento.");
     state.completeness = calculateCompleteness(state.procedureAct);
     return ok({
       completeness: state.completeness,
-      ledger: ledgerEnvelopeFromAct(state.procedureAct, "procedure.act.completeness_updated", `Acta ${state.completeness.percent}% completa.`, {
+      ledger: ledgerEnvelopeFromAct(state.procedureAct, "procedure.act.completeness_updated", `Registro Integrado ${state.completeness.percent}% completo.`, {
         percent: state.completeness.percent,
         pending: state.completeness.pending,
         blockingErrors: state.completeness.blockingErrors,
@@ -728,7 +728,7 @@
   }
 
   function checkConsistency(state) {
-    if (!state.procedureAct) return fail("Primero debe generarse el acta digital.");
+    if (!state.procedureAct) return fail("Primero debe generarse el Registro Integrado de Procedimiento.");
     const findings = runConsistencyEngine(state);
     return ok({
       findings,
@@ -741,8 +741,8 @@
   }
 
   function completeOperatorReview(state, reviewStatement = "El funcionario actuante revisa el borrador y confirma su contenido como demo.") {
-    if (!state.procedureAct) return fail("Primero debe generarse el acta digital.");
-    if (state.procedureAct.locked) return fail("El acta finalizada esta bloqueada.");
+    if (!state.procedureAct) return fail("Primero debe generarse el Registro Integrado de Procedimiento.");
+    if (state.procedureAct.locked) return fail("El Registro Integrado finalizado esta bloqueado.");
     state.procedureAct.content.confirmation.reviewStatement = reviewStatement;
     state.procedureAct.content.confirmation.timestamp = nowIso();
     state.procedureAct.content.confirmation.status = PROCEDURE_ACT_STATUSES.IN_REVIEW;
@@ -760,17 +760,17 @@
   }
 
   function submitProcedureAct(state) {
-    if (!state.procedureAct) return fail("Primero debe generarse el acta digital.");
+    if (!state.procedureAct) return fail("Primero debe generarse el Registro Integrado de Procedimiento.");
     const consistency = runConsistencyEngine(state);
     const blocking = consistency.filter((item) => item.type === FINDING_TYPES.BLOCKING_ERROR);
     if (blocking.length) {
       return fail(`No se puede presentar: ${blocking[0].message}`);
     }
     state.procedureAct.status = state.supervision.required ? PROCEDURE_ACT_STATUSES.PENDING_SUPERVISOR : PROCEDURE_ACT_STATUSES.IN_REVIEW;
-    state.lastMessage = "Acta presentada para control final.";
+    state.lastMessage = "Registro Integrado presentado para control final.";
     return ok({
       procedureAct: state.procedureAct,
-      ledger: ledgerEnvelopeFromAct(state.procedureAct, "procedure.act.submitted", "Acta presentada para control final.", {
+      ledger: ledgerEnvelopeFromAct(state.procedureAct, "procedure.act.submitted", "Registro Integrado presentado para control final.", {
         actId: state.procedureAct.actId,
         status: state.procedureAct.status,
       }),
@@ -778,7 +778,7 @@
   }
 
   function requestSupervisorReview(state, reason = "Revision requerida por criticidad, evidencia sensible o multiples organismos.") {
-    if (!state.procedureAct) return fail("Primero debe generarse el acta digital.");
+    if (!state.procedureAct) return fail("Primero debe generarse el Registro Integrado de Procedimiento.");
     state.supervision = determineSupervision(state);
     state.supervision.required = true;
     state.supervision.status = SUPERVISION_STATUSES.IN_REVIEW;
@@ -801,7 +801,7 @@
   }
 
   function observeSupervisor(state, observation = "Solicitar ampliacion antes de cierre.") {
-    if (!state.procedureAct) return fail("Primero debe generarse el acta digital.");
+    if (!state.procedureAct) return fail("Primero debe generarse el Registro Integrado de Procedimiento.");
     state.supervision.required = true;
     state.supervision.status = SUPERVISION_STATUSES.OBSERVED;
     state.supervision.reviewedAt = nowIso();
@@ -822,7 +822,7 @@
   }
 
   function validateSupervisor(state, observation = "Supervisor valida recepcion documental sin modificar relato.") {
-    if (!state.procedureAct) return fail("Primero debe generarse el acta digital.");
+    if (!state.procedureAct) return fail("Primero debe generarse el Registro Integrado de Procedimiento.");
     state.supervision.required = true;
     state.supervision.status = SUPERVISION_STATUSES.VALIDATED;
     state.supervision.validatedAt = nowIso();
@@ -846,7 +846,7 @@
   }
 
   function requestClarification(state, requestInput = {}) {
-    if (!state.procedureAct) return fail("Primero debe generarse el acta digital.");
+    if (!state.procedureAct) return fail("Primero debe generarse el Registro Integrado de Procedimiento.");
     const request = {
       id: `PCLAR-${String(state.clarificationRequests.length + 1).padStart(3, "0")}`,
       incidentId: state.incidentId,
@@ -901,8 +901,8 @@
   }
 
   function finalizeProcedureAct(state) {
-    if (!state.procedureAct) return fail("Primero debe generarse el acta digital.");
-    if (state.procedureAct.locked) return fail("El acta finalizada ya esta bloqueada.");
+    if (!state.procedureAct) return fail("Primero debe generarse el Registro Integrado de Procedimiento.");
+    if (state.procedureAct.locked) return fail("El Registro Integrado finalizado ya esta bloqueado.");
     state.completeness = calculateCompleteness(state.procedureAct);
     state.findings = runConsistencyEngine(state);
     const blocking = [
@@ -921,10 +921,10 @@
     state.procedureAct.locked = true;
     pushVersion(state, state.procedureAct, state.procedureAct.operatorId, "Finalizacion con control de completitud y consistencia.", "v3", PROCEDURE_ACT_STATUSES.FINALIZED);
     state.printViewHtml = buildPrintView(state.procedureAct, state);
-    state.lastMessage = "Acta Digital finalizada y bloqueada.";
+    state.lastMessage = "Registro Integrado finalizado y bloqueado.";
     return ok({
       procedureAct: state.procedureAct,
-      ledger: ledgerEnvelopeFromAct(state.procedureAct, "procedure.act.finalized", "Acta Digital finalizada y bloqueada.", {
+      ledger: ledgerEnvelopeFromAct(state.procedureAct, "procedure.act.finalized", "Registro Integrado finalizado y bloqueado.", {
         actId: state.procedureAct.actId,
         version: state.procedureAct.version,
         integrityReference: state.procedureAct.integrityReference,
@@ -940,7 +940,7 @@
     state.lastMessage = "Ampliacion agregada como nueva version sin sobrescribir la final.";
     return ok({
       version,
-      ledger: ledgerEnvelopeFromAct(state.procedureAct, "procedure.act.amended", "Acta ampliada mediante version posterior.", {
+      ledger: ledgerEnvelopeFromAct(state.procedureAct, "procedure.act.amended", "Registro Integrado ampliado mediante version posterior.", {
         actId: state.procedureAct.actId,
         versionId: version.versionId,
         previousVersionId: version.previousVersionId,
@@ -959,7 +959,7 @@
     state.lastMessage = "Rectificacion agregada sin reescribir el documento original.";
     return ok({
       version,
-      ledger: ledgerEnvelopeFromAct(state.procedureAct, "procedure.act.rectified", "Acta rectificada mediante version posterior.", {
+      ledger: ledgerEnvelopeFromAct(state.procedureAct, "procedure.act.rectified", "Registro Integrado rectificado mediante version posterior.", {
         actId: state.procedureAct.actId,
         versionId: version.versionId,
         correction,
@@ -969,7 +969,7 @@
   }
 
   function annulProcedureAct(state, reason = "", authority = "Autoridad simulada") {
-    if (!state.procedureAct) return fail("Primero debe generarse el acta digital.");
+    if (!state.procedureAct) return fail("Primero debe generarse el Registro Integrado de Procedimiento.");
     if (!compact(reason)) return fail("La anulacion requiere motivo y autoridad.");
     const version = createDetachedVersion(state, "v3.3", PROCEDURE_ACT_STATUSES.ANNULLED_WITH_REASON, reason, {
       authority,
@@ -978,7 +978,7 @@
     state.procedureAct.status = PROCEDURE_ACT_STATUSES.ANNULLED_WITH_REASON;
     return ok({
       version,
-      ledger: ledgerEnvelopeFromAct(state.procedureAct, "procedure.act.annulled", "Acta anulada con motivo conservando documento.", {
+      ledger: ledgerEnvelopeFromAct(state.procedureAct, "procedure.act.annulled", "Registro Integrado anulado con motivo conservando documento.", {
         actId: state.procedureAct.actId,
         versionId: version.versionId,
         reason,
@@ -988,7 +988,7 @@
   }
 
   function buildMasterIncidentRecord(state) {
-    if (!state.procedureAct) return fail("Primero debe generarse el acta digital.");
+    if (!state.procedureAct) return fail("Primero debe generarse el Registro Integrado de Procedimiento.");
     const fieldState = state.contextSnapshot.fieldState || {};
     const buildWeekState = state.contextSnapshot.buildWeekState || {};
     const divergences = state.findings.filter((item) => ["divergent_records", "intervention_before_arrival", "closure_before_arrival", "time_inconsistency"].includes(item.code));
@@ -1028,7 +1028,7 @@
     state.masterIncidentRecord = record;
     return ok({
       masterIncidentRecord: record,
-      ledger: ledgerEnvelopeFromAct(state.procedureAct, "master.record.generated", "Expediente maestro generado como indice y sintesis.", {
+      ledger: ledgerEnvelopeFromAct(state.procedureAct, "master.record.generated", "Informe Maestro Interno generado como indice y sintesis.", {
         masterRecordId: record.id,
         individualActs: record.individualActs,
         procedureActId: record.procedureActId,
@@ -1036,8 +1036,8 @@
     });
   }
 
-  function proposeClosure(state, status = CLOSURE_STATUSES.CLOSED_WITH_PROCEDURE_ACT, summary = "Cierre propuesto con Acta Digital de Procedimiento.", followUp = "Seguimiento no requerido luego de validacion.") {
-    if (!state.procedureAct) return fail("Primero debe generarse el acta digital.");
+  function proposeClosure(state, status = CLOSURE_STATUSES.CLOSED_WITH_PROCEDURE_ACT, summary = "Cierre propuesto con Registro Integrado de Procedimiento.", followUp = "Seguimiento no requerido luego de validacion.") {
+    if (!state.procedureAct) return fail("Primero debe generarse el Registro Integrado de Procedimiento.");
     if (!Object.values(CLOSURE_STATUSES).includes(status)) return fail("Estado de cierre no permitido.");
     const requirements = validateClosureRequirements(state, status, summary, followUp);
     if (!requirements.valid) {
@@ -1111,7 +1111,7 @@
     if (!status) errors.push("estado final pendiente");
     if (!state.procedureAct?.content?.result?.outcome) errors.push("resultado pendiente");
     if (!hasAnyAction(state.procedureAct?.content?.actions)) errors.push("actuacion pendiente");
-    if (!state.procedureAct?.actId) errors.push("acta o reporte pendiente");
+    if (!state.procedureAct?.actId) errors.push("registro integrado pendiente");
     if (!state.chronology.length) errors.push("cronologia pendiente");
     if (!followUp) errors.push("seguimiento pendiente");
     if (state.supervision.required && state.supervision.status !== SUPERVISION_STATUSES.VALIDATED) errors.push("revision de supervisor pendiente");
@@ -1121,7 +1121,7 @@
   }
 
   function exportProcedureJson(state) {
-    if (!state.procedureAct) return fail("Primero debe generarse el acta digital.");
+    if (!state.procedureAct) return fail("Primero debe generarse el Registro Integrado de Procedimiento.");
     const exported = {
       exportId: `EXPORT-${String(state.exports.length + 1).padStart(3, "0")}`,
       exportedAt: nowIso(),
@@ -1147,11 +1147,12 @@
     if (!act) return "";
     const sections = state.aiDraft?.sections || {};
     return [
-      `<h1>Acta Digital de Procedimiento PIPO</h1>`,
+      `<h1>Registro Integrado de Procedimiento</h1>`,
+      "<p>Documento interno de integración y revisión que referencia las actas individuales sin sustituirlas, fusionarlas ni modificar sus fuentes.</p>",
       `<p>${AI_DRAFT_NOTICE}</p>`,
       `<p>${INTEGRATION_PRINCIPLE}</p>`,
       `<h2>Identificacion</h2>`,
-      `<p>Acta ${act.actId} / Incidente ${act.incidentId} / Version ${act.version} / Estado ${act.status}</p>`,
+      `<p>Registro Integrado ${act.actId} / Incidente ${act.incidentId} / Version ${act.version} / Estado ${act.status}</p>`,
       `<h2>Cronologia</h2>`,
       `<ol>${state.chronology.slice(0, 12).map((event) => `<li>${event.timestamp} - ${event.summary} (${event.eventId})</li>`).join("")}</ol>`,
       `<h2>Borrador asistido</h2>`,

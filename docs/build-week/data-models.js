@@ -170,7 +170,7 @@ const MODEL_DEFINITIONS = [
   },
   {
     key: "digitalAct",
-    name: "Acta Digital de Procedimiento",
+    name: "Registro Integrado de Procedimiento",
     purpose: "Documento institucional estructurado a partir de bitacora y datos validados.",
     required: ["id", "incidentId", "threadId", "version", "status", "author", "startedAt"],
     fields: [
@@ -659,11 +659,11 @@ const FEDERATED_MODEL_DEFINITIONS = [
   },
   {
     key: "masterIncidentRecord",
-    name: "MasterIncidentRecord",
-    purpose: "Expediente digital del incidente: integra sin sustituir fuentes originales.",
+    name: "Informe Maestro Interno",
+    purpose: "Informe Maestro Interno del incidente: integra sin sustituir fuentes originales.",
     required: ["id", "incidentId", "participatingConsoles", "individualActs", "integratedTimeline", "closureStatus"],
     fields: [
-      ["id", "Identificador de expediente maestro"],
+      ["id", "Identificador del Informe Maestro Interno"],
       ["incidentId", "Incidente asociado"],
       ["participatingConsoles", "Consolas participantes"],
       ["individualActs", "Actas individuales referenciadas"],
@@ -769,7 +769,7 @@ const FEDERATED_MODEL_DEFINITIONS = [
       ["selectedFiles", "Archivos simulados seleccionados voluntariamente"],
       ["metadataSources", "Fuentes de metadatos visibles"],
       ["hashes", "Referencias de integridad de la demo"],
-      ["preservationActions", "Capturas, hash, acta digital, derivacion"],
+      ["preservationActions", "Capturas, hash, acta individual, derivacion"],
       ["referralAuthority", "Fiscalia u organismo de derivacion"],
       ["status", "Borrador, preservado, derivado o cerrado"],
     ],
@@ -1009,7 +1009,7 @@ const CITIZEN_MODEL_DEFINITIONS = [
   {
     key: "citizenClosureSummary",
     name: "CitizenClosureSummary",
-    purpose: "Resumen ciudadano en lenguaje claro, minimizado y separado del expediente maestro.",
+    purpose: "Resumen ciudadano en lenguaje claro, minimizado y separado del Informe Maestro Interno.",
     required: ["id", "incidentId", "createdAt", "createdBy", "status", "version", "classification", "integrityReference", "generatedAt"],
     fields: [
       ...CITIZEN_MODEL_COMMON_FIELDS,
@@ -1189,7 +1189,7 @@ const operationalConsoles = [
     specialties: ["coordinacion", "triage", "auditoria operativa"],
     roles: ["coordinador", "operador", "supervisor"],
     allowedActions: ["consultar", "invitar organismo", "solicitar aclaracion", "marcar contradiccion", "coordinar cierre"],
-    forms: ["expediente maestro", "observacion de coordinacion"],
+    forms: ["Informe Maestro Interno", "observacion de coordinacion"],
     evidenceTypes: ["indice", "referencia", "metadatos"],
     securityLevel: "high",
     accessLevel: "SENSITIVE",
@@ -1754,7 +1754,7 @@ const buildWeekScenarios = {
   },
   multidisciplinary: {
     label: "Incidente multidisciplinario",
-    summary: "Multiples bases participan con actas propias y expediente maestro referenciado.",
+    summary: "Multiples bases participan con actas propias e Informe Maestro Interno referenciado.",
     recommendedConsoles: ["CON-MASTER", "CON-911", "CON-107", "CON-DC", "CON-CVGRT"],
   },
 };

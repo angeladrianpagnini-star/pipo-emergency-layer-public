@@ -289,7 +289,10 @@ assert.strictEqual(procedureState.closure.status, CLOSURE_STATUSES.CLOSED_WITH_P
 const exported = appendResult(exportProcedureJson(procedureState)).export;
 assert.strictEqual(exported.content.procedureAct.actId, "PACT-BW-000001");
 assert(exported.integrityReference.value.startsWith("demo-sha256-"));
-assert(procedureState.printViewHtml.includes("Acta Digital de Procedimiento PIPO"));
+assert(procedureState.printViewHtml.includes("Registro Integrado de Procedimiento"));
+assert(procedureState.printViewHtml.includes("Documento interno de integración y revisión que referencia las actas individuales sin sustituirlas, fusionarlas ni modificar sus fuentes."));
+assert(!procedureState.printViewHtml.includes("Acta individual de procedimiento"));
+assert(!procedureState.printViewHtml.includes("Acta Digital de Procedimiento"));
 
 calculateSha256Reference({ test: true }).then((reference) => {
   assert(reference.value.startsWith("sha256-") || reference.value.startsWith("demo-sha256-"));
