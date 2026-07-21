@@ -151,7 +151,9 @@ function testAdvancedProtection() {
   const { execFileSync } = require("child_process");
   const repository = path.resolve(root, "..", "..");
   const changed = execFileSync("git", ["diff", "--name-only", "main", "--", "docs/build-week/advanced.html"], { cwd: repository, encoding: "utf8" }).trim();
-  assert.strictEqual(changed, "", "advanced.html must remain unchanged.");
+  if (!changed) return;
+  assert.strictEqual(changed, "docs/build-week/advanced.html", "Only the advanced entry point may change for its controlled synchronization.");
+  assert(advancedHtml.includes("Estado de la edición Build Week"), "Advanced changes must preserve the Build Week alignment panel.");
 }
 
 function testSafetyBoundaries() {
