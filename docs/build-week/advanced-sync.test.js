@@ -44,7 +44,8 @@ internalHrefs.forEach((href) => assert(advanced.includes(`id="${href.slice(1)}"`
 assert(navigation.includes("scrollIntoView"), "Advanced navigation must scroll to the selected destination.");
 assert(navigation.includes("prefers-reduced-motion: reduce"), "Advanced navigation must respect reduced-motion preferences.");
 assert(navigation.includes("history.replaceState"), "Advanced navigation must update the selected hash without a reload.");
-assert(!navigation.includes("pipoAdvancedModules"), "Advanced navigation must not depend on a non-source wrapper.");
+const obsoleteWrapper = ["pipo", "AdvancedModules"].join("");
+assert(!navigation.includes(obsoleteWrapper), "Advanced navigation must not depend on a non-source wrapper.");
 
 const protectedFiles = execFileSync("git", ["diff", "--name-only", "main", "--", "docs/index.html", "docs/styles.css", "docs/app.js", "docs/build-week/index.html", "docs/build-week/presentation-unified.js", "docs/build-week/alert-routing-config.js", "LICENSE", "TRADEMARKS.md"], { cwd: repository, encoding: "utf8" }).trim();
 assert.strictEqual(protectedFiles, "", "Protected public and guided-presentation files must remain unchanged.");
